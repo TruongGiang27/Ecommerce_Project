@@ -1,0 +1,25 @@
+/* theme.css */
+
+:root {
+  /* ==== Màu chủ đạo (Primary Theme Colors) ==== */
+  --color-primary: #2563eb; /* Xanh dương đậm */
+  --color-primary-light: #3b82f6; /* Xanh dương sáng */
+  --color-secondary: #06b6d4; /* Xanh cyan phụ trợ */
+
+  /* ==== Màu nền (Background) ==== */
+  --color-bg: #ffffff; /* Nền sáng */
+  --color-bg-alt: #f3f4f6; /* Nền phụ (xám nhạt) */
+  --color-surface: #e5e7eb; /* Màu nền khối card */
+
+  /* ==== Màu chữ (Text) ==== */
+  --color-text: #111827; /* Màu chữ chính (xám đậm gần đen) */
+  --color-text-light: #6b7280; /* Màu chữ phụ */
+
+  /* ==== Màu trạng thái (State) ==== */
+  --color-success: #16a34a;
+  --color-warning: #facc15;
+  --color-error: #dc2626;
+
+  /* ==== Màu viền (Border) ==== */
+  --color-border: #d1d5db;
+}

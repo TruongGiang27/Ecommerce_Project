@@ -1,0 +1,118 @@
+.footer {
+  background: #0e2239;
+  color: #fff;
+  padding: 40px 60px;
+  font-family: Arial, sans-serif;
+  text-align: left; /* ✅ Toàn bộ footer text căn trái */
+}
+
+.footer-main {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr 1fr 1.2fr; /* 5 cột co giãn */
+  gap: 30px;
+  align-items: start;
+}
+
+.footer-logo {
+  width: 140px;
+  margin-bottom: 15px;
+}
+
+.footer-social {
+  display: flex;
+  gap: 12px;
+}
+
+.footer-social a {
+  color: #fff;
+  background: #1a2c47;
+  padding: 8px;
+  border-radius: 50%;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.footer-social a:hover {
+  background: #f7c600; /* hover vàng */
+}
+
+.footer h4 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #f7c600; /* tiêu đề vàng */
+}
+
+.footer-intro p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer-intro ul,
+.footer-links ul,
+.footer-products ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-intro ul li,
+.footer-links ul li,
+.footer-products ul li {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* Box Hỗ trợ 24/7 */
+.footer-support {
+  background: linear-gradient(135deg, #f7c600, #ffcc33, #ffb347); /* vàng loang */
+  padding: 20px;
+  border-radius: 12px;
+  color: #0e2239; /* chữ xanh đậm */
+  text-align: left; /* ✅ giữ căn trái */
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* hiệu ứng nổi */
+}
+
+.footer-support h4 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  font-weight: bold;
+  color: #0e2239; /* giữ cùng màu chữ */
+}
+
+.footer-support p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #0e2239;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 15px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .footer-main {
+    grid-template-columns: 1fr 1fr 1fr; /* 3 cột */
+  }
+
+  .footer-support {
+    grid-column: span 3; /* support xuống hàng dưới */
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-main {
+    grid-template-columns: 1fr; /* 1 cột */
+  }
+
+  .footer-support {
+    grid-column: span 1;
+  }
+}
