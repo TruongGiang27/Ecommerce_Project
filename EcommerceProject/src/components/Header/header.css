@@ -40,12 +40,12 @@ body {
 }
 
 .header nav .nav-link:hover {
-  color: var(--color-secondary);
+  color: var(--color-primary-light);
 }
 
 /* menu đang active */
 .header nav .nav-link.active {
-  color: var(--color-secondary); /* màu nổi bật cho biết đang ở trang này */
+  color: var(--color-primary-light); /* màu nổi bật cho biết đang ở trang này */
   font-weight: 600;
   border-bottom: 2px solid var(--color-secondary); /* optional: gạch chân */
 }
