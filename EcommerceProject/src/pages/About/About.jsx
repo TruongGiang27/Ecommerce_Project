@@ -1,74 +1,90 @@
 import React from "react";
-import "../About/about.css";
+import { FaShieldAlt, FaHeadset, FaTags, FaSyncAlt } from "react-icons/fa";
+import "./about.css";
 
 export default function About() {
   return (
-    <div className="about-container">
-      <section className="hero-section">
-        <h1>Về Shop Software</h1>
-        <p className="subtitle">
-          Nền tảng phân phối phần mềm bản quyền hàng đầu Việt Nam
+    <div className="about-page">
+      {/* Hero Section */}
+      <section className="about-hero">
+        <div className="overlay">
+          <h1>Về Shop Software</h1>
+          <p>
+            Nền tảng phân phối phần mềm bản quyền hàng đầu Việt Nam – Uy tín,
+            chuyên nghiệp và tận tâm.
+          </p>
+        </div>
+      </section>
+
+      {/* Mission & Vision */}
+      <section className="about-mission container">
+        <h2>Sứ mệnh & Tầm nhìn</h2>
+        <p>
+          Chúng tôi cam kết mang đến cho khách hàng các giải pháp phần mềm chính
+          hãng với chi phí hợp lý, đảm bảo tính bản quyền 100% và dịch vụ hỗ trợ
+          24/7. Tầm nhìn của Shop Software là trở thành lựa chọn số 1 tại Việt
+          Nam trong lĩnh vực phân phối phần mềm bản quyền.
         </p>
       </section>
 
-      <section className="content-section">
-        <div className="mission-vision">
-          <h2>Sứ mệnh của chúng tôi</h2>
-          <p>
-            Shop Software cam kết mang đến cho khách hàng những sản phẩm phần
-            mềm chất lượng với giá cả hợp lý, đảm bảo 100% tính bản quyền và hỗ
-            trợ kỹ thuật chuyên nghiệp.
-          </p>
-        </div>
-
-        <div className="features">
-          <h2>Điểm nổi bật</h2>
-          <div className="features-grid">
-            <div className="feature-item">
-              <h3>Sản phẩm chính hãng</h3>
-              <p>Phần mềm được cung cấp trực tiếp từ nhà phát hành</p>
-            </div>
-            <div className="feature-item">
-              <h3>Giá cả cạnh tranh</h3>
-              <p>Cam kết giá tốt nhất thị trường cho phần mềm bản quyền</p>
-            </div>
-            <div className="feature-item">
-              <h3>Hỗ trợ 24/7</h3>
-              <p>Đội ngũ kỹ thuật luôn sẵn sàng hỗ trợ khi bạn cần</p>
-            </div>
-            <div className="feature-item">
-              <h3>Bảo hành dài hạn</h3>
-              <p>
-                Chính sách bảo hành và cập nhật trong suốt thời gian sử dụng
-              </p>
-            </div>
+      {/* Core Values */}
+      <section className="about-values container">
+        <h2>Giá trị cốt lõi</h2>
+        <div className="values-grid">
+          <div className="value-card">
+            <FaShieldAlt size={40} color="#007bff" />
+            <h3>Uy tín</h3>
+            <p>Sản phẩm chính hãng, nguồn gốc rõ ràng từ nhà phát hành.</p>
+          </div>
+          <div className="value-card">
+            <FaHeadset size={40} color="#28a745" />
+            <h3>Hỗ trợ 24/7</h3>
+            <p>Đội ngũ kỹ thuật sẵn sàng đồng hành cùng khách hàng.</p>
+          </div>
+          <div className="value-card">
+            <FaTags size={40} color="#ffc107" />
+            <h3>Giá cả hợp lý</h3>
+            <p>Cam kết giá cạnh tranh, ưu đãi linh hoạt.</p>
+          </div>
+          <div className="value-card">
+            <FaSyncAlt size={40} color="#17a2b8" />
+            <h3>Bảo hành & Cập nhật</h3>
+            <p>
+              Chính sách bảo hành minh bạch, cập nhật phần mềm liên tục.
+            </p>
           </div>
         </div>
+      </section>
 
-        <div className="categories">
-          <h2>Danh mục sản phẩm</h2>
-          <div className="categories-list">
-            <div className="category">
-              <h3>Phần mềm thiết kế</h3>
-              <p>Adobe, Autodesk, Sketch, Figma...</p>
-            </div>
-            <div className="category">
-              <h3>Phần mềm văn phòng</h3>
-              <p>Microsoft Office, Google Workspace...</p>
-            </div>
-            <div className="category">
-              <h3>Phần mềm lập trình</h3>
-              <p>Visual Studio, JetBrains, Sublime Text...</p>
-            </div>
-          </div>
-        </div>
+      {/* Timeline / Journey */}
+      <section className="about-timeline container">
+        <h2>Hành trình phát triển</h2>
+        <ul className="timeline">
+          <li>
+            <span>2018</span> - Thành lập Shop Software.
+          </li>
+          <li>
+            <span>2020</span> - Hợp tác với nhiều nhà phát hành lớn: Microsoft,
+            Adobe, JetBrains...
+          </li>
+          <li>
+            <span>2022</span> - Hơn 50,000 khách hàng tin tưởng sử dụng.
+          </li>
+          <li>
+            <span>2024</span> - Ra mắt hệ thống phân phối trực tuyến toàn quốc.
+          </li>
+        </ul>
+      </section>
 
-        <div className="contact-info">
-          <h2>Liên hệ với chúng tôi</h2>
-          <p>Email: support@shopsoftware.com</p>
-          <p>Hotline: 1900 xxxx</p>
-          <p>Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM</p>
-        </div>
+      {/* Call to Action */}
+      <section className="about-cta">
+        <h2>Bạn đã sẵn sàng trải nghiệm?</h2>
+        <p>
+          Khám phá ngay kho phần mềm bản quyền chính hãng với ưu đãi hấp dẫn.
+        </p>
+        <a href="/products" className="cta-btn">
+          Khám phá sản phẩm
+        </a>
       </section>
     </div>
   );

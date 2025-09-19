@@ -15,9 +15,20 @@ export default function ProductCard({ product }) {
 
   return (
     <div className="product-card">
-      <img src={product.img} alt={product.name} />
-      <h3>{product.name}</h3>
-      <p>{product.price.toLocaleString()} đ</p>
+      <img src={product.thumbnail} alt={product.name} />
+      {/* <h3>{product.name}</h3>
+      <p>{product.price.toLocaleString()} đ</p> */}
+      <h3>{product.title}</h3>
+<h5>
+  {product.description?.length > 100
+    ? product.description.slice(0, 100) + "..."
+    : product.description}
+</h5>
+{/* <p>
+  {product.variants?.[0]?.prices?.[0]?.amount?.toLocaleString()}
+  đ
+</p> */}
+
       <div className="product-card-actions">
         <Link to={`/products/${product.id}`} className="btn">
           Xem chi tiết
