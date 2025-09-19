@@ -33,14 +33,14 @@
 }
 
 .footer-social a:hover {
-  background: #f7c600; /* hover vàng */
+  background: #007bff; /* hover vàng */
 }
 
 .footer h4 {
   margin-bottom: 15px;
   font-size: 18px;
   font-weight: bold;
-  color: #f7c600; /* tiêu đề vàng */
+  color: #0056b3; /* tiêu đề vàng */
 }
 
 .footer-intro p {
@@ -66,7 +66,7 @@
 
 /* Box Hỗ trợ 24/7 */
 .footer-support {
-  background: linear-gradient(135deg, #f7c600, #ffcc33, #ffb347); /* vàng loang */
+  background: linear-gradient(135deg, #2563eb, #3b82f6, #06b6d4); /* xanh loang */
   padding: 20px;
   border-radius: 12px;
   color: #0e2239; /* chữ xanh đậm */
