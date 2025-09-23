@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import products from "../../data/products";
 import ProductCard from "../../components/productCard/ProductCard";
 import { useSearchParams } from "react-router-dom";
+import "./products.css";
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,15 +39,9 @@ export default function Products() {
       </h2>
 
       {/* Bộ lọc */}
-      <div
-        style={{
-          marginBottom: "20px",
-          display: "flex",
-          gap: "10px",
-          alignItems: "center",
-        }}
-      >
+      <div className="filters">
         <input
+          className="filter-search"
           type="text"
           placeholder="Tìm kiếm sản phẩm..."
           value={search}
@@ -54,6 +49,7 @@ export default function Products() {
           style={{ padding: "8px", flex: 1 }}
         />
         <select
+          className="filter-category"
           value={category}
           onChange={(e) => handleCategoryChange(e.target.value)}
           style={{ padding: "8px" }}

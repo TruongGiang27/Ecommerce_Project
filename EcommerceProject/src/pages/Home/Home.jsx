@@ -16,7 +16,6 @@ const Home = () => {
       {/* Giới thiệu */}
       <section className="intro">
         <h1>Chào mừng đến với Website Bán Phần Mềm</h1>
-        <h1>Chào mừng đến với Website Bán Phần Mềm 2</h1>
 
         <p>
           Khám phá các phần mềm chất lượng, các gói khuyến mãi hấp dẫn và trải

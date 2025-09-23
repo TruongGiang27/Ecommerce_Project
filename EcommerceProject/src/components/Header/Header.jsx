@@ -4,7 +4,8 @@ import "../../theme/theme.css";
 import React, { useState } from "react";
 import { FiMenu } from "react-icons/fi";
 import { FaUserCircle, FaShoppingCart, FaSearch } from "react-icons/fa";
-
+import Logo from "../../assets/images/DigitexLogoWhite.png";
+import { menuCategories } from "../Category/Category";
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
   const toggleMenu = () => setShowMenu(!showMenu);
@@ -18,20 +19,33 @@ export default function Header() {
         </button>
         {showMenu && (
           <div className="dropdown-menu">
-            <NavLink to="/products?category=Thiết kế" className="menu-item">
-              Thiết kế
-            </NavLink>
-            <NavLink to="/products?category=Văn phòng" className="menu-item">
-              Văn phòng
-            </NavLink>
-            <NavLink to="/products?category=Lập trình" className="menu-item">
-              Lập trình
-            </NavLink>
+            {menuCategories.map((category, index) => (
+              <div key={index} className="menu-category">
+                <div className="category-title">
+                  <span className="category-icon">{category.icon}</span>
+                  {category.title}
+                </div>
+                <div className="subcategory-list">
+                  {category.subcategories.map((sub, subIndex) => (
+                    <NavLink
+                      key={subIndex}
+                      to={sub.path}
+                      className="menu-item"
+                      onClick={() => setShowMenu(false)}
+                    >
+                      {sub.name}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
       <NavLink to="/">
-        <h1 className="logo">Shop</h1>
+        <h1 className="logo">
+          <img src={Logo} alt="Logo Website" />
+        </h1>
       </NavLink>
 
       <div className="search-bar">
@@ -55,6 +69,14 @@ export default function Header() {
           }
         >
           Giới thiệu
+        </NavLink>
+        <NavLink
+          to="/policy"
+          className={({ isActive }) =>
+            isActive ? "nav-link active" : "nav-link"
+          }
+        >
+          Chính sách
         </NavLink>
         <NavLink
           to="/products"

@@ -8,6 +8,7 @@ import Register from "./pages/Register/Register";
 import Header from "./components/Header/Header";
 import About from "./pages/About/About";
 import Footer from "./components/Footer/Footer";
+import Policy from "./pages/Policy/Policy";
 import "./App.css";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/about" element={<About />} />
+            <Route path="/policy" element={<Policy />} />
           </Routes>
         </main>
         <Footer />
