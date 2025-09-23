@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import products from "../../data/products";
+import { fetchProducts } from "../../services/api"; 
 import ProductCard from "../../components/productCard/ProductCard";
 import { useSearchParams } from "react-router-dom";
 import "./products.css";
@@ -10,6 +10,10 @@ export default function Products() {
   const [category, setCategory] = useState(
     searchParams.get("category") || "All"
   );
+const [products, setProducts] = useState([]);
+    useEffect(() => {
+      fetchProducts().then(setProducts);
+    }, []);
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");

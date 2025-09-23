@@ -1,18 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { fetchProducts } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import CategoryBar from "../../components/CategoryBar/CategoryBar";
-import products from "../../data/products";
 import ProductCard from "../../components/productCard/ProductCard";
+import HeroBanner from "../../components/Banner/HeroBanner"; // ✅ import banner
 
-const Home = () => {
+export default function Home() {
+  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
   const handleCategoryClick = (category) => {
     navigate(`/products?category=${category}`);
   };
 
+  useEffect(() => {
+    fetchProducts().then(setProducts).catch(err => console.error(err));
+  }, []);
+
+  // Chọn sản phẩm nổi bật (lấy 4 sản phẩm đầu tiên)
+  const featuredProducts = products.slice(0, 4);
+
   return (
     <div className="container">
+      {/* ✅ Banner */}
+      <HeroBanner />
+
       {/* Giới thiệu */}
       <section className="intro">
         <h1>Chào mừng đến với Website Bán Phần Mềm</h1>
@@ -30,7 +42,7 @@ const Home = () => {
       <section className="featured-products">
         <h2>Sản phẩm nổi bật</h2>
         <div className="grid">
-          {products.slice(0, 6).map((p) => (
+          {featuredProducts.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
@@ -52,6 +64,4 @@ const Home = () => {
       </section>
     </div>
   );
-};
-
-export default Home;
+}
