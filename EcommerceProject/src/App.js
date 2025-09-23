@@ -10,7 +10,7 @@ import About from "./pages/About/About";
 import Footer from "./components/Footer/Footer";
 import Policy from "./pages/Policy/Policy";
 import "./App.css";
-
+import FAQs from "./components/FAQs/FAQs";
 function App() {
   return (
     <Router>
@@ -26,6 +26,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/about" element={<About />} />
             <Route path="/policy" element={<Policy />} />
+            <Route path="/faqs" element={<FAQs />} />
           </Routes>
         </main>
         <Footer />
