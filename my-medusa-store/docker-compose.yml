@@ -2,10 +2,10 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: medusa_postgres_test
+    container_name: medusa_postgres_ecommerce
     restart: unless-stopped
     environment:
-      POSTGRES_DB: medusa-store
+      POSTGRES_DB: medusa_store
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -18,7 +18,7 @@ services:
   # Redis
   redis:
     image: redis:7-alpine
-    container_name: medusa_redis_test
+    container_name: medusa_redis_ecommerce
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -30,7 +30,7 @@ services:
   # and the admin dashboard.
   medusa:
     build: .
-    container_name: medusa_backend_test
+    container_name: medusa_backend_ecommerce
     restart: unless-stopped
     depends_on:
       - postgres
@@ -39,18 +39,20 @@ services:
       - "9000:9000"
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa-store
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa_store
       - REDIS_URL=redis://redis:6379
     env_file:
       - .env
     volumes:
       - .:/app
       - /app/node_modules
+      - static_data:/app/static
     networks:
       - medusa_network
 
 volumes:
   postgres_data:
+  static_data:
 
 networks:
   medusa_network:
