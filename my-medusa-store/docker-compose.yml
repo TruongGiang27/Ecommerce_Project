@@ -46,13 +46,11 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-      - static_data:/app/static
     networks:
       - medusa_network
 
 volumes:
   postgres_data:
-  static_data:
 
 networks:
   medusa_network:
