@@ -39,7 +39,7 @@ services:
       - "9000:9000"
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa_store
+      - DATABASE_URL=postgres://postgres:postgres@100.65.202.126:5432/medusa_store
       - REDIS_URL=redis://redis:6379
     env_file:
       - .env
