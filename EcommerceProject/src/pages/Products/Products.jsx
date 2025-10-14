@@ -63,7 +63,7 @@ export default function Products() {
 
         <div className="content">
           {/* Nội dung chính */}
-          <div style={{ flex: 1 }}>
+          <div className="title-style" style={{ flex: 1 }}>
             <h2 style={{ marginBottom: "20px" }}>
               {category === "All" ? "Tất cả sản phẩm" : `Sản phẩm: ${category}`}
             </h2>
