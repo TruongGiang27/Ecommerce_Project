@@ -11,6 +11,11 @@ import Footer from "./components/Footer/Footer";
 import Policy from "./pages/Policy/Policy";
 import "./App.css";
 import FAQs from "./components/FAQs/FAQs";
+import VnpayReturn from "./pages/Checkout/VnpayReturn";
+import "./App.css";
+
+import { CartProvider } from "./context/CartContext";
+
 function App() {
   return (
     <Router>
