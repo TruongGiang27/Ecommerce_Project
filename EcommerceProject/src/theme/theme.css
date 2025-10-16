@@ -1,25 +1,52 @@
-/* theme.css */
-
 :root {
-  /* ==== Màu chủ đạo (Primary Theme Colors) ==== */
-  --color-primary: #2563eb; /* Xanh dương đậm */
-  --color-primary-light: #3b82f6; /* Xanh dương sáng */
-  --color-secondary: #06b6d4; /* Xanh cyan phụ trợ */
+  /* ==== Primary Colors ==== */
+  --color-primary: #2563eb;
+  --color-primary-light: #3b82f6;
+  --color-primary-dark: #1e40af; /* Thêm màu đậm cho hover */
+  --color-secondary: #06b6d4;
 
-  /* ==== Màu nền (Background) ==== */
-  --color-bg: #ffffff; /* Nền sáng */
-  --color-bg-alt: #f3f4f6; /* Nền phụ (xám nhạt) */
-  --color-surface: #e5e7eb; /* Màu nền khối card */
+  /* ==== Background Colors ==== */
+  --color-bg: #ffffff;
+  --color-bg-alt: #f3f4f6;
+  --color-surface: #e5e7eb;
+  --color-card: #ffffff; /* Màu nền cho card sản phẩm */
 
-  /* ==== Màu chữ (Text) ==== */
-  --color-text: #111827; /* Màu chữ chính (xám đậm gần đen) */
-  --color-text-light: #bcc3d1; /* Màu chữ phụ */
+  /* ==== Text Colors ==== */
+  --color-text: #111827;
+  --color-text-light: #bcc3d1;
+  --color-text-muted: #6b7280; /* Màu chữ phụ cho giá, mô tả */
+  --color-price: #ef4444; /* Màu đặc biệt cho giá */
+  --color-discount: #16a34a; /* Màu cho phần trăm giảm giá */
 
-  /* ==== Màu trạng thái (State) ==== */
+  /* ==== State Colors ==== */
   --color-success: #16a34a;
   --color-warning: #facc15;
   --color-error: #dc2626;
+  --color-info: #3b82f6;
+  --color-stock: #22c55e; /* Màu cho trạng thái còn hàng */
+  --color-out-of-stock: #ef4444; /* Màu cho trạng thái hết hàng */
 
-  /* ==== Màu viền (Border) ==== */
+  /* ==== Border Colors ==== */
   --color-border: #d1d5db;
+  --color-border-hover: #9ca3af;
+
+  /* ==== Shadow Effects ==== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* ==== Border Radius ==== */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+
+  /* ==== Spacing ==== */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+
+  /* ==== Transitions ==== */
+  --transition-base: all 0.3s ease;
+  --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }

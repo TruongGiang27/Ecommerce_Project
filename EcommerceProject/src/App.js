@@ -11,7 +11,10 @@ import Footer from "./components/Footer/Footer";
 import Policy from "./pages/Policy/Policy";
 import "./App.css";
 import FAQs from "./components/FAQs/FAQs";
+import Profile from "./pages/Profile/Profile";
 function App() {
+  console.log("Profile:", Profile);
+
   return (
     <Router>
       <div className="app-container">
@@ -27,6 +30,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/policy" element={<Policy />} />
             <Route path="/faqs" element={<FAQs />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
         <Footer />
