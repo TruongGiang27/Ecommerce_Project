@@ -4,6 +4,9 @@ import { apiStoreClient } from "../lib/medusa";
 const DEFAULT_REGION_ID = "reg_01K7GR3JKEREAS3ZXJ367QSVF7";
 const API_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
 const PUBLISHABLE_KEY = process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY;
+// const API_URL = "http://localhost:9000/store";
+// const PUBLISHABLE_KEY =
+//   "pk_f39b41d09e59ef35a32f1f1608cace1f3e6916954f0701c83aedc38ccf9912e4";
 
 // Tạo instance cơ bản của axios
 const storeApi = axios.create({
@@ -27,8 +30,14 @@ export const setAuthToken = (token) => {
 
 /* ---------------- PRODUCTS ---------------- */
 export async function fetchProducts() {
-  const res = await apiStoreClient.get("/products");
-  return res.data.products;
+
+  try {
+    const res = await apiStoreClient.get("/products?limit=1000");
+    return res.data.products;
+  } catch (err) {
+    console.error("fetchProducts error:", err);
+    return [];
+  }
 }
 
 // const VALID_REGION_ID = "reg_01K7GR3JKEREAS3ZXJ367QSVF7"; // Giữ nguyên Region ID hợp lệ
@@ -65,7 +74,7 @@ export async function fetchCartDetail(cartId) {
 }
 
 export async function addToCart(cartId, variantId, quantity = 1) {
-  const res = await storeApi.post(`/carts/${cartId}/line-items`, {
+  const res = await apiStoreClient.post(`/carts/${cartId}/line-items`, {
     variant_id: variantId,
     quantity,
   });
@@ -73,7 +82,7 @@ export async function addToCart(cartId, variantId, quantity = 1) {
 }
 
 export async function updateCartItem(cartId, lineId, quantity) {
-  const res = await storeApi.put(`/carts/${cartId}/line-items/${lineId}`, {
+  const res = await apiStoreClient.put(`/carts/${cartId}/line-items/${lineId}`, {
     quantity,
   });
   return res.data.cart;
@@ -177,27 +186,30 @@ export const logoutCustomer = async (token) => {
 };
 
 // Cập nhật hồ sơ cá nhân
+// ✅ Cập nhật profile
 export async function updateCustomerProfile(data) {
   try {
-    const res = await storeApi.post("/customers/me", data);
+    const res = await apiStoreClient.post("/customers/me", data);
     return res.data.customer;
   } catch (err) {
-    throw handleError(err, "Cập nhật hồ sơ thất bại");
+    throw (err, "Cập nhật hồ sơ thất bại");
   }
 }
 
-// Đổi mật khẩu
+// ✅ Đổi mật khẩu
 export async function changeCustomerPassword(oldPassword, newPassword) {
   try {
-    const res = await storeApi.post("/auth/customer/emailpass/update", {
+    // const res = await storeApi.post("/auth/customer/emailpass/update", {
+    const res = await apiStoreClient.post("/auth/emailpass/update", {
       old_password: oldPassword,
       new_password: newPassword,
     });
     return res.data.customer;
   } catch (err) {
-    throw handleError(err, "Đổi mật khẩu thất bại");
+    throw (err, "Đổi mật khẩu thất bại");
   }
 }
+
 
 export async function getCustomerProfile(token) {
   try {
@@ -216,16 +228,14 @@ export async function getCustomerProfile(token) {
   }
 }
 
-
-
-/* ---------------- PAYMENTS ---------------- */
+/* ---------------- THANH TOÁN ---------------- */
 export async function createPaymentCollection(cartId) {
   const res = await storeApi.post("/payment-collections", { cart_id: cartId });
   return res.data.payment_collection;
 }
 
 export async function addPaymentSession(collectionId, providerId) {
-  const res = await storeApi.post(
+  const res = await apiStoreClient.post(
     `/payment-collections/${collectionId}/payment-sessions`,
     { provider_id: providerId }
   );
@@ -245,17 +255,16 @@ export async function fetchOrderById(orderId) {
   return res.data.order;
 }
 
-export async function fetchOrders() {
-  const res = await storeApi.get("/orders");
-  return res.data.orders;
-}
+// ✅ Lấy danh sách đơn hàng (phải login)
+export async function fetchOrders(customerToken) {
+  const authApi = axios.create({
+    baseURL: API_URL,
+    headers: {
+      "x-publishable-api-key": PUBLISHABLE_KEY,
+      Authorization: `Bearer ${customerToken}`,
+    },
+  });
 
-/* ---------------- ERROR HANDLER ---------------- */
-function handleError(err, defaultMsg) {
-  if (err.response) {
-    const message =
-      err.response.data?.message || err.response.data?.error || defaultMsg;
-    return new Error(message);
-  }
-  return new Error(defaultMsg);
+  const res = await authApi.get(`/orders`);
+  return res.data.orders;
 }
