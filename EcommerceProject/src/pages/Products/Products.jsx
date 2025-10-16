@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchProducts } from "../../services/api"; 
+import { fetchProducts } from "../../services/api";
 import ProductCard from "../../components/productCard/ProductCard";
 import { useSearchParams } from "react-router-dom";
 import "./products.css";
@@ -10,10 +10,10 @@ export default function Products() {
   const [category, setCategory] = useState(
     searchParams.get("category") || "All"
   );
-const [products, setProducts] = useState([]);
-    useEffect(() => {
-      fetchProducts().then(setProducts);
-    }, []);
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    fetchProducts().then(setProducts);
+  }, []);
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
@@ -32,46 +32,87 @@ const [products, setProducts] = useState([]);
   const filteredProducts = products.filter((p) => {
     return (
       (category === "All" || p.category === category) &&
-      p.name.toLowerCase().includes(search.toLowerCase())
+      p.title.toLowerCase().includes(search.toLowerCase())
     );
   });
 
   return (
-    <div className="container">
-      <h2>
-        {category === "All" ? "Tất cả sản phẩm" : `Sản phẩm: ${category}`}
-      </h2>
+    <div className="products-page">
+      <div className="products-header">
+        <h1 className="products-title">
+          {category === "All" ? "Tất cả sản phẩm" : `Sản phẩm: ${category}`}
+        </h1>
 
-      {/* Bộ lọc */}
-      <div className="filters">
-        <input
-          className="filter-search"
-          type="text"
-          placeholder="Tìm kiếm sản phẩm..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: "8px", flex: 1 }}
-        />
-        <select
-          className="filter-category"
-          value={category}
-          onChange={(e) => handleCategoryChange(e.target.value)}
-          style={{ padding: "8px" }}
-        >
-          <option value="All">Tất cả</option>
-          <option value="Thiết kế">Thiết kế</option>
-          <option value="Văn phòng">Văn phòng</option>
-          <option value="Lập trình">Lập trình</option>
-        </select>
+        <div className="products-stats">
+          <span>{filteredProducts.length} sản phẩm</span>
+        </div>
       </div>
 
-      {/* Hiển thị sản phẩm */}
-      <div className="grid">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((p) => <ProductCard key={p.id} product={p} />)
-        ) : (
-          <p>Không tìm thấy sản phẩm</p>
-        )}
+      <div className="products-container">
+        <aside className="filters-sidebar">
+          <div className="filter-section">
+            <h3>Tìm kiếm</h3>
+            <input
+              className="filter-search"
+              type="text"
+              placeholder="Tìm kiếm sản phẩm..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="filter-section">
+            <h3>Danh mục</h3>
+            <div className="category-filters">
+              <button
+                className={`category-btn ${category === "All" ? "active" : ""}`}
+                onClick={() => handleCategoryChange("All")}
+              >
+                Tất cả
+              </button>
+              {["Thiết kế", "Văn phòng", "Lập trình"].map((cat) => (
+                <button
+                  key={cat}
+                  className={`category-btn ${category === cat ? "active" : ""}`}
+                  onClick={() => handleCategoryChange(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Sắp xếp</h3>
+            <select className="sort-select">
+              <option value="newest">Mới nhất</option>
+              <option value="price-asc">Giá tăng dần</option>
+              <option value="price-desc">Giá giảm dần</option>
+            </select>
+          </div>
+        </aside>
+
+        <main className="products-grid">
+          {filteredProducts.length > 0 ? (
+            <div className="grid">
+              {filteredProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          ) : (
+            <div className="no-results">
+              <p>Không tìm thấy sản phẩm phù hợp</p>
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setCategory("All");
+                }}
+              >
+                Xóa bộ lọc
+              </button>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );
