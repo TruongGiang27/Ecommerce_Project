@@ -11,7 +11,15 @@ import Footer from "./components/Footer/Footer";
 import Policy from "./pages/Policy/Policy";
 import "./App.css";
 import FAQs from "./components/FAQs/FAQs";
+<<<<<<< HEAD
 import Profile from "./pages/Profile/Profile";
+=======
+import VnpayReturn from "./pages/Checkout/VnpayReturn";
+import "./App.css";
+
+import { CartProvider } from "./context/CartContext";
+
+>>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
 function App() {
   console.log("Profile:", Profile);
 
