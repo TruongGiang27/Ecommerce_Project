@@ -2,34 +2,26 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryBar from "../../components/CategoryBar/CategoryBar";
 import ProductCard from "../../components/productCard/ProductCard";
-<<<<<<< HEAD
-import HeroBanner from "../../components/Banner/HeroBanner"; // ✅ import banner
-=======
 import HeroBanner from "../../components/Banner/HeroBanner";
->>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
 import "./home.css";
+import InfinityScrollBar from "../../components/InfinityScrollBar/InfinityScrollBar";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
-  const regionId = "reg_01K73N9QAJJ6DVF7FGKAKCJQG0";
+  const regionId = "reg_01K83X4P5P7KBWB6FXEDJMADA6";
 
   const handleCategoryClick = (category) => {
     navigate(`/products?category=${category}`);
   };
 
   useEffect(() => {
-<<<<<<< HEAD
-    fetchProducts()
-      .then(setProducts)
-      .catch((err) => console.error(err));
-=======
     fetch(
       `http://localhost:9000/store/products?region_id=${regionId}&limit=1000`,
       {
         headers: {
           "x-publishable-api-key":
-            "pk_d4bf2faebacb69611013a1fd3c32bb8f76ab55d06f2068d92b0efd01a377ecfc",
+            process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
         },
       }
     )
@@ -46,7 +38,6 @@ export default function Home() {
         setProducts(data.products || []);
       })
       .catch((err) => console.error("Lỗi khi lấy sản phẩm:", err));
->>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
   }, []);
 
   // 🔥 Lấy ngày hiện tại trừ 30 ngày
@@ -65,42 +56,12 @@ export default function Home() {
   const bestSellers = products.slice(0, 8);
 
   return (
-    <>
-      <HeroBanner /> {/* ✅ Banner component */}
-      <div className="container">
-        {/* ✅ Banner */}
+    <div className="container">
+      {/* ✅ Banner */}
+      <HeroBanner />
 
-<<<<<<< HEAD
-        {/* Thanh category */}
-        <CategoryBar onCategoryClick={handleCategoryClick} />
+      <InfinityScrollBar />
 
-        {/* Sản phẩm nổi bật */}
-        <section className="featured-products">
-          <h2>Sản phẩm nổi bật</h2>
-          <div className="grid">
-            {featuredProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-        </section>
-
-        {/* Khuyến mãi */}
-        <section className="promotions">
-          <h2>Chương trình khuyến mãi</h2>
-          <div className="promo-cards">
-            <div className="promo-card">
-              <h3>Giảm giá 20% cho phần mềm thiết kế</h3>
-              <p>Chỉ áp dụng đến cuối tháng này!</p>
-            </div>
-            <div className="promo-card">
-              <h3>Mua 1 tặng 1 phần mềm văn phòng</h3>
-              <p>Nhanh tay trước khi hết ưu đãi.</p>
-            </div>
-          </div>
-        </section>
-      </div>
-    </>
-=======
       {/* Giới thiệu */}
       <section className="intro section-box">
         <h1>Digitech Shop</h1>
@@ -185,6 +146,5 @@ export default function Home() {
         </div>
       </section>
     </div>
->>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
   );
 }

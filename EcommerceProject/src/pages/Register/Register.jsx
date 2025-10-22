@@ -100,52 +100,115 @@ function CustomerRegistrationForm() {
     }
   };
 
+  const popUpMessage = message ? (<div style={{ color: isError ? "red" : "green", marginTop: "10px" }}>{message}</div>) : null;
+
   return (
-    // ... (Giữ nguyên Form JSX)
-    <form onSubmit={handleSubmit}>
-      <h2>Đăng ký Khách hàng (Medusa V2 Flow)</h2>
-      {/* Input fields */}
-      <input
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        required
-        placeholder="Email"
-      />
-      <input
-        type="password"
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-        required
-        placeholder="Mật khẩu"
-      />
-      <input
-        type="text"
-        name="first_name"
-        value={formData.first_name}
-        onChange={handleChange}
-        required
-        placeholder="Tên"
-      />
-      <input
-        type="text"
-        name="last_name"
-        value={formData.last_name}
-        onChange={handleChange}
-        required
-        placeholder="Họ"
-      />
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <h2>Đăng Ký</h2>
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Nhập email của bạn"
+              value={formData.email}
+              onChange={handleChange}
+              required
 
-      <button type="submit">Đăng ký và Đăng nhập</button>
+            />
+          </div>
+          <div className="form-group">
+            <label>Mật khẩu</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Nhập mật khẩu"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Họ</label>
+             <input
+              type="text"
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleChange}
+              required
+              placeholder="Họ"
+            />
+          </div>
+           <div className="form-group">
+            <label>Tên</label>
+             <input
+              type="text"
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleChange}
+              required
+              placeholder="Tên"
+            />
+          </div>
+          <div className="form-options">
+            <button type="button" className="link-btn" onClick={() => navigate("/login")}>
+              Bạn đã có tài khoản? Đăng nhập
+            </button>
+          </div>
+          <button type="submit" className="btn-submit">
+            Đăng ký
+          </button>
+        </form>
 
-      {message && (
-        <p style={{ color: isError ? "red" : "green", marginTop: "10px" }}>
-          {message}
-        </p>
-      )}
-    </form>
+        {popUpMessage}
+      </div>
+    </div>
+    // <form onSubmit={handleSubmit}>
+    //   <h2>Đăng ký Khách hàng (Medusa V2 Flow)</h2>
+    //   {/* Input fields */}
+    //   <input
+    //     type="email"
+    //     name="email"
+    //     value={formData.email}
+    //     onChange={handleChange}
+    //     required
+    //     placeholder="Email"
+    //   />
+    //   <input
+    //     type="password"
+    //     name="password"
+    //     value={formData.password}
+    //     onChange={handleChange}
+    //     required
+    //     placeholder="Mật khẩu"
+    //   />
+    //   <input
+    //     type="text"
+    //     name="first_name"
+    //     value={formData.first_name}
+    //     onChange={handleChange}
+    //     required
+    //     placeholder="Tên"
+    //   />
+    //   <input
+    //     type="text"
+    //     name="last_name"
+    //     value={formData.last_name}
+    //     onChange={handleChange}
+    //     required
+    //     placeholder="Họ"
+    //   />
+
+    //   <button type="submit">Đăng ký và Đăng nhập</button>
+
+    //   {message && (
+    //     <p style={{ color: isError ? "red" : "green", marginTop: "10px" }}>
+    //       {message}
+    //     </p>
+    //   )}
+    // </form>
   );
 }
 
