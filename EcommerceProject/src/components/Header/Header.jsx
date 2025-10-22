@@ -8,18 +8,14 @@ import { FiMenu } from "react-icons/fi";
 import { FaUserCircle, FaShoppingCart, FaSearch } from "react-icons/fa";
 import { useCart } from "../../context/CartContext"; // ✅ import context
 import Logo from "../../assets/images/DigitexLogoWhite.png";
-import { menuCategories } from "../Category/Category";
-<<<<<<< HEAD
+// import { menuCategories } from "../Category/Category";
 // ✅ Đảm bảo import useAuth
 import { useAuth } from "../../context/AuthContext";
-=======
->>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
 
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
   const toggleMenu = () => setShowMenu(!showMenu);
 
-<<<<<<< HEAD
   // ✅ Lấy trạng thái xác thực và thông tin khách hàng
   const { isAuthenticated, customer, logout } = useAuth();
 
@@ -29,17 +25,15 @@ export default function Header() {
     return customer.first_name || customer.email.split("@")[0];
   };
 
-=======
   const { cart } = useCart(); // ✅ lấy giỏ hàng
     const cartCount = cart.length;
->>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
   return (
     <header className="header">
       {/* 1. Menu Danh mục */}
       <div className="action-menu">
         <button onClick={toggleMenu} className="menu-button">
           <FiMenu className="icon" />
-          <span className="text-menu-button"> Danh mục sản phẩm</span>
+          {/* <span className="text-menu-button"></span> */}
         </button>
         {showMenu && (
           <div className="dropdown-menu">
@@ -71,10 +65,7 @@ export default function Header() {
         )}
       </div>
 
-<<<<<<< HEAD
       {/* 2. Logo */}
-=======
->>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
       <NavLink to="/">
         <h1 className="logo">
           <img src={Logo} alt="Logo Website" />
@@ -96,10 +87,7 @@ export default function Header() {
         </button>
       </div>
 
-<<<<<<< HEAD
       {/* 4. Menu Điều hướng chính */}
-=======
->>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
       <nav>
         {/* ... Các liên kết chung */}
         <NavLink
@@ -126,10 +114,7 @@ export default function Header() {
         >
           Sản phẩm
         </NavLink>
-<<<<<<< HEAD
-=======
 
->>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
         <NavLink
           to="/faqs"
           className={({ isActive }) =>
@@ -139,11 +124,8 @@ export default function Header() {
           FAQs
         </NavLink>
 
-<<<<<<< HEAD
         {/* 5. Giỏ hàng */}
-=======
         {/* ✅ Giỏ hàng có badge */}
->>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
         <NavLink
           to="/cart"
           className={({ isActive }) =>
@@ -177,6 +159,7 @@ export default function Header() {
               className="nav-link logout-button"
               title="Đăng xuất"
             >
+
               Đăng xuất
             </button>
           </>

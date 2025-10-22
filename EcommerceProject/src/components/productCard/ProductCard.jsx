@@ -1,50 +1,8 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { useState } from "react";
-// import { CartContext } from "../../context/CartContext";
+// import { Link } from "react-router-dom";
 import "./productCard.css";
-<<<<<<< HEAD
-import { useEffect } from "react";
+// import { useState, useEffect } from "react";
 import { fetchProducts } from "../../services/api";
-
-export default function ProductCard({ product }) {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const data = await fetchProducts();
-        setProducts(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-
-    loadProducts();
-  }, []);
-
-  if (loading) return <p>Loading products...</p>;
-  if (error) return <p>Error loading products: {error}</p>;
-  if (!products) return <p>Product not found</p>;
-
-  return (
-    <div>
-      <div key={product.id} className="product-card">
-        <Link to={`/products/${product.id}`} className="product-link">
-          <img src={product.thumbnail} alt={product.name} />
-        </Link>
-        <h3>{product.title}</h3>
-        {/* <p>{product.price.toLocaleString()} VND</p> */}
-        <h5>
-          {product.description?.length > 100
-            ? product.description.slice(0, 100) + "..."
-            : product.description}
-        </h5>
-=======
 import { FaShoppingCart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
@@ -53,13 +11,25 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
+  const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
 
   const handleAddToCart = () => {
     addToCart(product);
     navigate("/cart"); // 👉 Chuyển sang giỏ hàng ngay sau khi thêm
   };
   console.log("Product data:", product)
+
+  const getProduct = async (productId) => {
+    try {
+      const data = await fetchProducts(productId);
+      return data;
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      return null;
+    }
+  };
+
+  
 
 
   return (
@@ -98,7 +68,6 @@ const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
             <FaShoppingCart />
           </button>
         </div>
->>>>>>> c6e1c65e900e61c7abfc3ececeed678933ca946e
       </div>
     </div>
   );

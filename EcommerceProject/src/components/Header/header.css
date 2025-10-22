@@ -439,3 +439,23 @@ nav {
 .cart-footer button:hover {
   background: #d35400;
 }
+
+
+.logout-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.logout-button:hover {
+  color: #ffdddd;
+}
+
+.logout-button .icon {
+  margin-right: 6px;
+  font-size: 1.1rem;
+}
+

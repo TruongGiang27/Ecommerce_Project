@@ -1,7 +1,7 @@
 import axios from "axios";
 import { apiStoreClient } from "../lib/medusa";
 
-const DEFAULT_REGION_ID = "reg_01K7GR3JKEREAS3ZXJ367QSVF7";
+const DEFAULT_REGION_ID = "reg_01K83X4P5P7KBWB6FXEDJMADA6";
 const API_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
 const PUBLISHABLE_KEY = process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY;
 // const API_URL = "http://localhost:9000/store";

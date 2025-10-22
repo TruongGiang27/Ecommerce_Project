@@ -1,9 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useState, useContext, useEffect, useMemo } from "react";
-import { CartContext } from "../../context/CartContext";
 import { FaCheckCircle } from "react-icons/fa";
-import "./productDetail.css";
+// import "./productDetail.css";
 import { fetchProductById } from "../../services/api"; // Đảm bảo hàm này đã được sửa
+import { useCart } from "../../context/CartContext";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -13,7 +13,8 @@ export default function ProductDetail() {
   const [activeTab, setActiveTab] = useState("description");
   // ✅ STATE MỚI: Theo dõi Variant (Gói dịch vụ) đang được chọn
   const [selectedVariantId, setSelectedVariantId] = useState(null);
-  const { addToCart } = useContext(CartContext);
+  // const { addToCart } = useContext(CartContext);
+  const {addToCart} = useCart();
 
   useEffect(() => {
     const loadProduct = async () => {
