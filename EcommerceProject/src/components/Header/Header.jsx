@@ -1,9 +1,7 @@
-// src/components/Header/Header.jsx
-
 import { NavLink } from "react-router-dom";
 import "../Header/header.css";
 import "../../theme/theme.css";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiMenu } from "react-icons/fi";
 import { FaUserCircle, FaShoppingCart, FaSearch } from "react-icons/fa";
 import { useCart } from "../../context/CartContext"; // ✅ import context
@@ -16,17 +14,30 @@ export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
   const toggleMenu = () => setShowMenu(!showMenu);
 
-  // ✅ Lấy trạng thái xác thực và thông tin khách hàng
+  // Lấy trạng thái xác thực và thông tin khách hàng
   const { isAuthenticated, customer, logout } = useAuth();
 
-  // Hàm tạo tên hiển thị ngắn gọn
-  const getCustomerDisplayName = () => {
-    if (!customer) return "Khách hàng";
-    return customer.first_name || customer.email.split("@")[0];
-  };
+  const { cart } = useCart();
+  const cartCount = cart.length;
 
-  const { cart } = useCart(); // ✅ lấy giỏ hàng
-    const cartCount = cart.length;
+  const [open, setOpen] = useState(false);
+  const items = [
+    { name: "Thông tin", link: "/profile" },
+    { name: "Lịch sử đơn hàng", link: "/orders" },
+    { name: "Lịch sử giao dịch", link: "/settings" },
+  ];
+  const menuRef = useRef();
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <header className="header">
       {/* 1. Menu Danh mục */}
@@ -67,9 +78,9 @@ export default function Header() {
 
       {/* 2. Logo */}
       <NavLink to="/">
-        <h1 className="logo">
+        <div className="logo">
           <img src={Logo} alt="Logo Website" />
-        </h1>
+        </div>
       </NavLink>
 
       {/* 3. Thanh Tìm kiếm */}
@@ -139,40 +150,40 @@ export default function Header() {
         {/* 6. Trạng thái Đăng nhập/Đăng ký */}
         {isAuthenticated ? (
           <>
-            {/* Nếu đã đăng nhập: Hiển thị tên và nút Đăng xuất */}
-            {/* Thêm link đến trang /account để quản lý hồ sơ */}
-            <NavLink
-              to="/profile" // 💡 Giả sử trang quản lý hồ sơ là /account
-              className={({ isActive }) =>
-                isActive
-                  ? "nav-link nav-link-account active"
-                  : "nav-link nav-link-account"
-              }
-            >
-              <FaUserCircle className="icon" style={{ marginRight: "5px" }} />
-              {getCustomerDisplayName()}
-            </NavLink>
-
-            {/* Nút Đăng xuất */}
             <button
-              onClick={logout}
-              className="nav-link logout-button"
-              title="Đăng xuất"
+              className="user-button"
+              onClick={() => setOpen(!open)}
+              aria-label="Tài khoản"
             >
-
-              Đăng xuất
+              <FaUserCircle className="user-icon" />
             </button>
+
+            {open && (
+              <div className="user-dropdown" ref={menuRef}>
+                {items.map((item) => (
+                  <NavLink
+                    key={item.link}
+                    to={item.link}
+                    className="dropdown-item"
+                    onClick={() => setOpen(false)}
+                  >
+                    {item.name}
+                  </NavLink>
+                ))}
+                <button className="dropdown-item logout" onClick={logout}>
+                  Đăng xuất
+                </button>
+              </div>
+            )}
           </>
         ) : (
           /* Nếu chưa đăng nhập: Hiển thị link Đăng nhập/Đăng ký */
           <NavLink
-            to="/login" // 💡 Chuyển hướng đến trang Đăng nhập thay vì Đăng ký (Register)
-            className={({ isActive }) =>
-              isActive ? "nav-link active" : "nav-link"
-            }
+            to="/login"
+            className="user-button"
             title="Đăng nhập / Đăng ký"
           >
-            <FaUserCircle className="icon" />
+            <FaUserCircle className="user-icon" />
           </NavLink>
         )}
       </nav>
