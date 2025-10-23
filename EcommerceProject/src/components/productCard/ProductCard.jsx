@@ -29,9 +29,6 @@ const ProductCard = ({ product }) => {
     }
   };
 
-  
-
-
   return (
     <div className="product-card">
       {/* Ảnh + overlay */}
@@ -41,9 +38,9 @@ const ProductCard = ({ product }) => {
           alt={product?.title}
         />
         <div className="explore-overlay">
-          <Link to={`/products/${product.id}`} className="btn-explore">
+          <button onClick={() => navigate(`/products/${product?.id}`)} className="btn-explore">
             Khám phá ngay →
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -64,7 +61,7 @@ const ProductCard = ({ product }) => {
           <p className="status">
             {product?.status === "in_stock" ? "Còn hàng" : "Liên hệ"}
           </p>
-          <button onClick={handleAddToCart} className="btn-cart">
+          <button  onClick={() => navigate(`/products/${product?.id}`)} className="btn-cart">
             <FaShoppingCart />
           </button>
         </div>
