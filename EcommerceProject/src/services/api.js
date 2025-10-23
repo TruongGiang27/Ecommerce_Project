@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:9000/store";
-const PUBLISHABLE_KEY =
-  "pk_f39b41d09e59ef35a32f1f1608cace1f3e6916954f0701c83aedc38ccf9912e4";
+const PUBLISHABLE_KEY =process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY;
 
 const api = axios.create({
   baseURL: API_URL,
