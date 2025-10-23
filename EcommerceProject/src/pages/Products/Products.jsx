@@ -15,7 +15,7 @@ export default function Products() {
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   // NEW: input state cho trang (chuỗi để kiểm soát input)
   const [pageInput, setPageInput] = useState(String(Number(searchParams.get("page")) || 1));
-  const regionId = "reg_01K83X4P5P7KBWB6FXEDJMADA6";
+  const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
 
 
 
