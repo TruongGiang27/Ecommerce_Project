@@ -21,8 +21,15 @@
 }
 
 /* Ensure product-left and product-right keep expected sizing when wrapped */
-.product-left { flex: 0 0 420px; max-width: 420px; }
-.product-right { flex: 1 1 560px; max-width: 680px; }
+.product-left {
+  flex: 0 0 420px;
+  max-width: 420px;
+}
+
+.product-right {
+  flex: 1 1 560px;
+  max-width: 680px;
+}
 
 .product-left {
   flex: 1;
@@ -69,15 +76,22 @@
   color: var(--color-text);
 }
 
-.price{
+.price {
   font-size: 1.6rem;
   line-height: 1.2;
   font-family: var(--font-title);
-  background: linear-gradient(108deg, #2563eb 3.84%, #3b82f6 22.43%, #06b6d4 60.36%, #2563eb 96.59%);
+  background: linear-gradient(
+    108deg,
+    #2563eb 3.84%,
+    #3b82f6 22.43%,
+    #06b6d4 60.36%,
+    #2563eb 96.59%
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
 .product-status {
   font-size: 14px;
   color: var(--color-success);
@@ -125,7 +139,8 @@
   font-size: 1rem;
   border-color: var(--color-primary);
 }
-.reset{
+
+.reset {
   border: 1.5px solid var(--color-border);
   border-radius: 10px;
   padding: 8px 14px;
@@ -133,44 +148,36 @@
   margin-top: 2rem;
   margin-left: 10px;
   font-size: 1.2rem;
-   background: linear-gradient(108deg, #2563eb 3.84%, #3b82f6 22.43%, #06b6d4 60.36%, #2563eb 96.59%);
+  background: linear-gradient(
+    108deg,
+    #2563eb 3.84%,
+    #3b82f6 22.43%,
+    #06b6d4 60.36%,
+    #2563eb 96.59%
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   cursor: pointer;
 }
-.reset:hover{
+
+.reset:hover {
   background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-  -webkit-text-fill-color: white; /* ghi đè text transparent */
-  color: white;                   /* dự phòng cho trình duyệt khác */
-  -webkit-background-clip: initial; /* (tuỳ chọn) nếu muốn loại bỏ hiệu ứng clip */
+  -webkit-text-fill-color: white;
+  color: white;
+  -webkit-background-clip: initial;
 }
-/* 🔥 Thêm hiệu ứng "bị gạch X" cho lựa chọn không khả dụng */
-/* Lựa chọn không khả dụng (bị vô hiệu) */
+
+/* Lựa chọn không khả dụng (disabled) */
 .option-item.disabled {
-  opacity: 0.4;              /* làm mờ đi */
-  cursor: not-allowed;       /* đổi con trỏ chuột */
-  pointer-events: none;      /* chặn click */
-  filter: grayscale(70%);    /* chuyển hơi xám cho rõ hơn */
-  background-color: #f5f5f5; /* nền nhạt */
-  color: #999;               /* chữ xám nhạt */
-  border-color: #ddd;        /* viền mờ */
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(70%);
+  background-color: #f5f5f5;
+  color: #999;
+  border-color: #ddd;
 }
-
-
-/* Dấu X đỏ chéo qua nút */
-/* .option-item.disabled::before,
-.option-item.disabled::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 120%;
-  height: 2px;
-  background-color: red;
-  transform: translate(-50%, -50%) rotate(45deg);
-  border-radius: 2px;
-} */
 
 .option-item.disabled::after {
   transform: translate(-50%, -50%) rotate(-45deg);
@@ -188,7 +195,6 @@
   background: linear-gradient(108deg, #2563eb, #3b82f6, #06b6d4) !important;
   color: white !important;
 }
-
 
 .quantity-value {
   font-size: 1rem;
@@ -276,7 +282,6 @@
 
 .tab-content {
   margin-top: 20px;
-  /* Layout & nền để nội dung nổi bật hơn */
   background: var(--color-bg-alt);
   padding: 20px;
   border-radius: 12px;
@@ -290,7 +295,6 @@
   overflow: hidden;
 }
 
-/* Tiêu đề trong mô tả */
 .tab-content h1,
 .tab-content h2,
 .tab-content h3,
@@ -301,26 +305,27 @@
   font-weight: 700;
 }
 
-/* Đoạn văn, danh sách, liên kết */
 .tab-content p {
   margin: 0 0 1rem;
   color: var(--color-text-light);
   font-size: 15px;
 }
+
 .tab-content ul,
 .tab-content ol {
   margin: 0 0 1rem 1.25rem;
   padding-left: 0.5rem;
 }
+
 .tab-content li {
   margin-bottom: 0.5rem;
 }
+
 .tab-content a {
   color: var(--color-primary);
   text-decoration: underline;
 }
 
-/* Hình ảnh & media trong mô tả */
 .tab-content img,
 .tab-content iframe,
 .tab-content video {
@@ -332,7 +337,6 @@
   box-shadow: 0 6px 16px rgba(16, 24, 40, 0.04);
 }
 
-/* Blockquote / code */
 .tab-content blockquote {
   margin: 0 0 1rem;
   padding: 12px 16px;
@@ -341,22 +345,164 @@
   border-radius: 6px;
   color: var(--color-text-light);
 }
+
 .tab-content pre,
 .tab-content code {
   background: rgba(15, 23, 42, 0.04);
   padding: 8px 12px;
   border-radius: 6px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono",
+    "Courier New", monospace;
   overflow: auto;
   font-size: 13px;
 }
 
+/* 🌟 Phần mô tả sản phẩm */
 .product-description {
-  white-space: pre-line;
-  line-height: 1.6;
+  background-color: #fff;
+  color: #222;
   font-size: 16px;
-  color: #333;
+  line-height: 1.8;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  white-space: pre-line;
+  margin-top: 30px;
 }
+
+.product-description h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+.product-description ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.product-description ul li::before {
+  content: "◆ ";
+  color: #0078d7;
+  font-weight: bold;
+}
+
+.product-description ul li {
+  margin-bottom: 8px;
+}
+
+/* 💬 Phần liên hệ */
+.contact-section {
+  margin-top: 18px;
+}
+
+.contact-title {
+line-height: 1.2;
+font-size: 2.5rem;
+font-family: var(--font-title);
+background: linear-gradient(108deg, #2563eb 3.84%, #3b82f6 22.43%, #06b6d4 60.36%, #2563eb 96.59%);
+background-clip: text;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+margin-bottom: 2rem;
+}
+
+/* Container cho các phương thức liên hệ */
+.contact-box {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+/* Mỗi item liên hệ */
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 30px;
+  /* background: linear-gradient(90deg, #1e40af 0%, #2563eb 50%, #06b6d4 100%); */
+  color: #ffffff;
+  border: 0;
+  box-shadow: 0 8px 20px rgba(37,99,235,0.18);
+  transition:
+    transform .14s ease,
+    box-shadow .14s ease,
+    opacity .14s ease;
+  min-width: 200px;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease;
+}
+
+/* Biểu tượng trong vòng tròn */
+.contact-icon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* Nội dung text */
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.contact-name {
+  font-weight: 600;
+  color: black;
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.contact-phone {
+  margin: 10px 0 0;
+  font-size: 0.88rem;
+ color: red;
+}
+
+/* Hover / focus */
+.contact-item:hover,
+.contact-item:focus {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(37,99,235,0.22);
+}
+
+@keyframes icon-shake {
+  0%   { transform: translateX(0) rotate(0deg); }
+  20%  { transform: translateX(-2px) rotate(-6deg); }
+  40%  { transform: translateX(2px) rotate(6deg); }
+  60%  { transform: translateX(-1px) rotate(-4deg); }
+  80%  { transform: translateX(1px) rotate(4deg); }
+  100% { transform: translateX(0) rotate(0deg); }
+}
+
+.contact-item .contact-icon {
+  transform-origin: center;
+  /* đảm bảo chuyển tiếp mượt khi hover/blur */
+  will-change: transform;
+}
+
+.contact-item:hover .contact-icon,
+.contact-item:focus .contact-icon {
+  animation: icon-shake 0.6s ease-in-out infinite;
+}
+
+/* Nếu muốn chỉ lắc 1 lần mỗi khi hover, thay `infinite` bằng `1` */
 
 /* Responsive: giảm padding trên màn hình nhỏ */
 @media (max-width: 600px) {
@@ -364,9 +510,14 @@
     padding: 14px;
     font-size: 14px;
   }
+
+  .product-description {
+    padding: 16px;
+    font-size: 14px;
+  }
 }
 
-/* Responsive */
+/* Responsive tổng */
 @media (max-width: 992px) {
   .product-detail-container {
     flex-direction: column;
@@ -388,3 +539,4 @@
     gap: 12px;
   }
 }
+
