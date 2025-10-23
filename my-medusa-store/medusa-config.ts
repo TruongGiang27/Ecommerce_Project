@@ -1,6 +1,8 @@
-import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+import { loadEnv, defineConfig } from "@medusajs/framework/utils";
 
-loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+loadEnv(process.env.NODE_ENV || "development", process.cwd());
+console.log("✅ AUTH_CORS:", process.env.AUTH_CORS);
+console.log("✅ STORE_CORS:", process.env.STORE_CORS);
 
 module.exports = defineConfig({
   projectConfig: {
@@ -16,5 +18,5 @@ module.exports = defineConfig({
       ssl: false,
       sslmode: "disable",
     },
-  }
-})
+  },
+});

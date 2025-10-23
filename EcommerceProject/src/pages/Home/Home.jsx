@@ -4,6 +4,7 @@ import CategoryBar from "../../components/CategoryBar/CategoryBar";
 import ProductCard from "../../components/productCard/ProductCard";
 import HeroBanner from "../../components/Banner/HeroBanner";
 import "./home.css";
+import InfinityScrollBar from "../../components/InfinityScrollBar/InfinityScrollBar";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -59,6 +60,8 @@ export default function Home() {
       {/* ✅ Banner */}
       <HeroBanner />
 
+      <InfinityScrollBar />
+
       {/* Giới thiệu */}
       <section className="intro section-box">
         <h1>Digitech Shop</h1>
@@ -98,8 +101,8 @@ export default function Home() {
                     {bestSellers.slice(2).map((p) => {
                       // ✅ Lấy giá chuẩn theo calculated_price giống ProductCard
                       const price =
-                        p?.variants?.[0]?.calculated_price
-                          ?.calculated_amount || 0;
+                        p?.variants?.[0]?.calculated_price?.calculated_amount ||
+                        0;
                       const image = p.thumbnail || "/default-product.png";
 
                       return (
