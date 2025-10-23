@@ -8,7 +8,8 @@ const ProductList = () => {
   useEffect(() => {
   fetch("http://localhost:9000/store/products", {
     headers: {
-      "x-publishable-api-key": "pk_b2cf41247f32bfc9f08d3411059b74318d527f6cfa8a27ff5bb2973403063a4f",
+      "x-publishable-api-key": 
+        process.env.REACT_APP_PUBLISHABLE_API_KEY,
     },
   })
     .then((res) => res.json())
