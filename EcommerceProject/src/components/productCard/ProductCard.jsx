@@ -1,5 +1,8 @@
 import React from "react";
+// import { Link } from "react-router-dom";
 import "./productCard.css";
+// import { useState, useEffect } from "react";
+import { fetchProducts } from "../../services/api";
 import { FaShoppingCart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
@@ -8,13 +11,25 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
+  const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
 
   const handleAddToCart = () => {
     addToCart(product);
     navigate("/cart"); // 👉 Chuyển sang giỏ hàng ngay sau khi thêm
   };
   console.log("Product data:", product)
+
+  const getProduct = async (productId) => {
+    try {
+      const data = await fetchProducts(productId);
+      return data;
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      return null;
+    }
+  };
+
+  
 
 
   return (
