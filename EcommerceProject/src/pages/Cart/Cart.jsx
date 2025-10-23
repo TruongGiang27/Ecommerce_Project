@@ -62,7 +62,6 @@ export default function Cart() {
 
   // Chỉ tính tổng các sản phẩm được chọn
   const total = cart.reduce((sum, item) => {
-    
     if (!selected.includes(item.id)) return sum;
     const price = item?.variants?.[0]?.calculated_price?.calculated_amount || 0;
 
@@ -74,115 +73,118 @@ export default function Cart() {
   }
 
   return (
-    <div className="cart-wrapper">
-      {/* LEFT */}
-      <div className="cart-left">
-        <h2>Giỏ hàng ({cart.length} sản phẩm)</h2>
+    <div className="cart-page">
+      <div className="cart-wrapper">
+        {/* LEFT */}
+        <div className="cart-left">
+          <h2>Giỏ hàng ({cart.length} sản phẩm)</h2>
 
-        {cart.map((item, index) => {
-          // const price = item?.variants?.[0]?.prices?.[0]?.amount / 100 || 0;
-          const price = item?.variants?.[0]?.calculated_price?.calculated_amount || 0;
+          {cart.map((item, index) => {
+            // const price = item?.variants?.[0]?.prices?.[0]?.amount / 100 || 0;
+            const price =
+              item?.variants?.[0]?.calculated_price?.calculated_amount || 0;
 
-          return (
-            <div key={index} className="cart-row">
-              <input
-                type="checkbox"
-                className="cart-check"
-                checked={selected.includes(item.id)}
-                onChange={() => toggleSelect(item.id)}
-              />
-              <img
-                src={item.thumbnail || "https://via.placeholder.com/100"}
-                alt={item.title}
-              />
-              <div className="cart-info">
-                <h3>{item.title}</h3>
-                <p className="price">{price.toLocaleString()} đ</p>
+            return (
+              <div key={index} className="cart-row">
+                <input
+                  type="checkbox"
+                  className="cart-check"
+                  checked={selected.includes(item.id)}
+                  onChange={() => toggleSelect(item.id)}
+                />
+                <img
+                  src={item.thumbnail || "https://via.placeholder.com/100"}
+                  alt={item.title}
+                />
+                <div className="cart-info">
+                  <h3>{item.title}</h3>
+                  <p className="price">{price.toLocaleString()} đ</p>
+                </div>
+                <button
+                  className="remove"
+                  onClick={() => removeFromCart(item.id)}
+                >
+                  ✕
+                </button>
               </div>
-              <button
-                className="remove"
-                onClick={() => removeFromCart(item.id)}
-              >
-                ✕
+            );
+          })}
+        </div>
+
+        {/* RIGHT */}
+        <div className="cart-right">
+          <div className="summary">
+            <h3>Thanh toán</h3>
+
+            {/* Mã ưu đãi */}
+            <div className="input-group">
+              <label>Mã ưu đãi</label>
+              <div className="input-row">
+                <input
+                  type="text"
+                  placeholder="Nhập mã"
+                  value={promo}
+                  onChange={(e) => setPromo(e.target.value)}
+                />
+                <button className="apply-btn" onClick={applyPromo}>
+                  Áp dụng
+                </button>
+              </div>
+            </div>
+
+            {/* Số điện thoại */}
+            <div className="input-group">
+              <label>Liên hệ</label>
+              <div className="input-row phone">
+                <span className="prefix">+84</span>
+                <input
+                  type="tel"
+                  placeholder="Nhập số điện thoại"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="input-group">
+              <label>Email</label>
+              <div className="input-row">
+                <input
+                  type="text"
+                  placeholder="Nhập email của bạn"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Tổng tiền */}
+            <div className="line">
+              <span>Tổng tiền</span>
+              <strong>{total.toLocaleString()} đ</strong>
+            </div>
+
+            {/* Nút thanh toán nhanh */}
+            <div className="pay-alt">
+              <button className="qr-btn vnpay-btn" onClick={() => payVnpay()}>
+                <img src={vnpayLogo} alt="VNPay" className="pay-logo" />
+                Thanh toán với VNPay QR
+              </button>
+              <button className="qr-btn momo-btn" onClick={() => payMomo()}>
+                <img src={momoLogo} alt="MoMo" className="pay-logo" />
+                Thanh toán với MoMo QR
               </button>
             </div>
-          );
-        })}
-      </div>
 
-      {/* RIGHT */}
-      <div className="cart-right">
-        <div className="summary">
-          <h3>Thanh toán</h3>
-
-          {/* Mã ưu đãi */}
-          <div className="input-group">
-            <label>Mã ưu đãi</label>
-            <div className="input-row">
-              <input
-                type="text"
-                placeholder="Nhập mã"
-                value={promo}
-                onChange={(e) => setPromo(e.target.value)}
-              />
-              <button className="apply-btn" onClick={applyPromo}>
-                Áp dụng
-              </button>
-            </div>
+            {/* Hiển thị QR Code */}
+            {qrCode && (
+              <div className="qr-preview">
+                <h4>Quét mã để thanh toán</h4>
+                <img src={qrCode} alt="QR Code" className="qr-image" />
+              </div>
+            )}
           </div>
-
-          {/* Số điện thoại */}
-          <div className="input-group">
-            <label>Liên hệ</label>
-            <div className="input-row phone">
-              <span className="prefix">+84</span>
-              <input
-                type="tel"
-                placeholder="Nhập số điện thoại"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Email */}
-          <div className="input-group">
-            <label>Email</label>
-            <div className="input-row">
-              <input
-                type="text"
-                placeholder="Nhập email của bạn"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Tổng tiền */}
-          <div className="line">
-            <span>Tổng tiền</span>
-            <strong>{total.toLocaleString()} đ</strong>
-          </div>
-
-          {/* Nút thanh toán nhanh */}
-          <div className="pay-alt">
-            <button className="qr-btn vnpay-btn" onClick={() => payVnpay()}>
-              <img src={vnpayLogo} alt="VNPay" className="pay-logo" />
-              Thanh toán với VNPay QR
-            </button>
-            <button className="qr-btn momo-btn" onClick={() => payMomo()}>
-              <img src={momoLogo} alt="MoMo" className="pay-logo" />
-              Thanh toán với MoMo QR
-            </button>
-          </div>
-
-          {/* Hiển thị QR Code */}
-          {qrCode && (
-            <div className="qr-preview">
-              <h4>Quét mã để thanh toán</h4>
-              <img src={qrCode} alt="QR Code" className="qr-image" />
-            </div>
-          )}
         </div>
       </div>
     </div>
