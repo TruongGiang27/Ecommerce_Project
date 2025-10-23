@@ -11,14 +11,14 @@ export default function Products() {
     searchParams.get("category") || "All"
   );
   const [products, setProducts] = useState([]);
-  const regionId = "reg_01K73N9QAJJ6DVF7FGKAKCJQG0";
+  const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
 
  useEffect(() => {
     // Gọi API chỉ 1 lần, có region_id và API key
     fetch(`http://localhost:9000/store/products?region_id=${regionId}`, {
       headers: {
         "x-publishable-api-key":
-          "pk_d4bf2faebacb69611013a1fd3c32bb8f76ab55d06f2068d92b0efd01a377ecfc",
+          process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
       },
     })
       .then((res) => res.json())

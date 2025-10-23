@@ -8,7 +8,7 @@ import "./home.css";
 export default function Home() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
-  const regionId = "reg_01K73N9QAJJ6DVF7FGKAKCJQG0";
+  const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
 
   const handleCategoryClick = (category) => {
     navigate(`/products?category=${category}`);
@@ -20,7 +20,7 @@ export default function Home() {
       {
         headers: {
           "x-publishable-api-key":
-            "pk_d4bf2faebacb69611013a1fd3c32bb8f76ab55d06f2068d92b0efd01a377ecfc",
+            process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
         },
       }
     )

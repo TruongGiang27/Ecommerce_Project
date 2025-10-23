@@ -26,9 +26,9 @@ const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
           alt={product?.title}
         />
         <div className="explore-overlay">
-          <Link to={`/products/${product.id}`} className="btn-explore">
+          <button onClick={() => navigate(`/products/${product?.id}`)} className="btn-explore">
             Khám phá ngay →
-          </Link>
+          </button>
         </div>
       </div>
 
