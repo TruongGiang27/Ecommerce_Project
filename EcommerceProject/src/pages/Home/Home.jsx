@@ -9,7 +9,7 @@ import InfinityScrollBar from "../../components/InfinityScrollBar/InfinityScroll
 export default function Home() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
-  const regionId = "reg_01K83X4P5P7KBWB6FXEDJMADA6";
+  const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
 
   const handleCategoryClick = (category) => {
     navigate(`/products?category=${category}`);
@@ -20,8 +20,7 @@ export default function Home() {
       `http://localhost:9000/store/products?region_id=${regionId}&limit=1000`,
       {
         headers: {
-          "x-publishable-api-key":
-            process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
+          "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
         },
       }
     )
@@ -101,8 +100,8 @@ export default function Home() {
                     {bestSellers.slice(2).map((p) => {
                       // ✅ Lấy giá chuẩn theo calculated_price giống ProductCard
                       const price =
-                        p?.variants?.[0]?.calculated_price
-                          ?.calculated_amount || 0;
+                        p?.variants?.[0]?.calculated_price?.calculated_amount ||
+                        0;
                       const image = p.thumbnail || "/default-product.png";
 
                       return (
