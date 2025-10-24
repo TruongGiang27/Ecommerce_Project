@@ -258,7 +258,7 @@ export async function fetchOrderById(orderId) {
 // ✅ Lấy danh sách đơn hàng (phải login)
 export async function fetchOrders(customerToken) {
   const authApi = axios.create({
-    baseURL: API_URL,
+    baseURL: `${API_URL}/store`,
     headers: {
       "x-publishable-api-key": PUBLISHABLE_KEY,
       Authorization: `Bearer ${customerToken}`,
