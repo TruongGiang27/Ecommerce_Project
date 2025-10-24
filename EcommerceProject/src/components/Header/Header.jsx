@@ -23,8 +23,8 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const items = [
     { name: "Thông tin", link: "/profile" },
-    { name: "Lịch sử đơn hàng", link: "/orders" },
-    { name: "Lịch sử giao dịch", link: "/settings" },
+    { name: "Lịch sử đơn hàng", link: "/orders-history" },
+    { name: "Lịch sử giao dịch", link: "/transaction-history" },
   ];
   const menuRef = useRef();
 
