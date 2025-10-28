@@ -2,10 +2,10 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# 1. Copy package files (không cache)
+# 1. Copy package files (nguồn cache)
 COPY package.json package-lock.json ./ 
 
-# 2. Cài đặt TẤT CẢ Dependencies (bao gồm devDeps để build TS)
+# 2. Cài đặt TẤT CẢ Dependencies (BAO GỒM devDeps để build TS)
 # Lần này chúng ta không dùng --omit=dev để đảm bảo ts-node và typescript có sẵn.
 RUN npm install
 
@@ -28,9 +28,11 @@ COPY package.json package-lock.json ./
 RUN npm install --omit=dev
 
 # 2. Copy code đã build và script khởi động
+# Copy start.sh SỚM hơn để tránh lỗi cache ở các bước COPY sau
+COPY start.sh ./
+
 # Đảm bảo dist đã được tạo ở giai đoạn build
 COPY --from=build /app/dist ./dist
-COPY start.sh ./
 
 # Expose cổng (Mặc định là 9000, hoặc tùy vào biến PORT)
 EXPOSE 9000
