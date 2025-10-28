@@ -1,0 +1,336 @@
+/* General Body Styles (để reset và đặt font chữ) */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5; /* Màu nền xám nhạt */
+}
+
+/* Zalo Page Container - Bao bọc toàn bộ nội dung */
+.zalo-page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Mock Header Zalo */
+.zalo-mock-header {
+    background-color: #fff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.zalo-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0084ff;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-nav span {
+    font-size: 14px;
+    color: #555;
+}
+
+.login-button {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.login-button:hover {
+    background-color: #f0f0f0;
+}
+
+
+/* Content Wrapper - Phần chính chứa các card */
+.zalo-content-wrapper {
+    max-width: 960px; /* Chiều rộng giống trang Zalo OA */
+    margin: 20px auto;
+    padding: 0 20px; /* Padding ngang */
+    flex-grow: 1; /* Để footer ở dưới cùng */
+}
+
+/* Base Card Styles */
+.main-info-card, .services-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+    padding: 25px;
+}
+
+/* Main Info Card - Phần trên cùng */
+.main-info-card {
+    display: flex;
+    flex-direction: column; /* Đảm bảo các phần con xuống dòng */
+}
+
+.shop-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+.shop-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+    /* border: 1px solid #e0e0e0; */
+    background-color: #214EC7;
+}
+
+.shop-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.shop-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+.verified-icon {
+    margin-left: 5px;
+    color: #0084ff; /* Màu xanh của dấu tick Zalo */
+    font-size: 18px;
+}
+
+.shop-tagline {
+    font-size: 14px;
+    color: #777;
+    margin: 0;
+}
+
+.follow-button {
+    background-color: #0084ff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
+    width: fit-content; /* Nút vừa với nội dung */
+}
+
+.follow-button:hover {
+    background-color: #006ddb;
+}
+
+.zalo-icon-chat {
+    /* Đây là placeholder cho icon chat của Zalo, 
+       trong thực tế bạn sẽ dùng SVG hoặc Font Awesome */
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-color: white; /* Ví dụ */
+    -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>') no-repeat 50% 50%;
+    mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>') no-repeat 50% 50%;
+    mask-size: cover;
+}
+
+
+.shop-contact-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px; /* Khoảng cách giữa thông tin và QR */
+    flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+}
+
+.contact-details {
+    flex: 1; /* Chiếm phần còn lại */
+    min-width: 250px; /* Đảm bảo đủ rộng */
+}
+
+.info-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.status {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.status-icon {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #00ff22; /* Màu xám cho "Đã đóng cửa" */
+    border-radius: 50%;
+    margin-right: 8px;
+}
+/* Nếu muốn màu xanh cho "Đã mở cửa", bạn có thể thêm class khác và điều kiện */
+/* .status-icon.open { background-color: #28a745; } */
+
+
+.description {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.qr-code-section {
+    text-align: center;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    max-width: 200px; /* Đặt chiều rộng tối đa cho phần QR */
+    flex-shrink: 0; /* Không cho phép co lại */
+}
+
+.zalo-qr-image {
+    width: 160px; /* Kích thước QR code */
+    height: 160px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.qr-caption {
+    font-size: 12px;
+    color: #777;
+    line-height: 1.4;
+}
+
+.icon-scan {
+    /* Placeholder cho icon quét Zalo */
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background-color: #0084ff; /* Ví dụ */
+    -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10h4V7H7v3zm0 7h4v-3H7v3zm6 0h4v-3h-4v3zm0-7h4V7h-4v3zM5 1v3H2v2h3v3H2v2h3v3H2v2h3v3h2v-3h3v3h2v-3h3v3h2V21h3v-2h-3v-3h3v-2h-3v-3h3v-2h-3V5h3V2h-3V1h-2v3h-3V1h-2v3H7V1H5zm15 15h-4v-3h4v3zm0-7h-4V7h4v3z"/></svg>') no-repeat 50% 50%;
+    mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10h4V7H7v3zm0 7h4v-3H7v3zm6 0h4v-3h-4v3zm0-7h4V7h-4v3zM5 1v3H2v2h3v3H2v2h3v3H2v2h3v3h2v-3h3v3h2v-3h3v3h2V21h3v-2h-3v-3h3v-2h-3v-3h3v-2h-3V5h3V2h-3V1h-2v3h-3V1h-2v3H7V1H5zm15 15h-4v-3h4v3zm0-7h-4V7h4v3z"/></svg>') no-repeat 50% 50%;
+    mask-size: cover;
+    vertical-align: middle;
+}
+
+/* Services Card - Phần dịch vụ */
+.services-card .service-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.service-tag {
+    background-color: #f0f2f5;
+    color: #555;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Mock Footer Zalo */
+.zalo-mock-footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    font-size: 13px;
+    color: #777;
+    background-color: #f0f2f5;
+    border-top: 1px solid #e0e0e0;
+}
+
+.phone-title{
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.phone-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-copy-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #333;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.icon-copy-button:hover {
+  background: #f6f6f6;
+}
+
+.icon-copy-button svg {
+  display: block;
+}
+
+.icon-copy-button.copied {
+  background: #28a745;
+  border-color: #28a745;
+  color: #fff;
+}
+.icon-copy-button.copied svg path {
+  stroke: #fff;
+}
+
+.phone-number{
+    font-size: 17px;
+    color: #555;
+    font-weight: bold;
+
+}
+
+.copy-button {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.copy-button:hover {
+  background: #f2f2f2;
+}
+
+.copy-button.copied {
+  background: #e6ffea;
+  border-color: #4caf50;
+}
