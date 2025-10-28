@@ -1,0 +1,125 @@
+/* File: src/components/ContactForm.css */
+
+/* --- ẢNH NỀN TOÀN TRANG --- */
+.contact-page-wrapper {
+    position: relative; /* để ::before nằm phía trên ảnh nền nhưng sau nội dung */
+    min-height: 100vh; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+
+    background-image: url('../../images/Banner-Web-08.jpg'); /* ĐƯỜNG DẪN ẢNH TƯƠNG ĐỐI */
+    background-size: cover; 
+    background-position: center;
+    background-attachment: fixed; /* Giữ ảnh cố định khi cuộn */
+}
+
+/* Lớp phủ mờ đen */
+.contact-page-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0; /* top:0; right:0; bottom:0; left:0; */
+    background: rgba(0,0,0,0.45); /* chỉnh opacity ở đây (0.0 - 1.0) */
+    z-index: 1;
+    pointer-events: none; /* không chặn tương tác với nội dung */
+}
+
+/* --- Container Chính --- */
+.contact-container {
+    position: relative;
+    z-index: 2;
+    max-width: 500px;
+    width: 100%; /* Đảm bảo form responsive */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    
+    /* LÀM MỜ NỀN FORM ĐỂ THẤY ẢNH DƯỚI */
+    background-color: rgba(255, 255, 255, 0.9); /* Màu trắng hơi trong suốt */
+    backdrop-filter: blur(5px); /* Hiệu ứng làm mờ nền (hiện đại) */
+}
+
+/* --- Đảm bảo chữ dễ đọc trên nền ảnh --- */
+.contact-container h2 {
+    color: #1a1a1a; /* Đổi màu chữ sang màu tối nếu nền ảnh sáng */
+}
+
+/* --- Nhóm Form (Label + Input) --- */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555555;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    box-sizing: border-box; /* Quan trọng: đảm bảo padding không làm tràn width */
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    outline: none;
+}
+
+/* --- Nút Gửi --- */
+.contact-form button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+    margin-top: 15px;
+}
+
+.contact-form button[type="submit"]:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.contact-form button[type="submit"]:disabled {
+    background-color: #a0c3e1;
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+/* --- Thông báo Trạng thái --- */
+.status-message {
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Style cho thông báo thành công */
+.status-message:not(.error) {
+    background-color: #e9f7ef; /* Xanh lá nhạt */
+    color: #1a7e4b; /* Xanh lá đậm */
+    border: 1px solid #1a7e4b;
+}
+
+/* Style cho thông báo thất bại */
+.status-message.error {
+    background-color: #fcebeb; /* Đỏ nhạt */
+    color: #d93025; /* Đỏ đậm */
+    border: 1px solid #d93025;
+}
