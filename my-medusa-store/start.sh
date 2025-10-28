@@ -8,4 +8,4 @@ echo "Seeding database..."
 npm run seed || echo "Seeding failed, continuing..."
 
 echo "Starting Medusa development server..."
-npm run dev
+npm run start
