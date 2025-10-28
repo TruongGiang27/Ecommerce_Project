@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
   const setAuthToken = (token) => {
     if (token) {
-      localStorage.setItem(AUTH_TOKEN_KEY, token);
+      localStorage.setItem(AUTH_TOKEN_KEY, token);      
     } else {
       localStorage.removeItem(AUTH_TOKEN_KEY);
     }
@@ -88,6 +88,8 @@ export const AuthProvider = ({ children }) => {
       const token = authResponse.data.token;
 
       console.log("-> POST /customer/emailpass success. Token received.");
+      console.log("Token: ", token);
+      
       setAuthToken(token);
 
       // ⚠️ Dùng token mới để fetch customer từ Store API
