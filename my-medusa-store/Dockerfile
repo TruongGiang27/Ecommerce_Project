@@ -31,7 +31,11 @@ COPY package.json package-lock.json ./
 # 2. Cài đặt Dependencies (không cache)
 RUN npm install --omit=dev
 
-# 3. Build Admin Dashboard (BẮT BUỘC cho production)
+# 3. Copy toàn bộ mã nguồn VÀ cấu hình
+# BẮT BUỘC trước khi chạy lệnh build và các lệnh cần config
+COPY . .
+
+# 4. Build Admin Dashboard (BẮT BUỘC cho production)
 # Lệnh này tạo ra các file tĩnh cần thiết cho Admin
 RUN npm run build 
 
