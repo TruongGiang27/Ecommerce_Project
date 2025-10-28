@@ -425,7 +425,7 @@ margin-bottom: 2rem;
   gap: 12px;
   padding: 10px 12px;
   border-radius: 30px;
-  /* background: linear-gradient(90deg, #1e40af 0%, #2563eb 50%, #06b6d4 100%); */
+  background: linear-gradient(90deg, #1e40af 0%, #2563eb 50%, #06b6d4 100%);
   color: #ffffff;
   border: 0;
   box-shadow: 0 8px 20px rgba(37,99,235,0.18);

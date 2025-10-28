@@ -35,7 +35,7 @@
 /* ====== Danh sách sản phẩm ====== */
 .cart-page .cart-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 15px;
   padding: 15px 0;
   border-bottom: 1px solid #eee;
@@ -65,11 +65,35 @@
   font-weight: 600;
 }
 
-/* ====== Số lượng ====== */
+/* ====== Option List (màu - size - số lượng) ====== */
+.cart-page .option-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.cart-page .option-list label {
+  font-weight: 600;
+  color: #444;
+}
+
+.cart-page .option-list select {
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 .cart-page .quantity-box {
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-left: auto;
 }
 
 .cart-page .quantity-box button {
@@ -95,6 +119,7 @@
   cursor: pointer;
   font-size: 18px;
   transition: color 0.2s;
+  align-self: center;
 }
 .cart-page .remove:hover {
   color: #e11d48;
@@ -247,10 +272,10 @@
 
 /* MoMo màu tím */
 .cart-page .momo-btn {
-  background-color: #D82D7E; /* tím nhẹ */
+  background-color: #d82d7e;
 }
 .cart-page .momo-btn:hover {
-  background-color: #D82D7E; /* tím đậm hơn */
+  background-color: #b42567;
 }
 
 /* ====== Responsive ====== */
