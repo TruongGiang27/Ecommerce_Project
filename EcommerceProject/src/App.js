@@ -18,6 +18,8 @@ import VnpayReturn from "./pages/Checkout/VnpayReturn";
 import PhoneSupport from "./components/PhoneSupport/PhoneSupport";
 import ScrollTop from "./components/ScrollTop/ScrollTop";
 import "./App.css";
+import OrderHistory from "./pages/OrderHistory/OrderHistory";
+import TransactionHistory from "./pages/TransactionHistory/TransactionHistory";
 // import CartProvider from "./context/CartContext";
 
 function App() {
@@ -39,6 +41,10 @@ function App() {
             <Route path="/policy" element={<Policy />} />
             <Route path="/faqs" element={<FAQs />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/orders-history" element={<OrderHistory />} />
+            {/* <Route path="/orders-history-detail/:id" element={<OrderHistoryDetail />} /> */}
+            <Route path="/transaction-history" element={<TransactionHistory />} />
+            {/* <Route path="/transaction-history-detail/:id" element={<TransactionHistoryDetail />} /> */}
             <Route path="*" element={<h2>404 - Page Not Found</h2>} />
             <Route path="/vnpay-return" element={<VnpayReturn />} />
             <Route path="/support" element={<Support />} />
