@@ -8,11 +8,15 @@ import Register from "./pages/Register/Register";
 import Header from "./components/Header/Header";
 import About from "./pages/About/About";
 import Footer from "./components/Footer/Footer";
+import Support from "./pages/Support/Support";
 import Policy from "./pages/Policy/Policy";
+import ContactForm from "./components/ContactForm/ContactForm";
 import "./App.css";
 import FAQs from "./components/FAQs/FAQs";
 import Profile from "./pages/Profile/Profile";
 import VnpayReturn from "./pages/Checkout/VnpayReturn";
+import PhoneSupport from "./components/PhoneSupport/PhoneSupport";
+import ScrollTop from "./components/ScrollTop/ScrollTop";
 import "./App.css";
 // import CartProvider from "./context/CartContext";
 
@@ -37,8 +41,11 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<h2>404 - Page Not Found</h2>} />
             <Route path="/vnpay-return" element={<VnpayReturn />} />
-
+            <Route path="/support" element={<Support />} />
+            <Route path="/contact" element={<ContactForm />} />
           </Routes>
+          <PhoneSupport to="/support" />
+          <ScrollTop />
         </main>
         <Footer />
       </div>
