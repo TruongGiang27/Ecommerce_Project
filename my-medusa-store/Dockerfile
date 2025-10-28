@@ -19,8 +19,6 @@
 # # Start with migrations and then the development server
 # CMD ["./start.sh"]
 
-
-
 # Giai đoạn 1: Build Stage (Cài đặt dependencies và Build Admin)
 FROM node:20-alpine AS build
 WORKDIR /app
