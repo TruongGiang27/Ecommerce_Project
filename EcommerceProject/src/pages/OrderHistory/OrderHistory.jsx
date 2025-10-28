@@ -67,7 +67,7 @@ export default function OrderHistory() {
               <h3>Sản phẩm:</h3>
               <div className={styles.orderItems}>
                 {order.items.map((item) => (
-                  <Link to={`/products/${item.product_id}`} className={styles.orderItem}>
+                  <Link to={`/products/${item.product_id}`} key={item.id} className={styles.orderItem}>
                     <p style={{ fontWeight: "bold" }}>{item.title}</p>
                     <span>
                       Giá:{" "}

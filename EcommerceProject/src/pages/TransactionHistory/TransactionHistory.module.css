@@ -1,3 +1,79 @@
-.title {
-  color: red;
+.transactionContainer {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.transactionContainer h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+  color: #1e293b;
+}
+
+.transactionTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.transactionTable th,
+.transactionTable td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.transactionTable thead {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.transactionTable tbody tr:hover {
+  background-color: #f9fafb;
+  transition: 0.2s;
+}
+
+.status {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-block;
+}
+
+.statusSuccess {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.statusPending {
+  background-color: #fef9c3;
+  color: #a16207;
+}
+
+.statusFailed {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+@media (max-width: 768px) {
+  .transactionContainer {
+    padding: 16px;
+  }
+
+  .transactionTable th,
+  .transactionTable td {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .transactionContainer h1 {
+    font-size: 1.5rem;
+  }
 }
