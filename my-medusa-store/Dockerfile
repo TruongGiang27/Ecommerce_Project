@@ -33,9 +33,9 @@ RUN npm install --omit=dev
 # BẮT BUỘC trước khi chạy lệnh build và các lệnh cần config
 COPY . .
 
-# 4. Build Admin Dashboard (BẮT BUỘC cho production)
-# Lệnh này tạo ra các file tĩnh cần thiết cho Admin
-RUN npm run build 
+# 4. Build Medusa Backend (Biên dịch TypeScript sang Dist)
+# BẢO ĐẢM thư mục 'dist' được tạo. Lệnh 'build' trong package.json của bạn là 'medusa build'.
+RUN npm run build
 
 # ----------------------------------------------------------------------
 # Giai đoạn 2: Production Runtime Image (Nhẹ hơn)
@@ -53,3 +53,4 @@ EXPOSE 9000
 
 # Lệnh khởi động (sử dụng start.sh đã được sửa để gọi npm run start)
 CMD ["sh", "start.sh"]
+
