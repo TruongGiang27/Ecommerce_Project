@@ -20,7 +20,8 @@ export default function Home() {
       `http://localhost:9000/store/products?region_id=${regionId}&limit=1000`,
       {
         headers: {
-          "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
+          "x-publishable-api-key":
+            process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
         },
       }
     )
@@ -85,7 +86,7 @@ export default function Home() {
             Microsoft Office, thiết kế đồ họa, VPN/Antivirus... đáp ứng mọi nhu
             cầu học tập, công việc và giải trí với giá cực kỳ cạnh tranh.
           </p>
-          <button className="btn-contact" onClick={() => navigate("/products")}>
+          <button className="btn-contact" onClick={() => navigate("/contact")}>
             Liên hệ tư vấn tại đây →
           </button>
         </div>
