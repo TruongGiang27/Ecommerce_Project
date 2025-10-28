@@ -17,8 +17,6 @@ const storeApi = axios.create({
   },
 });
 
-
-
 // ---------- Hàm gắn token động khi người dùng đã đăng nhập ----------
 export const setAuthToken = (token) => {
   if (token) {
@@ -30,7 +28,6 @@ export const setAuthToken = (token) => {
 
 /* ---------------- PRODUCTS ---------------- */
 export async function fetchProducts() {
-
   try {
     const res = await apiStoreClient.get("/products?limit=1000");
     return res.data.products;
@@ -48,18 +45,26 @@ export async function fetchProductById(productId) {
       params: {
         // ✅ SỬA: Bỏ 'expand' và kết hợp tất cả vào 'fields'
         // Cú pháp: [Trường cơ bản], [Mối quan hệ chính], [Mối quan hệ phụ qua dấu chấm]
-        fields: "id,title,description,thumbnail,handle,status,metadata,variants,variants.prices,variants.calculated_price,options,images",
+        fields:
+          "id,title,description,thumbnail,handle,status,metadata,variants,variants.prices,variants.calculated_price,options,images",
         // ⚠️ Đã loại bỏ 'expand'
 
         region_id: DEFAULT_REGION_ID, // Sử dụng Region ID hợp lệ
-      }
+      },
     });
 
     return response.data.product;
-
   } catch (error) {
-    console.error("Lỗi khi lấy chi tiết sản phẩm:", error.response?.status, error.message);
-    throw new Error(`Lỗi tải chi tiết sản phẩm: ${error.response?.data?.message || error.message}. Vui lòng kiểm tra lại cấu hình fields.`);
+    console.error(
+      "Lỗi khi lấy chi tiết sản phẩm:",
+      error.response?.status,
+      error.message
+    );
+    throw new Error(
+      `Lỗi tải chi tiết sản phẩm: ${
+        error.response?.data?.message || error.message
+      }. Vui lòng kiểm tra lại cấu hình fields.`
+    );
   }
 }
 /* ---------------- CARTS ---------------- */
@@ -82,9 +87,12 @@ export async function addToCart(cartId, variantId, quantity = 1) {
 }
 
 export async function updateCartItem(cartId, lineId, quantity) {
-  const res = await apiStoreClient.put(`/carts/${cartId}/line-items/${lineId}`, {
-    quantity,
-  });
+  const res = await apiStoreClient.put(
+    `/carts/${cartId}/line-items/${lineId}`,
+    {
+      quantity,
+    }
+  );
   return res.data.cart;
 }
 
@@ -162,7 +170,10 @@ export const getCurrentCustomer = async (token) => {
     });
     return res.data.customer;
   } catch (err) {
-    console.error("❌ Fetch customer error:", err.response?.data || err.message);
+    console.error(
+      "❌ Fetch customer error:",
+      err.response?.data || err.message
+    );
     throw err;
   }
 };
@@ -209,7 +220,6 @@ export async function changeCustomerPassword(oldPassword, newPassword) {
     throw (err, "Đổi mật khẩu thất bại");
   }
 }
-
 
 export async function getCustomerProfile(token) {
   try {
@@ -258,7 +268,7 @@ export async function fetchOrderById(orderId) {
 // ✅ Lấy danh sách đơn hàng (phải login)
 export async function fetchOrders(customerToken) {
   const authApi = axios.create({
-    baseURL: API_URL,
+    baseURL: `${API_URL}/store`,
     headers: {
       "x-publishable-api-key": PUBLISHABLE_KEY,
       Authorization: `Bearer ${customerToken}`,
@@ -267,4 +277,43 @@ export async function fetchOrders(customerToken) {
 
   const res = await authApi.get(`/orders`);
   return res.data.orders;
+}
+
+export async function fetchTransactions(customerToken) {
+  const authApi = axios.create({
+    baseURL: `${API_URL}/store`,
+    headers: {
+      "x-publishable-api-key": PUBLISHABLE_KEY,
+      Authorization: `Bearer ${customerToken}`,
+    },
+  });
+
+  const ordersRes = await authApi.get(`/orders`);
+  const orders = ordersRes.data.orders || [];
+
+  const allTransactions = await Promise.all(
+    orders.map(async (order) => {
+      const detailRes = await authApi.get(`/orders/${order.id}`);
+      const collections = detailRes.data.order?.payment_collections || [];
+
+      return collections.map((col) => {
+        // Nếu có payment → lấy provider_id từ đó
+        const payment = col.payments?.[0];
+        const session = col.payment_sessions?.[0];
+
+        return {
+          order_id: order.id,
+          order_display_id: order.display_id,
+          amount: col.amount,
+          currency: col.currency_code,
+          status: col.status,
+          method: payment?.provider_id || session?.provider_id || "N/A",
+          created_at: col.created_at,
+          completed_at: col.completed_at,
+        };
+      });
+    })
+  );
+
+  return allTransactions.flat();
 }
