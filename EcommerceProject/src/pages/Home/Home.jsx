@@ -15,11 +15,6 @@ export default function Home() {
     navigate(`/products?category=${category}`);
   };
 
-  const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("Chọn sản phẩm");
-
-  const items = ["Tai nghe", "Bàn phím", "Chuột", "Màn hình"];
-
   useEffect(() => {
     fetch(
       `http://localhost:9000/store/products?region_id=${regionId}&limit=1000`,
@@ -149,57 +144,6 @@ export default function Home() {
           )}
         </div>
       </section>
-
-      <div style={{ position: "relative", width: 200, margin: 20 }}>
-      <button
-        onClick={() => setOpen(!open)}
-        style={{
-          width: "100%",
-          padding: "8px 12px",
-          border: "1px solid #ccc",
-          borderRadius: 6,
-          cursor: "pointer",
-          background: "#fff",
-        }}
-      >
-        {selected}
-      </button>
-
-      {open && (
-        <ul
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            background: "#fff",
-            border: "1px solid #ccc",
-            borderRadius: 6,
-            marginTop: 4,
-            listStyle: "none",
-            padding: 0,
-            zIndex: 100,
-          }}
-        >
-          {items.map((item) => (
-            <li
-              key={item}
-              onClick={() => {
-                setSelected(item);
-                setOpen(false);
-              }}
-              style={{
-                padding: "8px 12px",
-                cursor: "pointer",
-                borderBottom: "1px solid #eee",
-              }}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
     </div>
   );
 }
