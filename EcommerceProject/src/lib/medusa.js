@@ -39,4 +39,27 @@ export const apiStoreClient = axios.create({
     },
 });
 
+export const resetPasswordAPI = {
+  // B1: Gửi email reset
+  requestReset: async (email) => {
+    return apiAuthClient.post("/customer/emailpass/reset-password", {
+      identifier: email,
+    });
+  },
+
+  // B2: Cập nhật mật khẩu (chuẩn v2)
+  updatePassword: async (email, password, token) => {
+    return apiAuthClient.post(
+      "/customer/emailpass/update",
+      { email, password },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  },
+};
+
+
 export default medusaClient;

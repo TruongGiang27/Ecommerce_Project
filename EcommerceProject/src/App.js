@@ -20,6 +20,8 @@ import ScrollTop from "./components/ScrollTop/ScrollTop";
 import "./App.css";
 import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import TransactionHistory from "./pages/TransactionHistory/TransactionHistory";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 // import CartProvider from "./context/CartContext";
 
 function App() {
@@ -49,6 +51,8 @@ function App() {
             <Route path="/vnpay-return" element={<VnpayReturn />} />
             <Route path="/support" element={<Support />} />
             <Route path="/contact" element={<ContactForm />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Routes>
           <PhoneSupport to="/support" />
           <ScrollTop />
