@@ -1,20 +1,24 @@
-# Development Dockerfile for Medusa
+# Dockerfile cho MedusaJS chạy trên Render
 FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files and npm config
+# Copy package files và cài dependencies
 COPY package.json package-lock.json ./
-
-# Install all dependencies using npm
 RUN npm install
 
-# Copy source code
+# Copy toàn bộ source code
 COPY . .
 
-# Expose the port Medusa runs on
+# Thêm bash vì Alpine không có sẵn
+RUN apk add --no-cache bash
+
+# Cấp quyền thực thi cho start.sh
+RUN chmod +x start.sh
+
+# Expose port 9000 (Medusa default)
 EXPOSE 9000
 
-# Start with migrations and then the development server
-CMD ["./start.sh"]
+# Chạy script start.sh bằng bash
+CMD ["bash", "./start.sh"]
