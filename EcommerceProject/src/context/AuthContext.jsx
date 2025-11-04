@@ -182,20 +182,37 @@ export const AuthProvider = ({ children }) => {
 };
 
 
+// dùng apiAuthClient (baseURL = `${BACKEND_URL}/auth`)
+// AuthContext.jsx (thay thế hàm loginWithGoogle)
 const loginWithGoogle = async () => {
   try {
-    // Gọi endpoint đăng nhập Google của Medusa
-const response = await apiAuthClient.get("/auth/google");
-    if (response.data?.url) {
-      // Redirect người dùng đến Google login
-      window.location.href = response.data.url;
-    } else {
-      console.error("Không nhận được URL chuyển hướng từ backend:", response.data);
+    // Gọi route authenticate cho customer (baseURL đã là `${BACKEND_URL}/auth`)
+    const res = await apiAuthClient.get("/customer/google");
+
+    // Trường hợp backend trả object { location: "https://accounts.google..." }
+    if (res.data?.location) {
+      window.location.href = res.data.location;
+      return;
     }
-  } catch (error) {
-    console.error("Lỗi khi khởi tạo Google login:", error);
+
+    // Hoặc backend có thể trả token trực tiếp (ví dụ user đã đăng nhập trước)
+    const token = res.data?.token || (typeof res.data === "string" ? res.data : null);
+    if (token) {
+      setAuthToken(token);
+      await fetchCustomer(token);
+      return;
+    }
+
+    // Nếu không nhận gì hợp lệ -> fallback redirect thẳng
+    window.location.href = `${process.env.REACT_APP_MEDUSA_BACKEND_URL}/auth/customer/google`;
+  } catch (err) {
+    console.error("Lỗi khi khởi tạo Google login:", err.response?.data || err.message);
+    // fallback direct redirect nếu có lỗi mạng / CORS
+    window.location.href = `${process.env.REACT_APP_MEDUSA_BACKEND_URL}/auth/customer/google`;
   }
 };
+
+
 
   const value = {
     isAuthenticated,

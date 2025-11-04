@@ -12,8 +12,7 @@ function CustomerLoginForm() {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
-  const { login, isAuthenticated } = useAuth();
-  const {loginWithGoogle} = useAuth();
+  const { login, isAuthenticated, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   // ✅ Xử lý việc chuyển hướng sau khi Context cập nhật isAuthenticated
