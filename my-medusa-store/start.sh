@@ -1,23 +1,21 @@
 #!/bin/bash
 
-# 1. Chạy Migrations (LUÔN CẦN THIẾT)
+# Thiết lập Port cho Render. Mặc định Medusa là 9000, 
+# nhưng Render cung cấp biến $PORT cho Web Service.
+export PORT=9000 
+
 echo "Running database migrations..."
 npx medusa db:migrate
 
-# 2. Seeding (CHỈ KHI BIẾN MÔI TRƯỜNG ĐƯỢC SET)
-# Biến môi trường này (ví dụ: SEED_DB) sẽ được set thủ công trên Render CHỈ KHI CẦN.
+# Seeding chỉ được chạy khi biến môi trường SEED_DB được đặt là "true"
 if [ "$SEED_DB" = "true" ]; then
     echo "Seeding database..."
+    # Không dùng || echo "Seeding failed, continuing..." nữa để đảm bảo tính minh bạch
     npm run seed
-    # Tùy chọn: Sau khi seed thành công, bạn có thể xóa biến môi trường này
-    # hoặc set nó thành false trong database/cấu hình nếu Render hỗ trợ.
 else
-    echo "Skipping database seeding."
+    echo "Skipping database seeding. Set SEED_DB=true on Render to run."
 fi
 
-# 3. Khởi động Server (LUÔN CẦN THIẾT)
 echo "Starting Medusa production server..."
-# Quan trọng: Đảm bảo server lắng nghe trên PORT được Render cung cấp (thường là $PORT)
-# Cần kiểm tra lại lệnh start của bạn có sử dụng biến $PORT không.
-# Nếu không, bạn cần set biến PORT cho Render, thường là 9000
+# Khởi động server
 npx medusa start
