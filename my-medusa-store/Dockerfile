@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy package files và cài dependencies backend
 COPY package.json package-lock.json ./
+# Cài dependencies backend ở thư mục gốc
 RUN npm install
 
 # Copy toàn bộ source code
@@ -14,19 +15,21 @@ COPY . .
 # Cài đặt bash vì Alpine không có sẵn
 RUN apk add --no-cache bash
 
-# Build Admin
-WORKDIR /app/admin
+# *** BƯỚC SỬA LỖI ĐƯỜNG DẪN ADMIN ***
+# 1. Chuyển đến thư mục Admin thực tế
+WORKDIR /app/src/admin
 RUN npm install && npm run build
 
-# *** BƯỚC SỬA LỖI LẦN CUỐI: Quay lại /app và di chuyển thư mục build ***
+# 2. Quay lại thư mục backend gốc
 WORKDIR /app
-# 1. DI CHUYỂN THƯ MỤC BUILD (KHẢ NĂNG LÀ 'dist')
-# Nếu lỗi này xảy ra lần nữa, bạn cần kiểm tra trực tiếp code để biết tên thư mục build.
-RUN mv ./admin/dist ./admin-build
 
-# 2. XÓA THƯ MỤC SOURCE ADMIN
-# Bước này là tùy chọn, nhưng giúp giảm kích thước Docker Image
-RUN rm -rf ./admin 
+# 3. DI CHUYỂN THƯ MỤC BUILD ADMIN VỀ GỐC
+# Tên thư mục build là 'dist' và nó nằm trong /app/src/admin
+# Lệnh di chuyển: /app/src/admin/dist -> /app/admin-build
+RUN mv ./src/admin/dist ./admin-build
+
+# 4. XÓA THƯ MỤC SOURCE ADMIN (Không cần thiết cho runtime)
+RUN rm -rf ./src/admin 
 
 # Cấp quyền thực thi cho start.sh
 RUN chmod +x start.sh
