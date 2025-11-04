@@ -1,35 +1,30 @@
-# Dockerfile for Medusa v2 + Admin
-
-# Base image
-FROM node:20-alpine
-
-# Set working directory
+# ========================
+# Stage 1: Build
+# ========================
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Copy backend package files
-COPY package.json package-lock.json ./
-
-# Install backend dependencies
+COPY package*.json ./
 RUN npm install
 
-# Copy backend source code
 COPY . .
-
-# --- Build Admin ---
-# Move into admin folder
-WORKDIR /app/src/admin
-
-# Install admin dependencies
-RUN npm install
-
-# Build admin
 RUN npm run build
 
-# Move back to backend root
+# ========================
+# Stage 2: Run
+# ========================
+FROM node:18-alpine
 WORKDIR /app
 
-# Expose Medusa default port
+ENV NODE_ENV=production
+ENV PORT=9000
+
+COPY --from=builder /app ./
+
+# Chỉ install dependencies cần thiết cho production
+RUN npm install --omit=dev
+
 EXPOSE 9000
 
-# Start Medusa with migrations
-CMD ["npx", "medusa", "develop"]
+# ✅ Lệnh chạy Medusa production
+CMD ["npm", "run", "start"]
