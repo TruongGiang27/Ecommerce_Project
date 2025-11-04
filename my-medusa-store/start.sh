@@ -1,14 +1,13 @@
 #!/bin/sh
 
-# Run migrations and start server
+# 1. Chạy Migrations
 echo "Running database migrations..."
 npx medusa db:migrate
 
-# === Các dòng về Seeding đã được loại bỏ hoặc comment ===
-# echo "Seeding database..."
-# npm run seed || echo "Seeding failed, continuing..."
-# =======================================================
+# 2. Xây dựng Admin Panel (Bước Mới Cần Thiết cho Production)
+echo "Building Medusa Admin Panel..."
+npm run build 
 
-# 2. Khởi động Server ở chế độ Production
+# 3. Khởi động Server ở chế độ Production
 echo "Starting Medusa production server..."
 npm run start
