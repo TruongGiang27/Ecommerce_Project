@@ -6,30 +6,28 @@ WORKDIR /app
 
 # Copy package files và cài dependencies backend
 COPY package.json package-lock.json ./
-# Cài dependencies backend ở thư mục gốc
 RUN npm install
 
-# Copy toàn bộ source code
+# Copy toàn bộ source code (Bao gồm cả thư mục src/admin)
 COPY . .
 
 # Cài đặt bash vì Alpine không có sẵn
 RUN apk add --no-cache bash
 
-# *** BƯỚC SỬA LỖI ĐƯỜNG DẪN ADMIN ***
-# 1. Chuyển đến thư mục Admin thực tế
+# *** FIX LỖI 1: CHUYỂN ĐẾN THƯ MỤC ADMIN THỰC TẾ ***
 WORKDIR /app/src/admin
 RUN npm install && npm run build
 
 # 2. Quay lại thư mục backend gốc
 WORKDIR /app
 
-# 3. DI CHUYỂN THƯ MỤC BUILD ADMIN VỀ GỐC
-# Tên thư mục build là 'dist' và nó nằm trong /app/src/admin
-# Lệnh di chuyển: /app/src/admin/dist -> /app/admin-build
+# *** FIX LỖI 2: DI CHUYỂN THƯ MỤC BUILD ĐÚNG ĐƯỜNG DẪN ***
+# Di chuyển thư mục build từ /app/src/admin/dist sang /app/admin-build
+# LƯU Ý: Phải sử dụng đường dẫn tương đối từ /app
 RUN mv ./src/admin/dist ./admin-build
 
 # 4. XÓA THƯ MỤC SOURCE ADMIN (Không cần thiết cho runtime)
-RUN rm -rf ./src/admin 
+RUN rm -rf ./src/admin
 
 # Cấp quyền thực thi cho start.sh
 RUN chmod +x start.sh
