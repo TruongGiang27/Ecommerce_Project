@@ -18,14 +18,13 @@ RUN apk add --no-cache bash
 WORKDIR /app/admin
 RUN npm install && npm run build
 
-# *** BƯỚC SỬA LỖI: Copy Admin Build files về thư mục chính ***
+# *** BƯỚC SỬA LỖI LẦN CUỐI: Quay lại /app và di chuyển thư mục build ***
 WORKDIR /app
-# Đã xác nhận thư mục build là 'dist' (chứ không phải 'build')
-# Lệnh này sẽ move thư mục /app/admin/dist thành /app/admin-build
-# (Nếu bạn chỉ cần giữ lại /admin-build, dùng lệnh này. Nếu muốn giữ code admin, dùng COPY)
-# Để đơn giản và giải quyết lỗi, chúng ta sẽ **COPY** thay vì mv/rm để tránh xung đột
-COPY --from=0 /app/admin/dist /app/admin-build 
-RUN rm -rf ./admin # Xóa thư mục source admin để giảm kích thước image
+# 1. Di chuyển thư mục build Admin từ /app/admin/dist sang /app/admin-build
+# 2. Xóa thư mục source admin để giảm kích thước image (rm -rf ./admin)
+# SỬ DỤNG LỆNH MV TRỰC TIẾP
+RUN mv ./admin/dist ./admin-build && rm -rf ./admin 
+# Lưu ý: Lệnh này giả định admin build là 'dist' và bạn muốn xóa source code Admin sau khi build.
 
 # Cấp quyền thực thi cho start.sh
 RUN chmod +x start.sh
