@@ -1,30 +1,23 @@
-# ========================
-# Stage 1: Build
-# ========================
-FROM node:18-alpine AS builder
+# Use Node.js 20 Alpine
+FROM node:20-alpine
+
+# Set working directory
 WORKDIR /app
 
-COPY package*.json ./
+# Copy dependency files
+COPY package.json package-lock.json ./
+
+# Install dependencies
 RUN npm install
 
+# Copy all source code
 COPY . .
-RUN npm run build
 
-# ========================
-# Stage 2: Run
-# ========================
-FROM node:18-alpine
-WORKDIR /app
+# Build admin panel (nếu có)
+RUN cd src/admin && npm install && npm run build
 
-ENV NODE_ENV=production
-ENV PORT=9000
-
-COPY --from=builder /app ./
-
-# Chỉ install dependencies cần thiết cho production
-RUN npm install --omit=dev
-
+# Expose port for Medusa
 EXPOSE 9000
 
-# ✅ Lệnh chạy Medusa production
-CMD ["npm", "run", "start"]
+# Start server
+CMD ["./start.sh"]
