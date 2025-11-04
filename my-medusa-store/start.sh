@@ -9,5 +9,6 @@ npx medusa db:migrate
 # npm run seed || echo "Seeding failed, continuing..."
 # =======================================================
 
-echo "Starting Medusa development server..."
-npm run dev
+# 2. Khởi động Server ở chế độ Production
+echo "Starting Medusa production server..."
+npm run start
