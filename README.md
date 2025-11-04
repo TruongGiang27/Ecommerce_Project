@@ -88,3 +88,26 @@ npm run seed || echo "Seeding failed, continuing..."
 
 echo "Starting Medusa development server..."
 npm run dev
+
+``` Dockerfile mẫu
+
+# Development Dockerfile for Medusa
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files and npm config
+COPY package.json package-lock.json ./
+
+# Install all dependencies using npm
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Expose the port Medusa runs on
+EXPOSE 9000
+
+# Start with migrations and then the development server
+CMD ["./start.sh"]
