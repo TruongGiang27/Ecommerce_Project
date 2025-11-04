@@ -1,23 +1,35 @@
-# Use Node.js 20 Alpine
+# Dockerfile for Medusa v2 + Admin
+
+# Base image
 FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy dependency files
+# Copy backend package files
 COPY package.json package-lock.json ./
 
-# Install dependencies
+# Install backend dependencies
 RUN npm install
 
-# Copy all source code
+# Copy backend source code
 COPY . .
 
-# Build admin panel (nếu có)
-RUN cd src/admin && npm install && npm run build
+# --- Build Admin ---
+# Move into admin folder
+WORKDIR /app/src/admin
 
-# Expose port for Medusa
+# Install admin dependencies
+RUN npm install
+
+# Build admin
+RUN npm run build
+
+# Move back to backend root
+WORKDIR /app
+
+# Expose Medusa default port
 EXPOSE 9000
 
-# Start server
-CMD ["./start.sh"]
+# Start Medusa with migrations
+CMD ["npx", "medusa", "develop"]
