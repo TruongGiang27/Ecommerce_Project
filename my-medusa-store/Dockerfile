@@ -20,11 +20,11 @@ RUN npm install && npm run build
 
 # *** BƯỚC SỬA LỖI LẦN CUỐI: Quay lại /app và di chuyển thư mục build ***
 WORKDIR /app
-# 1. Di chuyển thư mục build Admin từ /app/admin/dist sang /app/admin-build
-# 2. Xóa thư mục source admin để giảm kích thước image (rm -rf ./admin)
-# SỬ DỤNG LỆNH MV TRỰC TIẾP
-RUN mv ./admin/dist ./admin-build && rm -rf ./admin 
-# Lưu ý: Lệnh này giả định admin build là 'dist' và bạn muốn xóa source code Admin sau khi build.
+# Thử đường dẫn Admin Build phổ biến khác: 'public'
+# Di chuyển thư mục build từ /app/admin/public sang /app/admin-build
+# LƯU Ý: Nếu thư mục build là 'dist', bạn phải đặt lại là 'dist'
+RUN mv ./admin/public ./admin-build && rm -rf ./admin
+# Nếu lỗi này vẫn xảy ra, tức là thư mục Admin build **là thư mục gốc /app/admin**
 
 # Cấp quyền thực thi cho start.sh
 RUN chmod +x start.sh
