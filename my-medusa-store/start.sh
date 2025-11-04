@@ -4,8 +4,10 @@
 echo "Running database migrations..."
 npx medusa db:migrate
 
-echo "Seeding database..."
-npm run seed || echo "Seeding failed, continuing..."
+# === Các dòng về Seeding đã được loại bỏ hoặc comment ===
+# echo "Seeding database..."
+# npm run seed || echo "Seeding failed, continuing..."
+# =======================================================
 
 echo "Starting Medusa development server..."
 npm run dev
