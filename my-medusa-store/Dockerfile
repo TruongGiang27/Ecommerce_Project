@@ -14,17 +14,16 @@ COPY . .
 # Cài đặt bash vì Alpine không có sẵn
 RUN apk add --no-cache bash
 
-# *** FIX LỖI 1: CHUYỂN ĐẾN THƯ MỤC ADMIN THỰC TẾ ***
+# 1. Chuyển đến thư mục Admin thực tế
 WORKDIR /app/src/admin
 RUN npm install && npm run build
 
 # 2. Quay lại thư mục backend gốc
 WORKDIR /app
 
-# *** FIX LỖI 2: DI CHUYỂN THƯ MỤC BUILD ĐÚNG ĐƯỜNG DẪN ***
-# Di chuyển thư mục build từ /app/src/admin/dist sang /app/admin-build
-# LƯU Ý: Phải sử dụng đường dẫn tương đối từ /app
-RUN mv ./src/admin/dist ./admin-build
+# *** FIX LỖI: DI CHUYỂN THƯ MỤC BUILD (THAY 'dist' bằng 'build') ***
+# Di chuyển thư mục build từ /app/src/admin/build sang /app/admin-build
+RUN mv ./src/admin/build ./admin-build
 
 # 4. XÓA THƯ MỤC SOURCE ADMIN (Không cần thiết cho runtime)
 RUN rm -rf ./src/admin
