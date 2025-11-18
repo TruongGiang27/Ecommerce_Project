@@ -1,20 +1,45 @@
-# Development Dockerfile for Medusa
-FROM node:20-alpine
+# ===============================================
+# === STAGE 1: BUILDER - Cài đặt dependencies và Build code ===
+# ===============================================
+FROM node:20-alpine AS builder
 
-# Set working directory
+# Thiết lập thư mục làm việc và ENV
 WORKDIR /app
+ENV NODE_ENV production
 
-# Copy package files and npm config
+# 1. Tận dụng Cache cho Dependencies (CỰC KỲ QUAN TRỌNG)
+# Chỉ cần copy file package.json và package-lock.json
 COPY package.json package-lock.json ./
+RUN npm install --omit=dev
 
-# Install all dependencies using npm
-RUN npm install
-
-# Copy source code
+# 2. Copy mã nguồn còn lại và chạy Build Medusa
+# Lệnh 'build' sẽ tạo ra các file cần thiết (.medusa/server, v.v.)
 COPY . .
+# Thêm tùy chọn tăng bộ nhớ cho Node.js trong khi Build (Giảm lỗi OOM trên các server giới hạn)
+RUN NODE_OPTIONS="--max-old-space-size=2048" npm run build 
 
-# Expose the port Medusa runs on
+# ===============================================
+# === STAGE 2: RUNNER - Image cuối cùng cho Runtime ===
+# ===============================================
+FROM node:20-alpine AS runner
+
+# Thiết lập ENV
+WORKDIR /app
+ENV NODE_ENV production
+ENV PORT 9000
+
+# 1. Copy chỉ những thứ CẦN THIẾT từ giai đoạn BUILDER
+# Chỉ copy các dependencies đã cài đặt và các file đã build.
+COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/.medusa /app/.medusa
+COPY --from=builder /app/package.json /app/package.json
+COPY --from=builder /app/package-lock.json /app/package-lock.json
+
+# Copy các file cần thiết khác (start.sh, cấu hình, v.v.)
+COPY ./start.sh ./
+
+# Expose cổng (Không bắt buộc nhưng là tài liệu tốt)
 EXPOSE 9000
 
-# Start with migrations and then the development server
+# Lệnh khởi động (start.sh phải chạy migration + start)
 CMD ["./start.sh"]
