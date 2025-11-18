@@ -32,4 +32,5 @@ WORKDIR /app
 EXPOSE 9000
 
 # Start Medusa with migrations
-CMD ["npx", "medusa", "develop"]
+# CMD ["npx", "medusa", "develop"]
+CMD ["sh", "-c", "npx medusa migrations run && npx medusa start"]
