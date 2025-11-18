@@ -1,14 +1,11 @@
 #!/bin/sh
 
-# Thoát ngay lập tức nếu bất kỳ lệnh nào thất bại
-set -e
+# Run migrations and start server
+echo "Running database migrations..."
+npx medusa db:migrate
 
-echo "Starting Medusa Production Server..."
+echo "Seeding database..."
+npm run seed || echo "Seeding failed, continuing..."
 
-# 1. Chạy Migrations
-# Sử dụng 'npm run migrate' (được định nghĩa là medusa migrations run trong package.json)
-npm run migrate
-
-# 2. Khởi động Server ở chế độ Production
-# Sử dụng 'npm run start' (được định nghĩa là medusa start trong package.json)
-npm run start
+echo "Starting Medusa development server..."
+npm run dev

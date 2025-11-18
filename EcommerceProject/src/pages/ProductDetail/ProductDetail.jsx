@@ -14,6 +14,8 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedVariant, setSelectedVariant] = useState(null);
+  // State để lưu tài khoản cần nâng cấp
+  const [upgradeAccount, setUpgradeAccount] = useState("");
   const { addToCart, cart } = useCart();
   const [activeTab, setActiveTab] = useState("description");
 
@@ -30,8 +32,10 @@ export default function ProductDetail() {
       .then((res) => res.json())
       .then((data) => {
         setProduct(data.product);
-        if (data.product?.variants?.length)
+        // Giữ behavior cũ: auto chọn variant đầu tiên để hiện giá
+        if (data.product?.variants?.length) {
           setSelectedVariant(data.product.variants[0]);
+        }
       })
       .catch((err) => console.error("Lỗi khi lấy chi tiết sản phẩm:", err));
   }, [id]);
@@ -69,6 +73,8 @@ export default function ProductDetail() {
   const handleOptionSelect = (optionId, value) => {
     const newSelected = { ...selectedOptions, [optionId]: value };
     setSelectedOptions(newSelected);
+
+    // Tìm variant trùng khớp với tất cả option đã chọn
     const matched = product.variants.find((variant) =>
       variant.options.every((opt) =>
         newSelected[opt.option_id]
@@ -76,20 +82,58 @@ export default function ProductDetail() {
           : true
       )
     );
+
     setSelectedVariant(matched || null);
   };
 
   const handleReset = () => {
     setSelectedOptions({});
+    // Khi reset, quay về variant đầu để hiển thị giá
     setSelectedVariant(product.variants[0] || null);
+    setUpgradeAccount(""); // Reset cả tài khoản khi chọn lại
   };
 
+  // Logic để xác định xem có hiển thị ô nhập tài khoản không
+  // Kiểm tra xem có bất kỳ giá trị option nào được chọn có chứa chữ "chính chủ" không
+  const isOfficialUpgrade = Object.values(selectedOptions).some((value) =>
+    value.toLowerCase().includes("chính chủ")
+  );
+
+  const shownPrice = displayPriceFromVariant(selectedVariant);
+  const isContactOnly = shownPrice === "Liên hệ";
+
+  // 🔎 Sản phẩm có option không
+  const hasOptions = product.options && product.options.length > 0;
+
+  // ✅ Đã chọn đầy đủ tất cả option chưa
+  const hasSelectedAllOptions = hasOptions
+    ? product.options.every((opt) => selectedOptions[opt.id])
+    : true;
+
+  // 👉 Chỉ cho thanh toán nếu:
+  // - Không phải hàng "Liên hệ"
+  // - Và (không có option) HOẶC (đã chọn đủ option & có variant match)
+  const canCheckout =
+    !isContactOnly &&
+    (!hasOptions || (hasSelectedAllOptions && selectedVariant));
+
   const handleAddToCart = () => {
+    // Không cho thêm nếu chưa chọn đủ
+    if (!canCheckout) return;
+
+    // Thêm validation tài khoản nâng cấp
+    if (isOfficialUpgrade && !upgradeAccount.trim()) {
+      alert("Vui lòng nhập tài khoản cần nâng cấp!");
+      return;
+    }
+
     const variant = selectedVariant || product.variants?.[0] || null;
     const payloadId = `${product.id}#${variant?.id || "default"}`;
     const exists = cart.some((c) => c.id === payloadId);
     if (exists) {
-      alert("Sản phẩm này (phiên bản) đã có trong giỏ — mỗi mã chỉ được mua 1 lần.");
+      alert(
+        "Sản phẩm này (phiên bản) đã có trong giỏ — mỗi mã chỉ được mua 1 lần."
+      );
       return;
     }
 
@@ -99,6 +143,8 @@ export default function ProductDetail() {
       title: product.title + (friendlyLabel ? " — " + friendlyLabel : ""),
       thumbnail: product.thumbnail,
       quantity: 1,
+      // Thêm tài khoản nâng cấp vào giỏ hàng
+      upgradeAccount: isOfficialUpgrade ? upgradeAccount : null,
       selectedVariant: {
         id: variant?.id,
         title: variant?.title,
@@ -109,6 +155,15 @@ export default function ProductDetail() {
 
   // Thêm hàm xử lý Mua ngay: thêm (nếu chưa có) rồi chuyển trang /cart
   const handleBuyNow = () => {
+    // Không cho thanh toán nếu chưa chọn đủ
+    if (!canCheckout) return;
+
+    // Thêm validation
+    if (isOfficialUpgrade && !upgradeAccount.trim()) {
+      alert("Vui lòng nhập tài khoản cần nâng cấp!");
+      return;
+    }
+
     const variant = selectedVariant || product.variants?.[0] || null;
     const payloadId = `${product.id}#${variant?.id || "default"}`;
     const exists = cart.some((c) => c.id === payloadId);
@@ -119,6 +174,8 @@ export default function ProductDetail() {
         title: product.title + (friendlyLabel ? " — " + friendlyLabel : ""),
         thumbnail: product.thumbnail,
         quantity: 1,
+        // Thêm tài khoản nâng cấp vào giỏ hàng
+        upgradeAccount: isOfficialUpgrade ? upgradeAccount : null,
         selectedVariant: {
           id: variant?.id,
           title: variant?.title,
@@ -128,9 +185,6 @@ export default function ProductDetail() {
     }
     navigate("/cart");
   };
-
-  const shownPrice = displayPriceFromVariant(selectedVariant);
-  const isContactOnly = shownPrice === "Liên hệ";
 
   return (
     <div className="product-detail-container">
@@ -182,9 +236,9 @@ export default function ProductDetail() {
                       return (
                         <div
                           key={v.id}
-                          className={`option-item ${isActive ? "active" : ""} ${
-                            !available ? "disabled" : ""
-                          }`}
+                          className={`option-item ${
+                            isActive ? "active" : ""
+                          } ${!available ? "disabled" : ""}`}
                           onClick={() =>
                             available && handleOptionSelect(opt.id, v.value)
                           }
@@ -208,9 +262,37 @@ export default function ProductDetail() {
                 Số lượng: <strong>1</strong> (mỗi mã chỉ mua 1 lần)
               </div>
 
+              {/* Khối JSX cho ô nhập tài khoản */}
+              {isOfficialUpgrade && (
+                <div className="upgrade-account-input-group">
+                  <label htmlFor="upgradeAccountInput">
+                    Nhập tài khoản cần nâng cấp (không phải tài khoản đăng
+                    nhập Woku Shop)
+                  </label>
+                  <input
+                    id="upgradeAccountInput"
+                    type="text"
+                    className="upgrade-account-input"
+                    placeholder="Nhập email / tài khoản của bạn"
+                    value={upgradeAccount}
+                    onChange={(e) => setUpgradeAccount(e.target.value)}
+                  />
+                </div>
+              )}
+
               <div className="btn-group">
-                <button className="btn-buy" onClick={handleBuyNow}>Mua ngay</button>
-                <button className="btn-add" onClick={handleAddToCart}>
+                <button
+                  className="btn-buy"
+                  onClick={handleBuyNow}
+                  disabled={!canCheckout}
+                >
+                  Mua ngay
+                </button>
+                <button
+                  className="btn-add"
+                  onClick={handleAddToCart}
+                  disabled={!canCheckout}
+                >
                   Thêm vào giỏ
                 </button>
               </div>
