@@ -33,4 +33,5 @@ EXPOSE 9000
 
 # Start Medusa with migrations
 # CMD ["npx", "medusa", "develop"]
-CMD ["sh", "-c", "npx medusa migrations run && npx medusa start"]
+CMD ["sh", "-c", "npx medusa db:setup && npx medusa start"]
+
