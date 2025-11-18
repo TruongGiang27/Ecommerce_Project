@@ -18,9 +18,9 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetch(`${backendUrl}/store/products?region_id=${regionId}&limit=1000`, {
+    fetch(`${backendUrl}/store/products?limit=1000`, {
       headers: {
-        "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
+        "x-publishable-api-key": publishableKey,
       },
     })
       .then((res) => res.json())
