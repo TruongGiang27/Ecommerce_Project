@@ -10,22 +10,19 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-    console.log("MEDUSA_BACKEND_URL =", backendUrl);
+  const backendUrl = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+  console.log("MEDUSA_BACKEND_URL =", backendUrl);
 
   const handleCategoryClick = (category) => {
     navigate(`/products?category=${category}`);
   };
 
   useEffect(() => {
-    fetch(
-      `${backendUrl}/store/products?region_id=${regionId}&limit=1000`,
-      {
-        headers: {
-          "x-publishable-api-key":
-            process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
-        },
-      }
-    )
+    fetch(`${backendUrl}/store/products?region_id=${regionId}&limit=1000`, {
+      headers: {
+        "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         console.log(
