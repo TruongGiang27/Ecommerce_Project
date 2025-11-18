@@ -1,25 +1,33 @@
-# ===============================================
+# =========================================================
 # === STAGE 1: BUILDER - Cài đặt dependencies và Build code ===
-# ===============================================
+# MỤC TIÊU: Tận dụng Build Cache và chạy quá trình nặng
+# =========================================================
 FROM node:20-alpine AS builder
 
 # Thiết lập thư mục làm việc và ENV
 WORKDIR /app
 ENV NODE_ENV production
 
-# 1. Tận dụng Cache cho Dependencies (CỰC KỲ QUAN TRỌNG)
-# Chỉ cần copy file package.json và package-lock.json
+# 1. Tận dụng Cache cho Dependencies (CẦN file cấu hình để Build)
+# COPY file cấu hình CỐT LÕI VÀO SỚM
 COPY package.json package-lock.json ./
+# >>> HÀNH ĐỘNG FIX 1: COPY FILE CẤU HÌNH VÀO BUILD CONTEXT <<<
+# Phải COPY các file mà các lệnh BUILD/MIGRATION sẽ cần
+COPY medusa-config.js ./ 
+COPY tsconfig.json ./
+COPY start.sh ./
+# -------------------------------------------------------------
+
 RUN npm install --omit=dev
 
 # 2. Copy mã nguồn còn lại và chạy Build Medusa
-# Lệnh 'build' sẽ tạo ra các file cần thiết (.medusa/server, v.v.)
 COPY . .
-# Thêm tùy chọn tăng bộ nhớ cho Node.js trong khi Build (Giảm lỗi OOM trên các server giới hạn)
+# Thêm tùy chọn tăng bộ nhớ (Giảm lỗi OOM)
 RUN NODE_OPTIONS="--max-old-space-size=2048" npm run build 
 
 # ===============================================
 # === STAGE 2: RUNNER - Image cuối cùng cho Runtime ===
+# MỤC TIÊU: Chỉ chứa những thứ cần thiết để chạy
 # ===============================================
 FROM node:20-alpine AS runner
 
@@ -31,25 +39,22 @@ ENV PORT 9000
 # 1. Copy chỉ những thứ CẦN THIẾT từ giai đoạn BUILDER
 # Chỉ copy các dependencies đã cài đặt và các file đã build.
 
+# COPY dependencies và file đã build
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/.medusa /app/.medusa
-# 1. medusa-config.js (File cấu hình cốt lõi)
-COPY medusa-config.js /app/medusa-config.js
 
-# 2. tsconfig.json (Nếu có)
-COPY tsconfig.json /app/tsconfig.json
+# >>> HÀNH ĐỘNG FIX 2: COPY FILE CẤU HÌNH TỪ BUILDER IMAGE <<<
+# Thay vì COPY từ context (lệnh bị lỗi), giờ ta COPY từ BUILDER IMAGE đã có file
+COPY --from=builder /app/medusa-config.js /app/medusa-config.js
+COPY --from=builder /app/tsconfig.json /app/tsconfig.json
+COPY --from=builder /app/start.sh /app/start.sh
+# ----------------------------------------------------------------
 
-# 3. start.sh (File khởi động)
-COPY start.sh /app/start.sh
-
-# 4. Copy các file cần thiết khác (nếu có)
+# 2. Copy các file package (Để lệnh start vẫn chạy được)
 COPY --from=builder /app/package.json /app/package.json
 COPY --from=builder /app/package-lock.json /app/package-lock.json
 
-# Copy các file cần thiết khác (start.sh, cấu hình, v.v.)
-COPY ./start.sh ./
-
-# Expose cổng (Không bắt buộc nhưng là tài liệu tốt)
+# Expose cổng (Dành cho tài liệu)
 EXPOSE 9000
 
 # Lệnh khởi động (start.sh phải chạy migration + start)
