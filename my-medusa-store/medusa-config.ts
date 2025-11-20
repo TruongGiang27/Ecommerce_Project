@@ -9,6 +9,8 @@ console.log("✅ STORE_CORS:", process.env.STORE_CORS);
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    redisUrl: process.env.REDIS_URL,
+    workerMode: (process.env.WORKER_MODE as "shared" | "worker" | "server") || "shared",
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
@@ -16,10 +18,13 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
-    // databaseDriverOptions: {
-    //         ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
-
-    // },
+    databaseDriverOptions: {
+      connection: {
+        ssl: {
+          rejectUnauthorized: false, // Chấp nhận chứng chỉ SSL của Neon
+        },
+      },
+    },
   },
   // modules: [
   //   // ...
