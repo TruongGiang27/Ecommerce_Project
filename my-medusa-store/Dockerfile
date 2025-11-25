@@ -29,7 +29,7 @@ RUN apk add --no-cache libc6-compat
 # Copy node_modules
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy Backend Core
+# Copy Backend Core (.medusa chứa .medusa/server và .medusa/client)
 COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./package.json
 
@@ -37,13 +37,17 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/medusa-config.ts ./medusa-config.ts
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
-# 👇👇👇 ĐÃ SỬA LỖI TẠI ĐÂY 👇👇👇
-# Xóa dòng COPY public cũ bị lỗi
-# Thay bằng lệnh tạo thư mục public rỗng (để tránh lỗi nếu code cần dùng nó)
+# Tạo thư mục public rỗng (tránh lỗi not found)
 RUN mkdir -p public
 
-# Copy Admin từ .medusa/client ra thành thư mục build
+# 👇👇👇 CHIẾN THUẬT RẢI THẢM: COPY VÀO MỌI CHỖ CÓ THỂ 👇👇👇
+
+# 1. Copy vào thư mục gốc /app/build (Nơi Medusa thường tìm nhất)
 COPY --from=builder /app/.medusa/client ./build
+
+# 2. Copy vào thư mục /app/.medusa/admin (Nơi cấu trúc Medusa v2 đôi khi tìm)
+# Lệnh này sẽ tự tạo thư mục admin nếu chưa có
+COPY --from=builder /app/.medusa/client ./.medusa/admin
 
 # Port
 EXPOSE 9000
