@@ -3,7 +3,7 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Cài đặt các thư viện cần thiết
+# Cài đặt thư viện hệ thống
 RUN apk add --no-cache libc6-compat python3 make g++
 
 COPY package.json package-lock.json ./
@@ -13,7 +13,7 @@ RUN npm ci
 
 COPY . .
 
-# Build Medusa
+# Build Medusa (Tạo ra .medusa và thư mục build chứa Admin)
 RUN npm run build
 
 # Stage 2: Production Runner
@@ -26,19 +26,25 @@ ENV NODE_ENV=production
 # Cài libc6-compat
 RUN apk add --no-cache libc6-compat
 
-# Copy node_modules và source đã build từ builder
+# Copy node_modules
 COPY --from=builder /app/node_modules ./node_modules
+
+# Copy Backend Core
 COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./package.json
 
-# Copy file config
+# Copy Config
 COPY --from=builder /app/medusa-config.ts ./medusa-config.ts
-
-# 👇👇👇 DÒNG NÀY LÀ DÒNG BẠN ĐANG THIẾU 👇👇👇
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
-# Port mặc định
+# 👇👇👇 BỔ SUNG QUAN TRỌNG TẠI ĐÂY 👇👇👇
+# Copy thư mục public (nơi chứa assets tĩnh)
+COPY --from=builder /app/public ./public
+# Copy thư mục build (nơi chứa giao diện Admin Dashboard)
+COPY --from=builder /app/build ./build
+
+# Port
 EXPOSE 9000
 
-# Lệnh chạy server
+# Chạy server
 CMD ["npm", "run", "start"]
