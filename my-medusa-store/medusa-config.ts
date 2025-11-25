@@ -18,13 +18,19 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
-    databaseDriverOptions: {
-      connection: {
-        ssl: {
-          rejectUnauthorized: false, // Chấp nhận chứng chỉ SSL của Neon
-        },
-      },
-    },
+    // 👇👇👇 SỬA LẠI ĐOẠN NÀY 👇👇👇
+    // Chỉ bật SSL khi chạy trên Production (Render/Neon)
+    // Local (Development) sẽ không dùng SSL
+    databaseDriverOptions: 
+      process.env.NODE_ENV === "production"
+        ? {
+            connection: {
+              ssl: {
+                rejectUnauthorized: false,
+              },
+            },
+          }
+        : {},
   },
   // modules: [
   //   // ...
