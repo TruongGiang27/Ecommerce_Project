@@ -6,30 +6,54 @@ loadEnv(process.env.NODE_ENV || "development", process.cwd());
 console.log("✅ AUTH_CORS:", process.env.AUTH_CORS);
 console.log("✅ STORE_CORS:", process.env.STORE_CORS);
 
-// ----------------------------------------------------
-// Bổ sung các biến môi trường cho Redis (Nếu cần thiết)
-// ----------------------------------------------------
-const REDIS_URL = process.env.REDIS_URL;
-
 module.exports = defineConfig({
-    // Removed unsupported top-level `cache` and `eventBus` keys;
-    // Medusa expects Redis settings inside projectConfig (e.g. redisUrl).
-    // ----------------------------------------------------
-
-    projectConfig: {
-        databaseUrl: process.env.DATABASE_URL,
-        redisUrl: REDIS_URL,
-        http: {
-            storeCors: process.env.STORE_CORS!,
-            adminCors: process.env.ADMIN_CORS!,
-            authCors: process.env.AUTH_CORS!,
-            jwtSecret: process.env.JWT_SECRET || "supersecret",
-            cookieSecret: process.env.COOKIE_SECRET || "supersecret",
-        },
-        databaseDriverOptions: {
-            ssl: false,
-            // Cân nhắc bật SSL/sslmode: 'require' nếu dùng Production DB
-            sslmode: "disable", 
-        },
+  projectConfig: {
+    databaseUrl: process.env.DATABASE_URL,
+    redisUrl: process.env.REDIS_URL,
+    workerMode: (process.env.WORKER_MODE as "shared" | "worker" | "server") || "shared",
+    http: {
+      storeCors: process.env.STORE_CORS!,
+      adminCors: process.env.ADMIN_CORS!,
+      authCors: process.env.AUTH_CORS!,
+      jwtSecret: process.env.JWT_SECRET || "supersecret",
+      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
+    databaseDriverOptions: {
+      connection: {
+        ssl: {
+          rejectUnauthorized: false, // Chấp nhận chứng chỉ SSL của Neon
+        },
+      },
+    },
+  },
+  // modules: [
+  //   // ...
+  //   {
+  //     resolve: "@medusajs/medusa/auth",
+  //     dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
+  //     options: {
+  //       providers: [
+  //         // other providers...
+  //         {
+  //           resolve: "@medusajs/medusa/auth-emailpass",
+  //           id: "emailpass",
+  //         },
+  //         {
+  //           resolve: "@medusajs/medusa/auth-google",
+  //           id: "google",
+  //           options: {
+  //             clientId: process.env.GOOGLE_CLIENT_ID,
+  //             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  //             callbackUrl:
+  //               process.env.GOOGLE_CALLBACK_URL ||
+  //               "http://localhost:3000/auth/callback",
+  //             successRedirect: "http://localhost:3000/auth/callback", // hoặc "/" rồi xử lý token nếu backend appends token
+  //             failureRedirect:
+  //               "http://localhost:3000/login?error=google_login_failed",
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   },
+  // ],
 });
