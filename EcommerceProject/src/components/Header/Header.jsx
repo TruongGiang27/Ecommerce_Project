@@ -3,8 +3,8 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import "../Header/header.css";
 import "../../theme/theme.css";
-import React, { useState } from "react";
-import { FiMenu, FiLogOut } from "react-icons/fi";
+import React, { useState, useEffect, useRef } from "react";
+import { FiMenu } from "react-icons/fi";
 import { FaUserCircle, FaShoppingCart, FaSearch } from "react-icons/fa";
 import { useCart } from "../../context/CartContext"; // ✅ import context
 import Logo from "../../assets/images/DigitexLogoWhite.png";
@@ -15,6 +15,12 @@ import { useAuth } from "../../context/AuthContext";
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
   const toggleMenu = () => setShowMenu(!showMenu);
+
+  const location = useLocation();
+  // Đóng dropdown khi route thay đổi (ví dụ sau khi click NavLink)
+  useEffect(() => {
+    setShowMenu(false);
+  }, [location]);
 
   // ✅ Lấy trạng thái xác thực và thông tin khách hàng
   const { isAuthenticated, customer, logout } = useAuth();
@@ -135,34 +141,33 @@ export default function Header() {
     <header className="header">
       {/* 1. Menu Danh mục */}
       <div className="action-menu">
-        <button onClick={toggleMenu} className="menu-button">
+        <button onClick={toggleMenu} className="menu-button" aria-expanded={showMenu} aria-controls="category-menu">
           <FiMenu className="icon" />
-          {/* <span className="text-menu-button"></span> */}
         </button>
         {showMenu && (
-          <div className="dropdown-menu">
-            <NavLink to="/products?category=Làm Việc" className="menu-item">
+          <div id="category-menu" className="dropdown-menu" role="menu">
+            <NavLink to="/products?category=Làm Việc" className="menu-item" onClick={() => setShowMenu(false)}>
               Làm Việc
             </NavLink>
-            <NavLink to="/products?category=Giải Trí" className="menu-item">
+            <NavLink to="/products?category=Giải Trí" className="menu-item" onClick={() => setShowMenu(false)}>
               Giải Trí
             </NavLink>
-            <NavLink to="/products?category=Học Tập" className="menu-item">
+            <NavLink to="/products?category=Học Tập" className="menu-item" onClick={() => setShowMenu(false)}>
               Học Tập
             </NavLink>
-            <NavLink to="/products?category=Tiện Ích" className="menu-item">
+            <NavLink to="/products?category=Tiện Ích" className="menu-item" onClick={() => setShowMenu(false)}>
               Tiện Ích
             </NavLink>
-            <NavLink to="/products?category=Windows" className="menu-item">
+            <NavLink to="/products?category=Windows" className="menu-item" onClick={() => setShowMenu(false)}>
               Windows
             </NavLink>
-            <NavLink to="/products?category=Microsoft" className="menu-item">
+            <NavLink to="/products?category=Microsoft" className="menu-item" onClick={() => setShowMenu(false)}>
               Microsoft
             </NavLink>
-            <NavLink to="/products?category=Diệt Virus" className="menu-item">
+            <NavLink to="/products?category=Diệt Virus" className="menu-item" onClick={() => setShowMenu(false)}>
               Diệt Virus
             </NavLink>
-            <NavLink to="/products?category=VPN" className="menu-item">
+            <NavLink to="/products?category=VPN" className="menu-item" onClick={() => setShowMenu(false)}>
               VPN
             </NavLink>
           </div>
@@ -171,9 +176,9 @@ export default function Header() {
 
       {/* 2. Logo */}
       <NavLink to="/">
-        <h1 className="logo">
+        <div className="logo">
           <img src={Logo} alt="Logo Website" />
-        </h1>
+        </div>
       </NavLink>
 
       {/* 3. Thanh Tìm kiếm */}
@@ -285,40 +290,40 @@ export default function Header() {
         {/* 6. Trạng thái Đăng nhập/Đăng ký */}
         {isAuthenticated ? (
           <>
-            {/* Nếu đã đăng nhập: Hiển thị tên và nút Đăng xuất */}
-            {/* Thêm link đến trang /account để quản lý hồ sơ */}
-            <NavLink
-              to="/profile" // 💡 Giả sử trang quản lý hồ sơ là /account
-              className={({ isActive }) =>
-                isActive
-                  ? "nav-link nav-link-account active"
-                  : "nav-link nav-link-account"
-              }
-            >
-              <FaUserCircle className="icon" style={{ marginRight: "5px" }} />
-              {getCustomerDisplayName()}
-            </NavLink>
-
-            {/* Nút Đăng xuất */}
             <button
-              onClick={logout}
-              className="nav-link logout-button"
-              title="Đăng xuất"
-              aria-label="Đăng xuất"
+              className="user-button"
+              onClick={() => setOpen(!open)}
+              aria-label="Tài khoản"
             >
-              <FiLogOut className="icon" />
+              <FaUserCircle className="user-icon" />
             </button>
+
+            {open && (
+              <div className="user-dropdown" ref={menuRef}>
+                {items.map((item) => (
+                  <NavLink
+                    key={item.link}
+                    to={item.link}
+                    className="dropdown-item"
+                    onClick={() => setOpen(false)}
+                  >
+                    {item.name}
+                  </NavLink>
+                ))}
+                <button className="dropdown-item logout" onClick={logout}>
+                  Đăng xuất
+                </button>
+              </div>
+            )}
           </>
         ) : (
           /* Nếu chưa đăng nhập: Hiển thị link Đăng nhập/Đăng ký */
           <NavLink
-            to="/login" // 💡 Chuyển hướng đến trang Đăng nhập thay vì Đăng ký (Register)
-            className={({ isActive }) =>
-              isActive ? "nav-link active" : "nav-link"
-            }
+            to="/login"
+            className="user-button"
             title="Đăng nhập / Đăng ký"
           >
-            <FaUserCircle className="icon" />
+            <FaUserCircle className="user-icon" />
           </NavLink>
         )}
       </nav>
