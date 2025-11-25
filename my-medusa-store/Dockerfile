@@ -13,7 +13,7 @@ RUN npm ci
 
 COPY . .
 
-# Build Medusa (Admin sẽ được tạo ra tại .medusa/client)
+# Build Medusa (Tạo ra folder .medusa chứa mọi thứ)
 RUN npm run build
 
 # Stage 2: Production Runner
@@ -29,7 +29,7 @@ RUN apk add --no-cache libc6-compat
 # Copy node_modules
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy Backend Core (.medusa chứa .medusa/server và .medusa/client)
+# Copy Backend Core (Copy TRỌN GÓI folder .medusa để không sót file nào)
 COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./package.json
 
@@ -37,20 +37,15 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/medusa-config.ts ./medusa-config.ts
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
-# Tạo thư mục public rỗng (tránh lỗi not found)
-RUN mkdir -p public
-
-# 👇👇👇 CHIẾN THUẬT RẢI THẢM: COPY VÀO MỌI CHỖ CÓ THỂ 👇👇👇
-
-# 1. Copy vào thư mục gốc /app/build (Nơi Medusa thường tìm nhất)
-COPY --from=builder /app/.medusa/client ./build
-
-# 2. Copy vào thư mục /app/.medusa/admin (Nơi cấu trúc Medusa v2 đôi khi tìm)
-# Lệnh này sẽ tự tạo thư mục admin nếu chưa có
-COPY --from=builder /app/.medusa/client ./.medusa/admin
+# Tạo thư mục build và public rỗng trước
+RUN mkdir -p build && mkdir -p public
 
 # Port
 EXPOSE 9000
 
-# Chạy server
-CMD ["npm", "run", "start"]
+# 👇👇👇 CHIẾN THUẬT QUAN TRỌNG NHẤT 👇👇👇
+# Lệnh này làm 3 việc:
+# 1. In ra màn hình xem file index.html đang trốn ở đâu (để debug nếu cần)
+# 2. Copy folder .medusa/client (nơi chứa Admin) ra folder build (nơi Server cần)
+# 3. Chạy Server
+CMD ["sh", "-c", "echo 'Searching for Admin...' && ls -R .medusa | grep index.html && cp -r .medusa/client/* build/ && echo 'Admin copied to build!' && npm run start"]
