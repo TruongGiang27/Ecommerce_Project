@@ -36,10 +36,13 @@ COPY --from=builder /app/package.json ./package.json
 # Copy Config
 COPY --from=builder /app/medusa-config.ts ./medusa-config.ts
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
-COPY --from=builder /app/public ./public
 
-# 👇👇👇 SỬA ĐỔI QUAN TRỌNG TẠI ĐÂY 👇👇👇
-# Lấy Admin từ .medusa/client và copy ra thành thư mục build để Server nhận diện
+# 👇👇👇 ĐÃ SỬA LỖI TẠI ĐÂY 👇👇👇
+# Xóa dòng COPY public cũ bị lỗi
+# Thay bằng lệnh tạo thư mục public rỗng (để tránh lỗi nếu code cần dùng nó)
+RUN mkdir -p public
+
+# Copy Admin từ .medusa/client ra thành thư mục build
 COPY --from=builder /app/.medusa/client ./build
 
 # Port
