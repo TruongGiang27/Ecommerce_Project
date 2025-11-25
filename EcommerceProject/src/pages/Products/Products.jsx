@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import ProductCard from "../../components/productCard/ProductCard";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import SidebarCategories from "../../components/SidebarCategories/SidebarCategories";
 import "./products.css";
+import OfficeBanner from "../../assets/images/banner-office.png";
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,14 +15,13 @@ export default function Products() {
   const pageSize = 12;
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   // NEW: input state cho trang (chuỗi để kiểm soát input)
-  const [pageInput, setPageInput] = useState(String(Number(searchParams.get("page")) || 1));
+  const [pageInput, setPageInput] = useState(
+    String(Number(searchParams.get("page")) || 1)
+  );
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
 
-
-
- useEffect(() => {
-    // Gọi API nhiều trang để lấy hết sản phẩm (limit/offset). Nếu API của bạn dùng cursor,
-    // cần điều chỉnh sang starting_after/next_cursor theo docs.
+  useEffect(() => {
+    // Gọi API nhiều trang để lấy hết sản phẩm (limit/offset)
     const fetchAllProducts = async () => {
       try {
         const limit = 100; // tăng lên tùy nhu cầu / theo giới hạn server
@@ -34,7 +34,7 @@ export default function Products() {
             {
               headers: {
                 "x-publishable-api-key":
-                    process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
+                  process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
               },
             }
           );
@@ -46,11 +46,9 @@ export default function Products() {
           const data = await res.json();
           console.log("API page response:", data);
 
-          // tùy API, danh sách có thể nằm ở data.products, data.items, data.data,...
           const items = data.products || data.items || data.data || [];
           allProducts = allProducts.concat(items);
 
-          // Điều kiện dừng: nếu items ít hơn limit => không còn trang tiếp
           if (items.length < limit) {
             break;
           }
@@ -67,7 +65,7 @@ export default function Products() {
     fetchAllProducts();
   }, []); // chỉ chạy 1 lần khi load trang
 
-    // Sync category + page từ URL
+  // Sync category + page từ URL
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
     const pageFromUrl = Number(searchParams.get("page")) || 1;
@@ -119,8 +117,6 @@ export default function Products() {
     setPageInput(String(newPage));
     setSearchParams({ category: category, page: String(newPage) });
 
-    // scroll to top: ưu tiên cuộn element container nếu layout cuộn trong div,
-    // fallback về window.scrollTo nếu không tìm thấy.
     try {
       const container = document.querySelector(".container-products");
       if (container && typeof container.scrollIntoView === "function") {
@@ -129,7 +125,6 @@ export default function Products() {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } catch (err) {
-      // nếu lỗi thì ít nhất scroll window
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -156,14 +151,12 @@ export default function Products() {
 
   // NEW: handlers cho input số trang
   const handlePageInputChange = (e) => {
-    // giữ nguyên chuỗi để người dùng có thể nhập tạm (ví dụ "0" hoặc "")
     setPageInput(e.target.value);
   };
 
   const applyPageInput = () => {
     const n = Number(pageInput);
     if (!Number.isFinite(n) || n < 1) {
-      // reset về trang hiện tại nếu input không hợp lệ
       setPageInput(String(page));
       return;
     }
@@ -186,28 +179,86 @@ export default function Products() {
     startIndex + pageSize
   );
 
-  
+  // ✅ Sản phẩm mới: sort theo created_at, lấy 5 sản phẩm đầu
+  const newestProducts = [...products]
+    .sort((a, b) => {
+      const da = new Date(a.created_at || 0).getTime();
+      const db = new Date(b.created_at || 0).getTime();
+      return db - da;
+    })
+    .slice(0, 5);
 
   return (
-     <div className="container-products">
+    <div className="container-products">
       <div className="subContainer">
+        {/* Sidebar bên trái */}
         <div className="side-bar">
-          {/* Sidebar bên trái */}
           <SidebarCategories onSelectCategory={handleCategoryChange} />
+
+          {/* ⭐ Banner + Sản phẩm mới nằm dưới Sidebar */}
+          <div className="right-sidebar">
+            {/* Banner Office */}
+            <div className="promo-banner">
+              <img src={OfficeBanner} alt="Office 2024 chính chủ" />
+            </div>
+
+            {/* Banner Quizlet (tạm dùng placeholder) */}
+            <div className="promo-banner">
+              <img
+                src="https://via.placeholder.com/260x360?text=Quizlet+Banner"
+                alt="Quizlet banner"
+              />
+            </div>
+
+            {/* Box Sản phẩm mới */}
+            <div className="new-products-box">
+              <h3 className="new-products-title">Sản phẩm mới</h3>
+              <div className="new-products-list">
+                {newestProducts.map((p) => {
+                  const npPrice =
+                    p?.variants?.[0]?.calculated_price?.calculated_amount || 0;
+                  return (
+                    <Link
+                      key={p.id}
+                      to={`/products/${p.id}`}
+                      className="new-product-item"
+                    >
+                      <div className="new-product-thumb">
+                        <img
+                          src={p.thumbnail || "https://via.placeholder.com/60"}
+                          alt={p.title}
+                        />
+                      </div>
+                      <div className="new-product-info">
+                        <p className="new-product-name">{p.title}</p>
+                        <p className="new-product-price">
+                          {npPrice.toLocaleString()} đ
+                        </p>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </div>
 
+        {/* Nội dung chính */}
         <div className="content">
-          {/* Nội dung chính */}
           <div className="title-style" style={{ flex: 1 }}>
             <h2 style={{ marginBottom: "20px" }}>
-              {category === "All" ? "Tất cả sản phẩm" : `Sản phẩm: ${category}`}
+              {category === "All"
+                ? "Tất cả sản phẩm"
+                : `Sản phẩm: ${category}`}
             </h2>
           </div>
 
           {/* Grid danh sách sản phẩm */}
           <div className="product-grid">
             {paginatedProducts.length > 0 ? (
-              paginatedProducts.map((p) => <ProductCard key={p.id} product={p} />)
+              paginatedProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))
             ) : (
               <p>Không tìm thấy sản phẩm</p>
             )}
@@ -229,24 +280,53 @@ export default function Products() {
               className="icon-pagination-button"
               aria-label="Trang trước"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M15 18L9 12L15 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               <span className="sr-only">Prev</span>
             </button>
 
             <nav aria-label="Pagination">
-              <ul className="pagination-list" style={{ display: "flex", gap: 6, listStyle: "none", padding: 0, margin: 0 }}>
+              <ul
+                className="pagination-list"
+                style={{
+                  display: "flex",
+                  gap: 6,
+                  listStyle: "none",
+                  padding: 0,
+                  margin: 0,
+                }}
+              >
                 {getPageList().map((item, idx) =>
                   item === "left-ellipsis" || item === "right-ellipsis" ? (
-                    <li key={`${item}-${idx}`} className="ellipsis" aria-hidden="true" style={{ padding: "6px 8px" }}>
+                    <li
+                      key={`${item}-${idx}`}
+                      className="ellipsis"
+                      aria-hidden="true"
+                      style={{ padding: "6px 8px" }}
+                    >
                       …
                     </li>
                   ) : (
                     <li key={item}>
                       <button
                         onClick={() => changePage(item)}
-                        className={`page-button ${item === page ? "active" : ""}`}
+                        className={`page-button ${
+                          item === page ? "active" : ""
+                        }`}
                         aria-current={item === page ? "page" : undefined}
                       >
                         {item}
@@ -263,8 +343,21 @@ export default function Products() {
               className="icon-pagination-button"
               aria-label="Trang tiếp theo"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M9 18L15 12L9 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               <span className="sr-only">Next</span>
             </button>

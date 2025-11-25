@@ -8,10 +8,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
+
+  /* 🔹 FIXED HEADER */
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 1000;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 🔹 Chừa chỗ cho header để nội dung không bị đè lên
+   (chỉnh số 80px gần bằng chiều cao header thực tế của bạn) */
+body {
+  padding-top: 80px;
 }
 
 /* === LOGO === */
@@ -258,7 +269,7 @@ nav {
 
 .dropdown-item.logout {
   color: #d00;
-  border: 1px   ;
+  border: 1px;
   background: white;
   cursor: pointer;
 }

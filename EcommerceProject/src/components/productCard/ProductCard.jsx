@@ -11,13 +11,16 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
+  // ✅ Lấy giá từ calculated_price (Medusa v2)
+  const price =
+    product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
 
   const handleAddToCart = () => {
     addToCart(product);
     navigate("/cart"); // 👉 Chuyển sang giỏ hàng ngay sau khi thêm
   };
-  console.log("Product data:", product)
+
+  console.log("Product data:", product);
 
   const getProduct = async (productId) => {
     try {
@@ -29,6 +32,24 @@ const ProductCard = ({ product }) => {
     }
   };
 
+  // ✅ Logic check tồn kho (thay vì dùng product.status)
+  const hasStock = product?.variants?.some((v) => {
+    // Medusa v1: inventory_quantity
+    if (typeof v.inventory_quantity === "number") {
+      return v.inventory_quantity > 0;
+    }
+
+    // Nếu không quản lý tồn kho thì coi như luôn mua được
+    if (v.manage_inventory === false) return true;
+
+    // Một số setup có thể dùng stock_status
+    if (v.stock_status === "in_stock") return true;
+
+    return false;
+  });
+
+  const statusLabel = hasStock ? "Còn hàng" : "Liên hệ";
+
   return (
     <div className="product-card">
       {/* Ảnh + overlay */}
@@ -38,7 +59,10 @@ const ProductCard = ({ product }) => {
           alt={product?.title}
         />
         <div className="explore-overlay">
-          <button onClick={() => navigate(`/products/${product?.id}`)} className="btn-explore">
+          <button
+            onClick={() => navigate(`/products/${product?.id}`)}
+            className="btn-explore"
+          >
             Khám phá ngay →
           </button>
         </div>
@@ -52,16 +76,18 @@ const ProductCard = ({ product }) => {
             <span className="price">{price.toLocaleString()} đ</span>
             {product?.variants?.[0]?.original_price && (
               <span className="old-price">
-                {(product?.variants?.[0]?.original_price / 100).toLocaleString()} đ
+                {(product?.variants?.[0]?.original_price / 100).toLocaleString()}{" "}
+                đ
               </span>
             )}
           </div>
         </div>
         <div className="info-bottom">
-          <p className="status">
-            {product?.status === "in_stock" ? "Còn hàng" : "Liên hệ"}
-          </p>
-          <button  onClick={() => navigate(`/products/${product?.id}`)} className="btn-cart">
+          <p className="status">{statusLabel}</p>
+          <button
+            onClick={() => navigate(`/products/${product?.id}`)}
+            className="btn-cart"
+          >
             <FaShoppingCart />
           </button>
         </div>
