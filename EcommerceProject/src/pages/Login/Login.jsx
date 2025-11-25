@@ -2,15 +2,17 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import "./Login.css";
 
 function CustomerLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   // ✅ Xử lý việc chuyển hướng sau khi Context cập nhật isAuthenticated
@@ -46,6 +48,11 @@ function CustomerLoginForm() {
 
   const messageStyle = { color: isError ? "red" : "green", marginTop: "10px" };
 
+  // const loginWithGoogle = 
+  const handleGoogleLogin = () => {
+    loginWithGoogle();
+  }
+
   // ... (Phần JSX giữ nguyên)
   return (
     <div className="auth-wrapper">
@@ -64,18 +71,42 @@ function CustomerLoginForm() {
           </div>
           <div className="form-group">
             <label>Mật khẩu</label>
-            <input
-              type="password"
-              placeholder="Nhập mật khẩu"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Nhập mật khẩu"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                aria-label="Mật khẩu"
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((s) => !s)}
+                aria-pressed={showPassword}
+                aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+              >
+                {showPassword ? (
+                  <AiOutlineEyeInvisible size={18} aria-hidden="true" />
+                ) : (
+                  <AiOutlineEye size={18} aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </div>
           <div className="form-options">
             <label>
               <input type="checkbox" /> Ghi nhớ mật khẩu
             </label>
+            <button
+      type="button"
+      className="link-btn"
+      onClick={() => navigate("/forgot-password")}
+      style={{ marginBottom: 4 }}
+    >
+      Quên mật khẩu?
+    </button>
             <button type="button" className="link-btn" onClick={() => navigate("/register")}>
               Bạn chưa có tài khoản? Đăng ký ngay
             </button>
@@ -89,37 +120,13 @@ function CustomerLoginForm() {
         <div className="social-login">
           <p>Hoặc đăng nhập bằng</p>
           <div className="social-buttons">
-            <button className="social-btn google">Google</button>
+            <button onClick={handleGoogleLogin} className="social-btn google">Google</button>
             <button className="social-btn facebook">Facebook</button>
           </div>
         </div>
       </div>
     </div>
-    // <form onSubmit={handleSubmit}>
-    //   <h2>Đăng nhập Khách hàng</h2>
-    //   <input
-    //     type="email"
-    //     value={email}
-    //     onChange={(e) => setEmail(e.target.value)}
-    //     required
-    //     placeholder="Email"
-    //   />
-    //   <input
-    //     type="password"
-    //     value={password}
-    //     onChange={(e) => setPassword(e.target.value)}
-    //     required
-    //     placeholder="Mật khẩu"
-    //   />
 
-    //   <button type="submit">Đăng nhập</button>
-
-    //   {message && (
-    //     <p style={{ color: isError ? "red" : "green", marginTop: "10px" }}>
-    //       {message}
-    //     </p>
-    //   )}
-    // </form>
   );
 }
 

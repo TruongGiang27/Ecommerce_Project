@@ -462,3 +462,38 @@ nav {
     overflow-y: auto;
   }
 }
+
+/* src/components/Header/header.css */
+
+/* Nút Logout */
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent; /* trong suốt, giống link */
+  border: none;
+  color: #fff; /* màu chữ/icon, thay đổi theo theme */
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* Hover */
+.logout-button:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* highlight nhẹ */
+  color: #f6f4f4; /* đổi màu icon/text khi hover */
+  border-radius: 4px;
+}
+
+/* Icon trong nút */
+.logout-button .icon {
+  margin-right: 0.25rem; /* khoảng cách giữa icon và text nếu có */
+  font-size: 1.2rem;
+}
+
+
+
+
+
+
