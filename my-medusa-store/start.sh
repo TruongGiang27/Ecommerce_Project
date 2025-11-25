@@ -1,14 +1,11 @@
 #!/bin/sh
 
-# 1. Chạy Migrations
+# Run migrations and start server
 echo "Running database migrations..."
 npx medusa db:migrate
 
-# 2. Xây dựng Admin Panel (QUAN TRỌNG: Tăng bộ nhớ để tránh Out-of-Memory)
-echo "Building Medusa Admin Panel..."
-# Sử dụng NODE_OPTIONS để tăng bộ nhớ heap cho quá trình build (ví dụ 2048MB)
-NODE_OPTIONS=--max-old-space-size=2048 npm run build
+echo "Seeding database..."
+npm run seed || echo "Seeding failed, continuing..."
 
-# 3. Khởi động Server ở chế độ Production
-echo "Starting Medusa production server..."
-npm run start
+echo "Starting Medusa development server..."
+npm run dev
