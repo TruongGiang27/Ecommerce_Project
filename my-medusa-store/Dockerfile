@@ -1,22 +1,24 @@
-# Stage 1: Build
+# --- Stage 1: Build ---
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Cài đặt thư viện hệ thống
+# Cài đặt thư viện hệ thống cần thiết
 RUN apk add --no-cache libc6-compat python3 make g++
 
+# Copy package files
 COPY package.json package-lock.json ./
 
 # Cài đặt dependencies
 RUN npm ci
 
+# Copy toàn bộ source code
 COPY . .
 
-# Build Medusa (Tạo ra folder .medusa chứa mọi thứ)
+# Build Medusa (Admin sẽ được tạo ra tại .medusa/client)
 RUN npm run build
 
-# Stage 2: Production Runner
+# --- Stage 2: Production Runner ---
 FROM node:20-alpine AS runner
 
 WORKDIR /app
@@ -26,26 +28,30 @@ ENV NODE_ENV=production
 # Cài libc6-compat
 RUN apk add --no-cache libc6-compat
 
-# Copy node_modules
+# 1. Copy node_modules
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy Backend Core (Copy TRỌN GÓI folder .medusa để không sót file nào)
+# 2. Copy Backend Core (.medusa chứa code server)
 COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./package.json
 
-# Copy Config
+# 3. Copy Configs
 COPY --from=builder /app/medusa-config.ts ./medusa-config.ts
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
-# Tạo thư mục build và public rỗng trước
-RUN mkdir -p build && mkdir -p public
+# 4. Tạo các thư mục đích trước để tránh lỗi
+RUN mkdir -p build && mkdir -p public && mkdir -p .medusa/server/public/admin
+
+# 👇👇👇 SỬA LỖI QUAN TRỌNG: COPY ADMIN VÀO 2 CHỖ 👇👇👇
+
+# Chỗ 1: Copy vào /app/build (Nơi server thường tìm kiếm mặc định và báo lỗi)
+COPY --from=builder /app/.medusa/client ./build
+
+# Chỗ 2: Copy vào cấu trúc nội bộ của Medusa v2 (Dự phòng)
+COPY --from=builder /app/.medusa/client ./.medusa/server/public/admin
 
 # Port
 EXPOSE 9000
 
-# 👇👇👇 CHIẾN THUẬT QUAN TRỌNG NHẤT 👇👇👇
-# Lệnh này làm 3 việc:
-# 1. In ra màn hình xem file index.html đang trốn ở đâu (để debug nếu cần)
-# 2. Copy folder .medusa/client (nơi chứa Admin) ra folder build (nơi Server cần)
-# 3. Chạy Server
-CMD ["sh", "-c", "echo 'Searching for Admin...' && ls -R .medusa | grep index.html && cp -r .medusa/client/* build/ && echo 'Admin copied to build!' && npm run start"]
+# Chạy server
+CMD ["npm", "run", "start"]
