@@ -21,7 +21,10 @@ import ScrollTop from "./components/ScrollTop/ScrollTop";
 import "./App.css";
 import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import TransactionHistory from "./pages/TransactionHistory/TransactionHistory";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 // import CartProvider from "./context/CartContext";
+import ThirdPartyCallback from "./pages/Auth/ThirdPartyCallback";
 
 function App() {
   console.log("Profile:", Profile);
@@ -51,6 +54,10 @@ function App() {
             <Route path="/vnpay-return" element={<VnpayReturn />} />
             <Route path="/support" element={<Support />} />
             <Route path="/contact" element={<ContactForm />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/auth/callback" element={<ThirdPartyCallback />} />
+
           </Routes>
           <PhoneSupport to="/support" />
           <ScrollTop />
