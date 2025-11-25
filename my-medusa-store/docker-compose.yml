@@ -34,7 +34,7 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
-      - redis
+      # - redis
     ports:
       - "9000:9000"
     environment:
