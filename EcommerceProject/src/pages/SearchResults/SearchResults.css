@@ -1,0 +1,282 @@
+/* Styles for SearchResults — align UI with Products page */
+
+/* === Layout === */
+.container-products {
+  background: var(--color-bg-alt);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 30px 40px;
+  box-sizing: border-box;
+}
+
+.subContainer {
+  display: flex;
+  gap: 25px;
+  width: 100%;
+  max-width: 1400px;
+}
+
+/* === Sidebar === */
+.side-bar {
+  width: 240px;
+  flex-shrink: 0;
+}
+.side-bar h3 {
+  font-size: 17px;
+  color: var(--color-primary);
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+.side-bar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.side-bar li {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+.side-bar li:hover {
+  background: var(--color-bg-alt);
+  color: var(--color-primary);
+}
+
+/* === Content === */
+.content {
+  flex: 1;
+  border-radius: 12px;
+  padding: 20px;
+  background: transparent;
+}
+
+/* Title / header */
+.title-style {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.title-style h2 {
+  margin: 0;
+  font-size: 20px;
+  background: linear-gradient(90deg,#3b82f6, #2563eb, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+.title-style p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* === Product grid === */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+/* === Product card (same look as Products page) === */
+.product-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 350px;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* card media */
+.card-media, .product-card img {
+  width: 100%;
+  height: 160px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  object-fit: cover;
+  border-bottom: 1px solid var(--color-border);
+}
+.card-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+/* body */
+.card-body, .product-info {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+
+/* title */
+.card-title, .product-info h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 6px;
+  height: 38px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+
+/* price */
+.card-price, .product-info .price {
+  background: linear-gradient(108deg, #2563eb, #3b82f6, #06b6d4, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* bottom actions */
+.card-bottom, .product-info .bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.card-actions, .product-info .bottom button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* buttons */
+.btn-primary, .btn-outline {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+/* loading / empty */
+.loading-placeholder {
+  color: #666;
+  padding: 12px;
+}
+.no-results {
+  padding: 20px;
+  color: #666;
+  background: #fafafa;
+  border: 1px dashed #eee;
+  border-radius: 6px;
+}
+
+/* === Pagination styles (same as products.css) === */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  margin-top: 20px;
+}
+
+/* unified buttons */
+.icon-pagination-button,
+.pagination-list .page-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 9999px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: background .12s, border-color .12s, transform .06s, color .12s;
+}
+.pagination-list {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pagination-list .page-button.active,
+.icon-pagination-button.active {
+  background: linear-gradient(108deg, #2563eb, #3b82f6, #06b6d4, #06b6d4);
+  color: #fff;
+  border: 1px solid transparent;
+  box-shadow: 0 6px 18px rgba(37,99,235,0.12);
+}
+
+.icon-pagination-button svg {
+  color: currentColor;
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.pagination .ellipsis {
+  padding: 6px 8px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* quick page input area (align right) */
+.pagination .page-input-area {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.pagination input[type="text"] {
+  width: 60px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* responsive tweaks */
+@media (max-width: 900px) {
+  .side-bar { display: none; }
+  .subContainer { gap: 16px; padding: 0 8px; }
+  .container-products { padding: 18px 16px; }
+  .product-card { height: auto; }
+  .card-media { height: 140px; }
+  .product-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
