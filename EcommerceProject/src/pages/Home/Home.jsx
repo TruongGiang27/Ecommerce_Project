@@ -10,7 +10,18 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-  const  BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+
+  // 🔥 1. THÊM HÀM XỬ LÝ ẢNH NÀY VÀO
+  const getImageUrl = (url) => {
+    if (!url) return "/default-product.png";
+    // Nếu ảnh chứa localhost, thay thế bằng BACKEND_URL từ env (Cloudflare)
+    if (url.includes("localhost:9000")) {
+      return url.replace("http://localhost:9000", BACKEND_URL);
+    }
+    return url;
+  };
+
   const handleCategoryClick = (category) => {
     navigate(`/products?category=${category}`);
   };
@@ -27,42 +38,28 @@ export default function Home() {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(
-          "Test products:",
-          data.products.map((p) => ({
-            title: p.title,
-            created_at: p.created_at,
-          }))
-        );
-
         setProducts(data.products || []);
       })
       .catch((err) => console.error("Lỗi khi lấy sản phẩm:", err));
-  }, []);
+  }, [BACKEND_URL, regionId]); // Thêm dependency cho chuẩn React
 
-  // 🔥 Lấy ngày hiện tại trừ 30 ngày
   const now = new Date();
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(now.getDate() - 30);
 
-  // 🕒 Lọc sản phẩm tạo trong 30 ngày qua
   const recentProducts = products.filter((p) => {
     if (!p.created_at) return false;
     const createdAt = new Date(p.created_at);
     return createdAt >= thirtyDaysAgo;
   });
 
-  // 🔝 8 sản phẩm nổi bật
   const bestSellers = products.slice(0, 8);
 
   return (
     <div className="container">
-      {/* ✅ Banner */}
       <HeroBanner />
-
       <InfinityScrollBar />
 
-      {/* Giới thiệu */}
       <section className="intro section-box">
         <h1>Digitech Shop</h1>
         <p>
@@ -73,10 +70,8 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Thanh category */}
       <CategoryBar onCategoryClick={handleCategoryClick} />
 
-      {/* 🔥 Sản phẩm nổi bật */}
       <section className="highlight-box">
         <div className="highlight-left">
           <span className="tag">🔥 Xu Hướng 2025</span>
@@ -99,11 +94,12 @@ export default function Home() {
                 <div className="bestseller-scroll-vertical">
                   <ul className="bestseller-list-vertical">
                     {bestSellers.slice(2).map((p) => {
-                      // ✅ Lấy giá chuẩn theo calculated_price giống ProductCard
                       const price =
                         p?.variants?.[0]?.calculated_price?.calculated_amount ||
                         0;
-                      const image = p.thumbnail || "/default-product.png";
+                      
+                      // 🔥 2. SỬA CHỖ NÀY: Dùng hàm getImageUrl bọc thumbnail lại
+                      const image = getImageUrl(p.thumbnail);
 
                       return (
                         <li
@@ -131,7 +127,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 🛒 Sản phẩm mới nhất trong 30 ngày */}
       <section className="product-section">
         <h2>Sản phẩm mới nhất</h2>
         <div className="product-grid">
@@ -139,6 +134,9 @@ export default function Home() {
             recentProducts
               .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
               .slice(0, 8)
+              // 🔥 LƯU Ý QUAN TRỌNG:
+              // Bạn cũng phải vào file ProductCard.jsx để sửa giống hệt như trên
+              // (Thêm hàm getImageUrl và bọc src ảnh lại)
               .map((p) => <ProductCard key={p.id} product={p} />)
           ) : (
             <p>Không có sản phẩm mới nhất</p>
