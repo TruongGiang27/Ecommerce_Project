@@ -4,9 +4,10 @@ import ProductCard from "../productCard/ProductCard";
 const ProductList = () => {
   const [products, setProducts] = useState([]); // luôn là array
   const [loading, setLoading] = useState(true);
+  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
 
   useEffect(() => {
-  fetch("http://localhost:9000/store/products", {
+  fetch(`${BACKEND_URL}/store/products`, {
     headers: {
       "x-publishable-api-key": 
         process.env.REACT_APP_PUBLISHABLE_API_KEY,
