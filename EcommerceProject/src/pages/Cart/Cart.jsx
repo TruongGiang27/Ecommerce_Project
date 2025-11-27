@@ -36,7 +36,7 @@ export default function Cart() {
   };
 
   const payMomo = async () => {
-    const res = await fetch("http://localhost:8888/create-momo-payment", {
+    const res = await fetch(`${PAYMENT_URL}/create-momo-payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: total, orderInfo: "Thanh toán đơn hàng" }),
