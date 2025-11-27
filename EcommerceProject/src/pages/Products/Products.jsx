@@ -16,7 +16,7 @@ export default function Products() {
   // NEW: input state cho trang (chuỗi để kiểm soát input)
   const [pageInput, setPageInput] = useState(String(Number(searchParams.get("page")) || 1));
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-
+ const  BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
 
 
  useEffect(() => {
@@ -30,7 +30,7 @@ export default function Products() {
 
         while (true) {
           const res = await fetch(
-            `http://localhost:9000/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
+            `${BACKEND_URL}/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
             {
               headers: {
                 "x-publishable-api-key":

@@ -10,14 +10,14 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-
+  const  BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
   const handleCategoryClick = (category) => {
     navigate(`/products?category=${category}`);
   };
 
   useEffect(() => {
     fetch(
-      `http://localhost:9000/store/products?region_id=${regionId}&limit=1000`,
+      `${BACKEND_URL}/store/products?region_id=${regionId}&limit=1000`,
       {
         headers: {
           "x-publishable-api-key":

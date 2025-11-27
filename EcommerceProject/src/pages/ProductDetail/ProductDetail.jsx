@@ -16,10 +16,10 @@ export default function ProductDetail() {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const { addToCart, cart } = useCart();
   const [activeTab, setActiveTab] = useState("description");
-
+ const  BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
   useEffect(() => {
     fetch(
-      `http://localhost:9000/store/products/${id}?region_id=reg_01K73N9QAJJ6DVF7FGKAKCJQG0`,
+      `${BACKEND_URL}/store/products/${id}?region_id=reg_01K73N9QAJJ6DVF7FGKAKCJQG0`,
       {
         headers: {
           "x-publishable-api-key":
