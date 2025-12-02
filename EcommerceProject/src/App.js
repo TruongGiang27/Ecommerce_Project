@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
+import SearchResults from "./pages/SearchResults/SearchResults";
 import Products from "./pages/Products/Products";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
 import Cart from "./pages/Cart/Cart";
@@ -20,7 +21,10 @@ import ScrollTop from "./components/ScrollTop/ScrollTop";
 import "./App.css";
 import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import TransactionHistory from "./pages/TransactionHistory/TransactionHistory";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 // import CartProvider from "./context/CartContext";
+import ThirdPartyCallback from "./pages/Auth/ThirdPartyCallback";
 
 function App() {
   console.log("Profile:", Profile);
@@ -32,6 +36,7 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/search" element={<SearchResults />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
@@ -49,6 +54,10 @@ function App() {
             <Route path="/vnpay-return" element={<VnpayReturn />} />
             <Route path="/support" element={<Support />} />
             <Route path="/contact" element={<ContactForm />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/auth/callback" element={<ThirdPartyCallback />} />
+
           </Routes>
           <PhoneSupport to="/support" />
           <ScrollTop />

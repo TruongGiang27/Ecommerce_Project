@@ -27,6 +27,20 @@ services:
     networks:
       - medusa_network_ecommerce
 
+  # THÊM SERVICE NÀY VÀO:
+  payment-server:
+    build: ../vnpay-api/ # Ví dụ: ./payment-service
+    container_name: payment_server_container
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+      # Đây là link Frontend (Web bán hàng) của bạn trên Cloudflare
+      # Thay bằng link thực tế bạn đang có
+      - FRONTEND_URL=https://ecommerce-project-seven-hazel.vercel.app
+    networks:
+      - medusa_network_ecommerce
+
   # Medusa Backend
   medusa:
     build: .
@@ -34,7 +48,7 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
-      - redis
+      # - redis
     ports:
       - "9000:9000"
     environment:

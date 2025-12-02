@@ -11,6 +11,7 @@ export default function Cart() {
   const [email, setEmail] = useState("");
   const [selected, setSelected] = useState([]);
   const [qrCode, setQrCode] = useState(null);
+<<<<<<< HEAD
   const [errorMessage, setErrorMessage] = useState("");
   const [loadingPromo, setLoadingPromo] = useState(false);
 
@@ -46,6 +47,10 @@ export default function Cart() {
     },
   ];
 
+=======
+  const PAYMENT_URL = process.env.REACT_APP_PAYMENT_URL;
+  // sync selected default none
+>>>>>>> e3c53243d78c6f88f0f26722427ead8fcda94da0
   useEffect(() => {
     setSelected([]);
   }, [cart]);
@@ -122,7 +127,7 @@ export default function Cart() {
 
   // ✅ Thanh toán
   const payVnpay = async () => {
-    const res = await fetch("http://localhost:8888/create_payment", {
+    const res = await fetch(`${PAYMENT_URL}/create_payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: total }),
@@ -132,7 +137,7 @@ export default function Cart() {
   };
 
   const payMomo = async () => {
-    const res = await fetch("http://localhost:8888/create-momo-payment", {
+    const res = await fetch(`${PAYMENT_URL}/create-momo-payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: total, orderInfo: "Thanh toán đơn hàng" }),

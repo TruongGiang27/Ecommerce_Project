@@ -19,9 +19,18 @@ export default function Products() {
     String(Number(searchParams.get("page")) || 1)
   );
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
+<<<<<<< HEAD
 
   useEffect(() => {
     // Gọi API nhiều trang để lấy hết sản phẩm (limit/offset)
+=======
+ const  BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+
+
+ useEffect(() => {
+    // Gọi API nhiều trang để lấy hết sản phẩm (limit/offset). Nếu API của bạn dùng cursor,
+    // cần điều chỉnh sang starting_after/next_cursor theo docs.
+>>>>>>> e3c53243d78c6f88f0f26722427ead8fcda94da0
     const fetchAllProducts = async () => {
       try {
         const limit = 100; // tăng lên tùy nhu cầu / theo giới hạn server
@@ -30,7 +39,7 @@ export default function Products() {
 
         while (true) {
           const res = await fetch(
-            `http://localhost:9000/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
+            `${BACKEND_URL}/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
             {
               headers: {
                 "x-publishable-api-key":
