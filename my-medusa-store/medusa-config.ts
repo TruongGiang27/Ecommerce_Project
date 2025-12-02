@@ -22,11 +22,22 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
-
     databaseDriverOptions: {
-      connection: {
-        // ssl: { rejectUnauthorized: false }, // <--- Đã comment dòng này
-      },
+      ssl: false,
+      sslmode: "disable",
+    },
+  },
+  admin: {
+    // Hàm này giúp cấu hình lại Vite đang chạy ngầm bên trong
+    vite: (config) => {
+      return {
+        ...config,
+        server: {
+          ...config.server,
+          // Cho phép tất cả các host (Bao gồm cả link Cloudflare)
+          allowedHosts: true, 
+        },
+      };
     },
   },
 });

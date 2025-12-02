@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - postgres_data_ecommerce:/var/lib/postgresql/data
     networks:
@@ -24,6 +24,20 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+    networks:
+      - medusa_network_ecommerce
+
+  # THÊM SERVICE NÀY VÀO:
+  payment-server:
+    build: ../vnpay-api/ # Ví dụ: ./payment-service
+    container_name: payment_server_container
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+      # Đây là link Frontend (Web bán hàng) của bạn trên Cloudflare
+      # Thay bằng link thực tế bạn đang có
+      - FRONTEND_URL=http://localhost:3000
     networks:
       - medusa_network_ecommerce
 

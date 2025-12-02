@@ -1,44 +1,72 @@
 import React from "react";
 // import { Link } from "react-router-dom";
 import "./productCard.css";
-// import { useState, useEffect } from "react";
-import { fetchProducts } from "../../services/api";
+// import { fetchProducts } from "../../services/api"; // Không dùng thì có thể bỏ
 import { FaShoppingCart } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
+  // 🔥 1. Lấy biến môi trường URL Backend (Cloudflare)
+  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+
+  // 🔥 2. Hàm xử lý link ảnh: Đổi localhost -> Cloudflare URL
+  const getImageUrl = (url) => {
+    if (!url) return "https://via.placeholder.com/200";
+    
+    // Nếu link ảnh chứa localhost:9000, thay thế bằng BACKEND_URL
+    if (url.includes("localhost:9000")) {
+      return url.replace("http://localhost:9000", BACKEND_URL);
+    }
+    return url;
+  };
+
   const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
 
+  // Hàm handleAddToCart này của bạn chưa được gắn vào nút giỏ hàng ở dưới, 
+  // mình đã để nguyên nhưng bạn nhớ kiểm tra nút Button nhé.
   const handleAddToCart = () => {
     addToCart(product);
-    navigate("/cart"); // 👉 Chuyển sang giỏ hàng ngay sau khi thêm
+    navigate("/cart");
   };
-  console.log("Product data:", product)
 
-  const getProduct = async (productId) => {
-    try {
-      const data = await fetchProducts(productId);
-      return data;
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      return null;
+  // console.log("Product data:", product);
+
+  // ✅ Logic check tồn kho (thay vì dùng product.status)
+  const hasStock = product?.variants?.some((v) => {
+    // Medusa v1: inventory_quantity
+    if (typeof v.inventory_quantity === "number") {
+      return v.inventory_quantity > 0;
     }
-  };
+
+    // Nếu không quản lý tồn kho thì coi như luôn mua được
+    if (v.manage_inventory === false) return true;
+
+    // Một số setup có thể dùng stock_status
+    if (v.stock_status === "in_stock") return true;
+
+    return false;
+  });
+
+  const statusLabel = hasStock ? "Còn hàng" : "Liên hệ";
 
   return (
     <div className="product-card">
       {/* Ảnh + overlay */}
       <div className="product-img">
         <img
-          src={product?.thumbnail || "https://via.placeholder.com/200"}
+          // 🔥 3. Áp dụng hàm getImageUrl vào đây
+          src={getImageUrl(product?.thumbnail)}
           alt={product?.title}
         />
         <div className="explore-overlay">
-          <button onClick={() => navigate(`/products/${product?.id}`)} className="btn-explore">
+          <button 
+            onClick={() => navigate(`/products/${product?.id}`)} 
+            className="btn-explore"
+          >
             Khám phá ngay →
           </button>
         </div>
@@ -52,16 +80,22 @@ const ProductCard = ({ product }) => {
             <span className="price">{price.toLocaleString()} đ</span>
             {product?.variants?.[0]?.original_price && (
               <span className="old-price">
-                {(product?.variants?.[0]?.original_price / 100).toLocaleString()} đ
+                {(product?.variants?.[0]?.original_price / 100).toLocaleString()}{" "}
+                đ
               </span>
             )}
           </div>
         </div>
         <div className="info-bottom">
           <p className="status">
-            {product?.status === "in_stock" ? "Còn hàng" : "Liên hệ"}
+            {product?.status === "published" || product?.status === "in_stock" 
+              ? "Còn hàng" 
+              : "Liên hệ"}
           </p>
-          <button  onClick={() => navigate(`/products/${product?.id}`)} className="btn-cart">
+          <button 
+            onClick={() => navigate(`/products/${product?.id}`)} 
+            className="btn-cart"
+          >
             <FaShoppingCart />
           </button>
         </div>

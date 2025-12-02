@@ -289,3 +289,110 @@
     width: 100%;
   }
 }
+
+/* =============================
+   🎟 PHẦN MÃ GIẢM GIÁ (VOUCHER)
+   ============================= */
+.voucher-section {
+  margin-top: 16px;
+}
+
+.voucher-btn {
+  width: 100%;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+  text-align: center;
+}
+.voucher-btn:hover {
+  background: #ebebeb;
+}
+
+/* Modal voucher */
+.voucher-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.voucher-content {
+  background: #fff;
+  width: 400px;
+  border-radius: 12px;
+  padding: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.voucher-content h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  color: #333;
+}
+
+.voucher-list {
+  margin-top: 12px;
+}
+
+.voucher-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.voucher-item:hover {
+  background: #f9f9f9;
+}
+
+.voucher-item.active {
+  border-color: #2563eb;
+  background: #eaf1ff;
+}
+
+.voucher-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.voucher-desc {
+  font-size: 13px;
+  color: #666;
+}
+
+.voucher-footer {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.voucher-footer button {
+  background: #2563eb;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.voucher-footer button:hover {
+  background: #1d4ed8;
+}
