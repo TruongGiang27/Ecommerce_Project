@@ -10,11 +10,6 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-<<<<<<< HEAD
-  // ✅ Lấy giá từ calculated_price (Medusa v2)
-  const price =
-    product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
-=======
   // 🔥 1. Lấy biến môi trường URL Backend (Cloudflare)
   const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
 
@@ -30,7 +25,6 @@ const ProductCard = ({ product }) => {
   };
 
   const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
->>>>>>> e3c53243d78c6f88f0f26722427ead8fcda94da0
 
   // Hàm handleAddToCart này của bạn chưa được gắn vào nút giỏ hàng ở dưới, 
   // mình đã để nguyên nhưng bạn nhớ kiểm tra nút Button nhé.
@@ -38,11 +32,6 @@ const ProductCard = ({ product }) => {
     addToCart(product);
     navigate("/cart");
   };
-<<<<<<< HEAD
-
-  console.log("Product data:", product);
-=======
->>>>>>> e3c53243d78c6f88f0f26722427ead8fcda94da0
 
   // console.log("Product data:", product);
 
@@ -74,13 +63,8 @@ const ProductCard = ({ product }) => {
           alt={product?.title}
         />
         <div className="explore-overlay">
-<<<<<<< HEAD
-          <button
-            onClick={() => navigate(`/products/${product?.id}`)}
-=======
           <button 
             onClick={() => navigate(`/products/${product?.id}`)} 
->>>>>>> e3c53243d78c6f88f0f26722427ead8fcda94da0
             className="btn-explore"
           >
             Khám phá ngay →
@@ -103,11 +87,6 @@ const ProductCard = ({ product }) => {
           </div>
         </div>
         <div className="info-bottom">
-<<<<<<< HEAD
-          <p className="status">{statusLabel}</p>
-          <button
-            onClick={() => navigate(`/products/${product?.id}`)}
-=======
           <p className="status">
             {product?.status === "published" || product?.status === "in_stock" 
               ? "Còn hàng" 
@@ -115,7 +94,6 @@ const ProductCard = ({ product }) => {
           </p>
           <button 
             onClick={() => navigate(`/products/${product?.id}`)} 
->>>>>>> e3c53243d78c6f88f0f26722427ead8fcda94da0
             className="btn-cart"
           >
             <FaShoppingCart />

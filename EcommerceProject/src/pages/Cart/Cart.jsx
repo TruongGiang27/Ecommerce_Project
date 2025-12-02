@@ -11,7 +11,6 @@ export default function Cart() {
   const [email, setEmail] = useState("");
   const [selected, setSelected] = useState([]);
   const [qrCode, setQrCode] = useState(null);
-<<<<<<< HEAD
   const [errorMessage, setErrorMessage] = useState("");
   const [loadingPromo, setLoadingPromo] = useState(false);
 
@@ -47,10 +46,8 @@ export default function Cart() {
     },
   ];
 
-=======
   const PAYMENT_URL = process.env.REACT_APP_PAYMENT_URL;
   // sync selected default none
->>>>>>> e3c53243d78c6f88f0f26722427ead8fcda94da0
   useEffect(() => {
     setSelected([]);
   }, [cart]);

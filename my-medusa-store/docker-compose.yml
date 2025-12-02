@@ -37,7 +37,7 @@ services:
     environment:
       # Đây là link Frontend (Web bán hàng) của bạn trên Cloudflare
       # Thay bằng link thực tế bạn đang có
-      - FRONTEND_URL=https://ecommerce-project-seven-hazel.vercel.app
+      - FRONTEND_URL=http://localhost:3000
     networks:
       - medusa_network_ecommerce
 

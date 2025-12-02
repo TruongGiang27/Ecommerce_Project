@@ -54,7 +54,6 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-<<<<<<< HEAD
   // ⭐ Thêm state để biết header có đang sticky hay không
   const [isSticky, setIsSticky] = useState(false);
 
@@ -68,7 +67,6 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-=======
   // Load all products once for client-side filtering (Medusa store endpoint)
   useEffect(() => {
     const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
@@ -147,7 +145,6 @@ export default function Header() {
     navigate(`/search?search=${encodeURIComponent(q)}`);
   };
 
->>>>>>> e3c53243d78c6f88f0f26722427ead8fcda94da0
   return (
     // ⭐ Thêm class header--sticky khi isSticky = true
     <header className={`header ${isSticky ? "header--sticky" : ""}`}>
