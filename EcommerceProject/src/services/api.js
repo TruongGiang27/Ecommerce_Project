@@ -1,3 +1,4 @@
+/* eslint-disable no-throw-literal */
 import axios from "axios";
 import { apiStoreClient } from "../lib/medusa";
 
@@ -37,19 +38,13 @@ export async function fetchProducts() {
   }
 }
 
-// const VALID_REGION_ID = "reg_01K7GR3JKEREAS3ZXJ367QSVF7"; // Giữ nguyên Region ID hợp lệ
-
 export async function fetchProductById(productId) {
   try {
     const response = await apiStoreClient.get(`/products/${productId}`, {
       params: {
-        // ✅ SỬA: Bỏ 'expand' và kết hợp tất cả vào 'fields'
-        // Cú pháp: [Trường cơ bản], [Mối quan hệ chính], [Mối quan hệ phụ qua dấu chấm]
         fields:
           "id,title,description,thumbnail,handle,status,metadata,variants,variants.prices,variants.calculated_price,options,images",
-        // ⚠️ Đã loại bỏ 'expand'
-
-        region_id: DEFAULT_REGION_ID, // Sử dụng Region ID hợp lệ
+        region_id: DEFAULT_REGION_ID,
       },
     });
 
@@ -67,6 +62,7 @@ export async function fetchProductById(productId) {
     );
   }
 }
+
 /* ---------------- CARTS ---------------- */
 export async function createCart() {
   const res = await storeApi.post("/carts", {});
@@ -196,28 +192,32 @@ export const logoutCustomer = async (token) => {
   }
 };
 
-// Cập nhật hồ sơ cá nhân
 // ✅ Cập nhật profile
 export async function updateCustomerProfile(data) {
   try {
     const res = await apiStoreClient.post("/customers/me", data);
     return res.data.customer;
   } catch (err) {
-    throw (err, "Cập nhật hồ sơ thất bại");
+    console.error("❌ Cập nhật hồ sơ thất bại:", err.response?.data || err);
+    throw new Error(
+      err.response?.data?.message || "Cập nhật hồ sơ thất bại"
+    );
   }
 }
 
 // ✅ Đổi mật khẩu
 export async function changeCustomerPassword(oldPassword, newPassword) {
   try {
-    // const res = await storeApi.post("/auth/customer/emailpass/update", {
     const res = await apiStoreClient.post("/auth/emailpass/update", {
       old_password: oldPassword,
       new_password: newPassword,
     });
     return res.data.customer;
   } catch (err) {
-    throw (err, "Đổi mật khẩu thất bại");
+    console.error("❌ Đổi mật khẩu thất bại:", err.response?.data || err);
+    throw new Error(
+      err.response?.data?.message || "Đổi mật khẩu thất bại"
+    );
   }
 }
 
@@ -297,7 +297,6 @@ export async function fetchTransactions(customerToken) {
       const collections = detailRes.data.order?.payment_collections || [];
 
       return collections.map((col) => {
-        // Nếu có payment → lấy provider_id từ đó
         const payment = col.payments?.[0];
         const session = col.payment_sessions?.[0];
 

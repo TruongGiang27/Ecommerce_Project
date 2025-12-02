@@ -8,4 +8,4 @@ echo "Seeding database..."
 npm run seed || echo "Seeding failed, continuing..."
 
 echo "Starting Medusa development server..."
-npx medusa start --port=${PORT:-9000}
+npm run dev

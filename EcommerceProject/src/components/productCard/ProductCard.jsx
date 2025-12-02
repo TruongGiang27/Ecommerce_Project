@@ -35,6 +35,24 @@ const ProductCard = ({ product }) => {
 
   // console.log("Product data:", product);
 
+  // ✅ Logic check tồn kho (thay vì dùng product.status)
+  const hasStock = product?.variants?.some((v) => {
+    // Medusa v1: inventory_quantity
+    if (typeof v.inventory_quantity === "number") {
+      return v.inventory_quantity > 0;
+    }
+
+    // Nếu không quản lý tồn kho thì coi như luôn mua được
+    if (v.manage_inventory === false) return true;
+
+    // Một số setup có thể dùng stock_status
+    if (v.stock_status === "in_stock") return true;
+
+    return false;
+  });
+
+  const statusLabel = hasStock ? "Còn hàng" : "Liên hệ";
+
   return (
     <div className="product-card">
       {/* Ảnh + overlay */}
@@ -62,7 +80,8 @@ const ProductCard = ({ product }) => {
             <span className="price">{price.toLocaleString()} đ</span>
             {product?.variants?.[0]?.original_price && (
               <span className="old-price">
-                {(product?.variants?.[0]?.original_price / 100).toLocaleString()} đ
+                {(product?.variants?.[0]?.original_price / 100).toLocaleString()}{" "}
+                đ
               </span>
             )}
           </div>

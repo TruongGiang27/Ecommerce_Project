@@ -38,14 +38,14 @@ const Footer = () => {
         <div className="footer-intro">
           <h4>Giới thiệu</h4>
           <p>
-            Demo Shop – Địa chỉ uy tín chuyên cung cấp phần mềm bản quyền chính
+            Digitech Shop – Địa chỉ uy tín chuyên cung cấp phần mềm bản quyền chính
             hãng với giá tốt. Chúng tôi cam kết mang đến sản phẩm chất lượng
             cao, đa dạng từ các lĩnh vực như AI, thiết kế, văn phòng, bảo mật,
             và giải trí, cùng dịch vụ hỗ trợ khách hàng tận tâm 24/7.
           </p>
           <ul>
             <li>📞 0911 000 038</li>
-            <li>✉️ info@demoshop.com</li>
+            <li>✉️ info@digitechshop.com</li>
             <li>
               📍 7 Đường số 7C, Khu đô thị An Phú An Khánh, Thủ Đức, HCM 71106
             </li>
@@ -86,13 +86,13 @@ const Footer = () => {
           <h4>Hỗ trợ 24/7</h4>
           <p>📞 Gọi hotline: 0911 000 038</p>
           <p>Zalo: 0911 000 038</p>
-          <p>Messenger: DemoShop</p>
+          <p>Messenger: DigitechShop</p>
           <p>📢 Báo cáo sự cố qua số hotline</p>
         </div>
       </div>
 
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} Demo Shop. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Digitech Shop. All rights reserved.</p>
       </div>
     </footer>
   );
