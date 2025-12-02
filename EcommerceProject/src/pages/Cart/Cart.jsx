@@ -11,7 +11,7 @@ export default function Cart() {
   const [email, setEmail] = useState("");
   const [selected, setSelected] = useState([]); // checked items
   const [qrCode, setQrCode] = useState(null);
-
+  const PAYMENT_URL = process.env.REACT_APP_PAYMENT_URL;
   // sync selected default none
   useEffect(() => {
     setSelected([]);
@@ -26,7 +26,7 @@ export default function Cart() {
   };
 
   const payVnpay = async () => {
-    const res = await fetch("http://localhost:8888/create_payment", {
+    const res = await fetch(`${PAYMENT_URL}/create_payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: total }),
@@ -36,7 +36,7 @@ export default function Cart() {
   };
 
   const payMomo = async () => {
-    const res = await fetch("http://localhost:8888/create-momo-payment", {
+    const res = await fetch(`${PAYMENT_URL}/create-momo-payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: total, orderInfo: "Thanh toán đơn hàng" }),

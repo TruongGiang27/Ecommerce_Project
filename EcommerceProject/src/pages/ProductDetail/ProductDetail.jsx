@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./ProductDetail.css";
 import { useCart } from "../../context/CartContext";
-// import { FaEnvelope, FaFacebookMessenger } from "react-icons/fa";
-
 import { SiZalo } from "react-icons/si"; // Icon Zalo
 import { FaEnvelope } from "react-icons/fa"; // Icon Gmail
 
@@ -16,14 +14,26 @@ export default function ProductDetail() {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const { addToCart, cart } = useCart();
   const [activeTab, setActiveTab] = useState("description");
+  
+  // 🔥 1. Lấy URL từ biến môi trường
+  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+
+  // 🔥 2. Hàm xử lý link ảnh (Fix lỗi localhost)
+  const getImageUrl = (url) => {
+    if (!url) return "https://via.placeholder.com/400";
+    if (url.includes("localhost:9000")) {
+      return url.replace("http://localhost:9000", BACKEND_URL);
+    }
+    return url;
+  };
 
   useEffect(() => {
     fetch(
-      `http://localhost:9000/store/products/${id}?region_id=reg_01K73N9QAJJ6DVF7FGKAKCJQG0`,
+      `${BACKEND_URL}/store/products/${id}?region_id=reg_01K73N9QAJJ6DVF7FGKAKCJQG0`,
       {
         headers: {
           "x-publishable-api-key":
-            "pk_d4bf2faebacb69611013a1fd3c32bb8f76ab55d06f2068d92b0efd01a377ecfc",
+             process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY || "pk_d4bf2faebacb69611013a1fd3c32bb8f76ab55d06f2068d92b0efd01a377ecfc",
         },
       }
     )
@@ -34,7 +44,7 @@ export default function ProductDetail() {
           setSelectedVariant(data.product.variants[0]);
       })
       .catch((err) => console.error("Lỗi khi lấy chi tiết sản phẩm:", err));
-  }, [id]);
+  }, [id, BACKEND_URL]);
 
   if (!product) {
     return (
@@ -107,7 +117,6 @@ export default function ProductDetail() {
     });
   };
 
-  // Thêm hàm xử lý Mua ngay: thêm (nếu chưa có) rồi chuyển trang /cart
   const handleBuyNow = () => {
     const variant = selectedVariant || product.variants?.[0] || null;
     const payloadId = `${product.id}#${variant?.id || "default"}`;
@@ -136,16 +145,18 @@ export default function ProductDetail() {
     <div className="product-detail-container">
       <div className="product-container">
         <div className="product-left">
+          {/* 🔥 3. Áp dụng getImageUrl cho ảnh chính */}
           <img
-            src={selectedImage || product.thumbnail}
+            src={getImageUrl(selectedImage || product.thumbnail)}
             alt={product.title}
             className="main-image"
           />
           <div className="thumbnail-list">
             {product.images?.map((img, index) => (
+              /* 🔥 4. Áp dụng getImageUrl cho danh sách ảnh nhỏ */
               <img
                 key={index}
-                src={img.url}
+                src={getImageUrl(img.url)}
                 alt=""
                 className={selectedImage === img.url ? "active" : ""}
                 onClick={() => setSelectedImage(img.url)}

@@ -32,7 +32,7 @@ export default function SearchResults() {
   );
 
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-
+  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
   useEffect(() => {
     // load products once when there's a query
     if (!q.trim()) {
@@ -40,9 +40,8 @@ export default function SearchResults() {
       return;
     }
 
-    const url = `http://localhost:9000/store/products?limit=1000${
-      regionId ? `&region_id=${regionId}` : ""
-    }`;
+    const url = `${BACKEND_URL}/store/products?limit=1000${regionId ? `&region_id=${regionId}` : ""
+      }`;
     setLoading(true);
     fetch(url, {
       headers: {

@@ -35,7 +35,7 @@ export default function Header() {
     { name: "Lịch sử giao dịch", link: "/transaction-history" },
   ];
   const menuRef = useRef();
-
+  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
   // --- SEARCH: states ---
   const [query, setQuery] = useState("");
   const [allProducts, setAllProducts] = useState([]); // full product list from Medusa
@@ -62,7 +62,7 @@ export default function Header() {
   // Load all products once for client-side filtering (Medusa store endpoint)
   useEffect(() => {
     const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-    const url = `http://localhost:9000/store/products?limit=1000${regionId ? `&region_id=${regionId}` : ""}`;
+    const url = `${BACKEND_URL}/store/products?limit=1000${regionId ? `&region_id=${regionId}` : ""}`;
     setLoadingProducts(true);
     fetch(url, {
       headers: {
