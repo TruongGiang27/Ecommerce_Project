@@ -25,7 +25,10 @@ import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 // import CartProvider from "./context/CartContext";
 import ThirdPartyCallback from "./pages/Auth/ThirdPartyCallback";
-
+import Guide from "./pages/Guide/Guide";
+import News from "./pages/News/News";
+import GuideDetail from "./pages/GuideDetail/GuideDetail";
+import NewsDetail from "./pages/NewsDetail/NewsDetail";
 function App() {
   console.log("Profile:", Profile);
 
@@ -57,7 +60,10 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/callback" element={<ThirdPartyCallback />} />
-
+            <Route path="/guide" element={<Guide />} />
+            <Route path="/news" element={<News />} />
+            <Route path="/guide/:slug" element={<GuideDetail />} />
+            <Route path="/news/:slug" element={<NewsDetail />} />
           </Routes>
           <PhoneSupport to="/support" />
           <ScrollTop />

@@ -11,7 +11,7 @@ const Support = () => {
   const zaloOAStatus = "Mở cửa"; // Trạng thái OA, có thể là "Đã mở cửa"
   const zaloOALastUpdate = "08:00"; // Thời gian cập nhật trạng thái
   const shopDescription = "Digitech Shop - Công ty cung cấp bản quyền phần mềm giải trí tại Việt Nam"; // Mô tả shop
-  const phoneNumber = "0123456789"; // Số điện thoại liên hệ
+  const phoneNumber = "0911 000 038"; // Số điện thoại liên hệ
 
   // Thêm state và hàm sao chép
   const [copied, setCopied] = React.useState(false);

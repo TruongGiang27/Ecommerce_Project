@@ -5,6 +5,7 @@ import ProductCard from "../../components/productCard/ProductCard";
 import HeroBanner from "../../components/Banner/HeroBanner";
 import "./home.css";
 import InfinityScrollBar from "../../components/InfinityScrollBar/InfinityScrollBar";
+import HeroLanding from "../../components/HeroLanding/HeroLanding";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -12,10 +13,8 @@ export default function Home() {
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
   const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
 
-  // 🔥 1. THÊM HÀM XỬ LÝ ẢNH NÀY VÀO
   const getImageUrl = (url) => {
     if (!url) return "/default-product.png";
-    // Nếu ảnh chứa localhost, thay thế bằng BACKEND_URL từ env (Cloudflare)
     if (url.includes("localhost:9000")) {
       return url.replace("http://localhost:9000", BACKEND_URL);
     }
@@ -27,21 +26,17 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetch(
-      `${BACKEND_URL}/store/products?region_id=${regionId}&limit=1000`,
-      {
-        headers: {
-          "x-publishable-api-key":
-            process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
-        },
-      }
-    )
+    fetch(`${BACKEND_URL}/store/products?region_id=${regionId}&limit=1000`, {
+      headers: {
+        "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setProducts(data.products || []);
       })
       .catch((err) => console.error("Lỗi khi lấy sản phẩm:", err));
-  }, [BACKEND_URL, regionId]); // Thêm dependency cho chuẩn React
+  }, [BACKEND_URL, regionId]);
 
   const now = new Date();
   const thirtyDaysAgo = new Date();
@@ -97,8 +92,7 @@ export default function Home() {
                       const price =
                         p?.variants?.[0]?.calculated_price?.calculated_amount ||
                         0;
-                      
-                      // 🔥 2. SỬA CHỖ NÀY: Dùng hàm getImageUrl bọc thumbnail lại
+
                       const image = getImageUrl(p.thumbnail);
 
                       return (
@@ -134,13 +128,64 @@ export default function Home() {
             recentProducts
               .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
               .slice(0, 8)
-              // 🔥 LƯU Ý QUAN TRỌNG:
-              // Bạn cũng phải vào file ProductCard.jsx để sửa giống hệt như trên
-              // (Thêm hàm getImageUrl và bọc src ảnh lại)
               .map((p) => <ProductCard key={p.id} product={p} />)
           ) : (
             <p>Không có sản phẩm mới nhất</p>
           )}
+        </div>
+      </section>
+
+      {/* ⭐ THÊM HERO LANDING Ở CUỐI */}
+      <HeroLanding />
+
+      {/* ⭐ THÊM LẠI KHUNG ĐEN BENEFIT STRIP (BẢN GỐC CỦA BẠN) */}
+      <section className="benefit-strip">
+        <div className="benefit-strip-inner">
+          <div className="benefit-item">
+            <div className="benefit-icon">
+              <span role="img" aria-label="truck">🚚</span>
+            </div>
+            <div className="benefit-text">
+              <p className="benefit-title">Xử lý nhanh</p>
+              <p className="benefit-sub">Trong vòng 3h</p>
+            </div>
+          </div>
+
+          <span className="benefit-divider" />
+
+          <div className="benefit-item">
+            <div className="benefit-icon">
+              <span role="img" aria-label="support">🛡️</span>
+            </div>
+            <div className="benefit-text">
+              <p className="benefit-title">Đội ngũ chuyên nghiệp</p>
+              <p className="benefit-sub">Hỗ trợ 24/7</p>
+            </div>
+          </div>
+
+          <span className="benefit-divider" />
+
+          <div className="benefit-item">
+            <div className="benefit-icon">
+              <span role="img" aria-label="key">🔑</span>
+            </div>
+            <div className="benefit-text">
+              <p className="benefit-title">Key chính hãng</p>
+              <p className="benefit-sub">Hợp pháp 100%</p>
+            </div>
+          </div>
+
+          <span className="benefit-divider" />
+
+          <div className="benefit-item">
+            <div className="benefit-icon">
+              <span role="img" aria-label="headset">🎧</span>
+            </div>
+            <div className="benefit-text">
+              <p className="benefit-title">Cổng thanh toán</p>
+              <p className="benefit-sub">An toàn, uy tín</p>
+            </div>
+          </div>
         </div>
       </section>
     </div>

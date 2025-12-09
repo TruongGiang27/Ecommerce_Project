@@ -11,7 +11,7 @@ const HeroBanner = () => {
       <div className="hero-content">
         <h1>Website mới - Nâng tầm trải nghiệm khách hàng</h1>
         <p>
-          Demo Shop chính thức ra mắt website mới, hỗ trợ thanh toán 24/7 và
+          Digitech Shop chính thức ra mắt website mới, hỗ trợ thanh toán 24/7 và
           quản lý đơn hàng tự động, giúp khách hàng có trải nghiệm tốt nhất khi
           mua hàng. Sự hài lòng và tin tưởng của khách hàng là tiêu chí phấn đấu
           của chúng tôi.

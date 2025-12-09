@@ -1,0 +1,106 @@
+.news-container {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.news-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+  text-align: center;
+}
+
+/* GRID */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.8rem;
+}
+
+/* CARD */
+.news-card {
+  background: var(--color-card);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-base);
+}
+
+.news-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* IMAGE */
+.news-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--color-border);
+  background: #f5f5f5;
+}
+
+/* DATE (badge) */
+.news-date {
+  position: absolute;
+  background: #ffffff;
+  padding: 6px 12px;
+  border-radius: 12px;
+  top: 16px;
+  left: 16px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* CONTENT */
+.news-content {
+  padding: 1.2rem 1.2rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* TAG */
+.news-tag {
+  padding: 4px 12px;
+  background: #fff1f2;
+  border-radius: 8px;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  font-size: 0.85rem;
+  display: inline-block;
+  width: fit-content;   /* ⭐ Giảm lại về kích thước nhỏ gọn */
+  margin-bottom: 12px;
+}
+
+/* TITLE */
+.news-content h3 {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: var(--color-text);
+
+  /* Giới hạn 3 dòng */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* “Xem chi tiết” luôn căn đáy */
+.news-link {
+  margin-top: auto;
+  color: var(--color-primary);
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.news-link:hover {
+  color: var(--color-primary-dark);
+}
