@@ -29,7 +29,7 @@ export default function Products() {
     String(Number(searchParams.get("page")) || 1)
   );
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-
+  const  BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
   // Lấy toàn bộ products
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -40,7 +40,7 @@ export default function Products() {
 
         while (true) {
           const res = await fetch(
-            `http://localhost:9000/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
+            `${BACKEND_URL}/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
             {
               headers: {
                 "x-publishable-api-key":
