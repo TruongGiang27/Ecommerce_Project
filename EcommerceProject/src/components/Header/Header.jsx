@@ -6,10 +6,8 @@ import "../../theme/theme.css";
 import React, { useState, useEffect, useRef } from "react";
 import { FiMenu } from "react-icons/fi";
 import { FaUserCircle, FaShoppingCart, FaSearch } from "react-icons/fa";
-import { useCart } from "../../context/CartContext"; // ✅ import context
+import { useCart } from "../../context/CartContext";
 import Logo from "../../assets/images/DigitexLogoWhite.png";
-// import { menuCategories } from "../Category/Category";
-// ✅ Đảm bảo import useAuth
 import { useAuth } from "../../context/AuthContext";
 
 export default function Header() {
@@ -17,14 +15,11 @@ export default function Header() {
   const toggleMenu = () => setShowMenu(!showMenu);
 
   const location = useLocation();
-  // Đóng dropdown khi route thay đổi (ví dụ sau khi click NavLink)
   useEffect(() => {
     setShowMenu(false);
   }, [location]);
 
-  // ✅ Lấy trạng thái xác thực và thông tin khách hàng
   const { isAuthenticated, customer, logout } = useAuth();
-
   const { cart } = useCart();
   const cartCount = cart.length;
 
@@ -57,6 +52,19 @@ export default function Header() {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // ⭐ Thêm state để biết header có đang sticky hay không
+  const [isSticky, setIsSticky] = useState(false);
+
+  // ⭐ Lắng nghe sự kiện scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsSticky(window.scrollY > 0); // scroll xuống là bật sticky
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Load all products once for client-side filtering (Medusa store endpoint)
@@ -138,36 +146,74 @@ export default function Header() {
   };
 
   return (
-    <header className="header">
+    // ⭐ Thêm class header--sticky khi isSticky = true
+    <header className={`header ${isSticky ? "header--sticky" : ""}`}>
       {/* 1. Menu Danh mục */}
       <div className="action-menu">
-        <button onClick={toggleMenu} className="menu-button" aria-expanded={showMenu} aria-controls="category-menu">
+        <button
+          onClick={toggleMenu}
+          className="menu-button"
+          aria-expanded={showMenu}
+          aria-controls="category-menu"
+        >
           <FiMenu className="icon" />
         </button>
         {showMenu && (
           <div id="category-menu" className="dropdown-menu" role="menu">
-            <NavLink to="/products?category=Làm Việc" className="menu-item" onClick={() => setShowMenu(false)}>
+            <NavLink
+              to="/products?category=Làm Việc"
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
               Làm Việc
             </NavLink>
-            <NavLink to="/products?category=Giải Trí" className="menu-item" onClick={() => setShowMenu(false)}>
+            <NavLink
+              to="/products?category=Giải Trí"
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
               Giải Trí
             </NavLink>
-            <NavLink to="/products?category=Học Tập" className="menu-item" onClick={() => setShowMenu(false)}>
+            <NavLink
+              to="/products?category=Học Tập"
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
               Học Tập
             </NavLink>
-            <NavLink to="/products?category=Tiện Ích" className="menu-item" onClick={() => setShowMenu(false)}>
+            <NavLink
+              to="/products?category=Tiện Ích"
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
               Tiện Ích
             </NavLink>
-            <NavLink to="/products?category=Windows" className="menu-item" onClick={() => setShowMenu(false)}>
+            <NavLink
+              to="/products?category=Windows"
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
               Windows
             </NavLink>
-            <NavLink to="/products?category=Microsoft" className="menu-item" onClick={() => setShowMenu(false)}>
+            <NavLink
+              to="/products?category=Microsoft"
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
               Microsoft
             </NavLink>
-            <NavLink to="/products?category=Diệt Virus" className="menu-item" onClick={() => setShowMenu(false)}>
+            <NavLink
+              to="/products?category=Diệt Virus"
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
               Diệt Virus
             </NavLink>
-            <NavLink to="/products?category=VPN" className="menu-item" onClick={() => setShowMenu(false)}>
+            <NavLink
+              to="/products?category=VPN"
+              className="menu-item"
+              onClick={() => setShowMenu(false)}
+            >
               VPN
             </NavLink>
           </div>
@@ -240,7 +286,6 @@ export default function Header() {
 
       {/* 4. Menu Điều hướng chính */}
       <nav>
-        {/* ... Các liên kết chung */}
         <NavLink
           to="/about"
           className={({ isActive }) =>
@@ -275,8 +320,6 @@ export default function Header() {
           FAQs
         </NavLink>
 
-        {/* 5. Giỏ hàng */}
-        {/* ✅ Giỏ hàng có badge */}
         <NavLink
           to="/cart"
           className={({ isActive }) =>
@@ -287,7 +330,6 @@ export default function Header() {
           {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
         </NavLink>
 
-        {/* 6. Trạng thái Đăng nhập/Đăng ký */}
         {isAuthenticated ? (
           <>
             <button
@@ -317,7 +359,6 @@ export default function Header() {
             )}
           </>
         ) : (
-          /* Nếu chưa đăng nhập: Hiển thị link Đăng nhập/Đăng ký */
           <NavLink
             to="/login"
             className="user-button"
