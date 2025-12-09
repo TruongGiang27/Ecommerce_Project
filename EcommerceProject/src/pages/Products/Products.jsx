@@ -40,7 +40,7 @@ export default function Products() {
 
         while (true) {
           const res = await fetch(
-            `${process.env.REACT_APP_MEDUSA_BACKEND}/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
+            `http://localhost:9000/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
             {
               headers: {
                 "x-publishable-api-key":
