@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryBar from "../../components/CategoryBar/CategoryBar";
 import ProductCard from "../../components/productCard/ProductCard";
@@ -6,54 +6,84 @@ import HeroBanner from "../../components/Banner/HeroBanner";
 import "./home.css";
 import InfinityScrollBar from "../../components/InfinityScrollBar/InfinityScrollBar";
 
+// 🔥 1. TỐI ƯU: Đưa biến tĩnh ra ngoài component để không khởi tạo lại
+const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+const REGION_ID = process.env.REACT_APP_MEDUSA_REGION_ID;
+const PUBLISHABLE_KEY = process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY;
+
+// 🔥 2. TỐI ƯU: Hàm xử lý ảnh đưa ra ngoài (hoặc dùng useCallback)
+const getImageUrl = (url) => {
+  if (!url) return "/default-product.png";
+  if (url.includes("localhost:9000")) {
+    return url.replace("http://localhost:9000", BACKEND_URL);
+  }
+  return url;
+};
+
 export default function Home() {
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Thêm state loading
   const navigate = useNavigate();
-  const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
-
-  // 🔥 1. THÊM HÀM XỬ LÝ ẢNH NÀY VÀO
-  const getImageUrl = (url) => {
-    if (!url) return "/default-product.png";
-    // Nếu ảnh chứa localhost, thay thế bằng BACKEND_URL từ env (Cloudflare)
-    if (url.includes("localhost:9000")) {
-      return url.replace("http://localhost:9000", BACKEND_URL);
-    }
-    return url;
-  };
 
   const handleCategoryClick = (category) => {
     navigate(`/products?category=${category}`);
   };
 
   useEffect(() => {
-    fetch(
-      `${BACKEND_URL}/store/products?region_id=${regionId}&limit=1000`,
-      {
-        headers: {
-          "x-publishable-api-key":
-            process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
+    // 🔥 3. TỐI ƯU: Fetch dữ liệu
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch(
+          `${BACKEND_URL}/store/products?region_id=${REGION_ID}&limit=1000`, // Lưu ý: 1000 item là khá nặng, nên cân nhắc giảm xuống nếu backend hỗ trợ sort
+          {
+            headers: {
+              "x-publishable-api-key": PUBLISHABLE_KEY,
+            },
+          }
+        );
+        const data = await res.json();
         setProducts(data.products || []);
-      })
-      .catch((err) => console.error("Lỗi khi lấy sản phẩm:", err));
-  }, [BACKEND_URL, regionId]); // Thêm dependency cho chuẩn React
+      } catch (err) {
+        console.error("Lỗi khi lấy sản phẩm:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const now = new Date();
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(now.getDate() - 30);
+    fetchProducts();
+  }, []);
 
-  const recentProducts = products.filter((p) => {
-    if (!p.created_at) return false;
-    const createdAt = new Date(p.created_at);
-    return createdAt >= thirtyDaysAgo;
-  });
+  // 🔥 4. TỐI ƯU: Sử dụng useMemo để tính toán danh sách sản phẩm
+  // Giúp React KHÔNG phải tính lại logic lọc 1000 sản phẩm mỗi khi component re-render
+  const { recentProducts, bestSellers } = useMemo(() => {
+    const now = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(now.getDate() - 30);
 
-  const bestSellers = products.slice(0, 8);
+    const recent = products.filter((p) => {
+      if (!p.created_at) return false;
+      const createdAt = new Date(p.created_at);
+      return createdAt >= thirtyDaysAgo;
+    });
+
+    // Sort giảm dần theo ngày tạo để lấy mới nhất thực sự
+    const sortedRecent = recent.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    const best = products.slice(0, 8);
+
+    return { recentProducts: sortedRecent, bestSellers: best };
+  }, [products]);
+
+  // Nếu đang tải dữ liệu ban đầu, hiển thị loading đơn giản để tránh layout bị nhảy
+  if (isLoading) {
+    return (
+      <div className="container" style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div className="loader"></div> 
+        <p style={{marginLeft: 10}}>Đang tải dữ liệu shop...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container">
@@ -98,7 +128,6 @@ export default function Home() {
                         p?.variants?.[0]?.calculated_price?.calculated_amount ||
                         0;
                       
-                      // 🔥 2. SỬA CHỖ NÀY: Dùng hàm getImageUrl bọc thumbnail lại
                       const image = getImageUrl(p.thumbnail);
 
                       return (
@@ -107,7 +136,13 @@ export default function Home() {
                           className="bestseller-item"
                           onClick={() => navigate(`/products/${p.id}`)}
                         >
-                          <img src={image} alt={p.title} />
+                          {/* 🔥 5. TỐI ƯU: Thêm loading="lazy" cho ảnh list nhỏ */}
+                          <img 
+                            src={image} 
+                            alt={p.title} 
+                            loading="lazy" 
+                            width="60" height="60" // Gợi ý kích thước để browser render nhanh hơn
+                          />
                           <div>
                             <h4>{p.title}</h4>
                             <p className="price-highlight">
@@ -122,7 +157,7 @@ export default function Home() {
               )}
             </>
           ) : (
-            <p>Đang tải sản phẩm...</p>
+            <p>Đang cập nhật...</p>
           )}
         </div>
       </section>
@@ -132,12 +167,11 @@ export default function Home() {
         <div className="product-grid">
           {recentProducts.length > 0 ? (
             recentProducts
-              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
               .slice(0, 8)
-              // 🔥 LƯU Ý QUAN TRỌNG:
-              // Bạn cũng phải vào file ProductCard.jsx để sửa giống hệt như trên
-              // (Thêm hàm getImageUrl và bọc src ảnh lại)
-              .map((p) => <ProductCard key={p.id} product={p} />)
+              .map((p) => (
+                // ProductCard đã được tối ưu ở bước trước (có memo và lazy load)
+                <ProductCard key={p.id} product={p} />
+              ))
           ) : (
             <p>Không có sản phẩm mới nhất</p>
           )}

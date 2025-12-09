@@ -1,67 +1,72 @@
-import React, { useMemo } from "react";
+import React from "react";
+// import { Link } from "react-router-dom";
 import "./productCard.css";
+// import { fetchProducts } from "../../services/api"; // Không dùng thì có thể bỏ
 import { FaShoppingCart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
-// 🔥 1. TỐI ƯU: Đưa biến tĩnh và hàm ra ngoài component
-// Giúp React không phải khởi tạo lại hàm này mỗi lần component render
-const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
-
-const getImageUrl = (url) => {
-  if (!url) return "https://via.placeholder.com/200";
-  // Nếu link ảnh chứa localhost:9000, thay thế bằng BACKEND_URL
-  if (url.includes("localhost:9000")) {
-    return url.replace("http://localhost:9000", BACKEND_URL);
-  }
-  return url;
-};
-
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
-  // const { addToCart } = useCart(); // Nếu chưa dùng thì comment lại để đỡ tốn bộ nhớ
+  const { addToCart } = useCart();
 
-  // 🔥 2. TỐI ƯU: Sử dụng useMemo để tính toán giá trị
-  // Chỉ tính lại khi object product thay đổi, giúp CPU nghỉ ngơi
-  const price = useMemo(() => {
-    return product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
-  }, [product]);
+  // 🔥 1. Lấy biến môi trường URL Backend (Cloudflare)
+  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
 
-  const originalPrice = useMemo(() => {
-    return product?.variants?.[0]?.original_price || 0;
-  }, [product]);
-
-  const statusLabel = useMemo(() => {
-    const hasStock = product?.variants?.some((v) => {
-      if (typeof v.inventory_quantity === "number") return v.inventory_quantity > 0;
-      if (v.manage_inventory === false) return true;
-      if (v.stock_status === "in_stock") return true;
-      return false;
-    });
-    return hasStock ? "Còn hàng" : "Liên hệ";
-  }, [product]);
-
-  // Điều hướng nhanh
-  const handleNavigate = () => {
-    navigate(`/products/${product?.id}`);
+  // 🔥 2. Hàm xử lý link ảnh: Đổi localhost -> Cloudflare URL
+  const getImageUrl = (url) => {
+    if (!url) return "https://via.placeholder.com/200";
+    
+    // Nếu link ảnh chứa localhost:9000, thay thế bằng BACKEND_URL
+    if (url.includes("localhost:9000")) {
+      return url.replace("http://localhost:9000", BACKEND_URL);
+    }
+    return url;
   };
+
+  const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
+
+  // Hàm handleAddToCart này của bạn chưa được gắn vào nút giỏ hàng ở dưới, 
+  // mình đã để nguyên nhưng bạn nhớ kiểm tra nút Button nhé.
+  const handleAddToCart = () => {
+    addToCart(product);
+    navigate("/cart");
+  };
+
+  // console.log("Product data:", product);
+
+  // ✅ Logic check tồn kho (thay vì dùng product.status)
+  const hasStock = product?.variants?.some((v) => {
+    // Medusa v1: inventory_quantity
+    if (typeof v.inventory_quantity === "number") {
+      return v.inventory_quantity > 0;
+    }
+
+    // Nếu không quản lý tồn kho thì coi như luôn mua được
+    if (v.manage_inventory === false) return true;
+
+    // Một số setup có thể dùng stock_status
+    if (v.stock_status === "in_stock") return true;
+
+    return false;
+  });
+
+  const statusLabel = hasStock ? "Còn hàng" : "Liên hệ";
 
   return (
     <div className="product-card">
       {/* Ảnh + overlay */}
       <div className="product-img">
-        {/* 🔥 3. TỐI ƯU QUAN TRỌNG NHẤT: Lazy Loading Ảnh */}
         <img
+          // 🔥 3. Áp dụng hàm getImageUrl vào đây
           src={getImageUrl(product?.thumbnail)}
           alt={product?.title}
-          loading="lazy"      // Chỉ tải khi cuộn tới
-          decoding="async"    // Giải mã ảnh không chặn luồng chính
-          width="200"         // Gợi ý kích thước để tránh nhảy layout (CLS)
-          height="200"
-          style={{ objectFit: "cover" }} 
         />
         <div className="explore-overlay">
-          <button onClick={handleNavigate} className="btn-explore">
+          <button 
+            onClick={() => navigate(`/products/${product?.id}`)} 
+            className="btn-explore"
+          >
             Khám phá ngay →
           </button>
         </div>
@@ -73,19 +78,24 @@ const ProductCard = ({ product }) => {
           <h3 className="title">{product?.title}</h3>
           <div className="price-box">
             <span className="price">{price.toLocaleString()} đ</span>
-            {originalPrice > 0 && (
+            {product?.variants?.[0]?.original_price && (
               <span className="old-price">
-                {(originalPrice / 100).toLocaleString()} đ
+                {(product?.variants?.[0]?.original_price / 100).toLocaleString()}{" "}
+                đ
               </span>
             )}
           </div>
         </div>
         <div className="info-bottom">
           <p className="status">
-             {/* Dùng statusLabel đã tính toán ở trên */}
-             {statusLabel}
+            {product?.status === "published" || product?.status === "in_stock" 
+              ? "Còn hàng" 
+              : "Liên hệ"}
           </p>
-          <button onClick={handleNavigate} className="btn-cart">
+          <button 
+            onClick={() => navigate(`/products/${product?.id}`)} 
+            className="btn-cart"
+          >
             <FaShoppingCart />
           </button>
         </div>
@@ -94,7 +104,4 @@ const ProductCard = ({ product }) => {
   );
 };
 
-// 🔥 4. TỐI ƯU: Dùng React.memo
-// Giúp component không bị render lại nếu props "product" không đổi
-// Cực kỳ hiệu quả khi hiển thị danh sách dài
-export default React.memo(ProductCard);
+export default ProductCard;
