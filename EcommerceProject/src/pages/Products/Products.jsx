@@ -8,7 +8,7 @@ import "./products.css";
 import OfficeBanner from "../../assets/images/banner-office.png";
 import QuizletBanner from "../../assets/images/banner-quizlet.png";
 
-// 👉 Các logo “app” bay lơ lửng quanh hero (bạn đổi path cho đúng dự án của bạn nha)
+// 👉 Các logo “app” bay lơ lửng quanh hero
 import NetflixLogo from "../../assets/images/netflix2.png";
 import AdobeLogo from "../../assets/images/adobe-color.png";
 import DuolingoLogo from "../../assets/images/duolingo-logo.png";
@@ -29,7 +29,17 @@ export default function Products() {
     String(Number(searchParams.get("page")) || 1)
   );
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-  const  BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+
+  // 🔥 1. THÊM HÀM XỬ LÝ ẢNH (Fix lỗi localhost ở Sidebar)
+  const getImageUrl = (url) => {
+    if (!url) return "https://via.placeholder.com/60";
+    if (url.includes("localhost:9000")) {
+      return url.replace("http://localhost:9000", BACKEND_URL);
+    }
+    return url;
+  };
+
   // Lấy toàn bộ products
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -54,7 +64,7 @@ export default function Products() {
           }
 
           const data = await res.json();
-          console.log("API page response:", data);
+          // console.log("API page response:", data);
 
           const items = data.products || data.items || data.data || [];
           allProducts = allProducts.concat(items);
@@ -73,7 +83,7 @@ export default function Products() {
     };
 
     fetchAllProducts();
-  }, [regionId]);
+  }, [regionId, BACKEND_URL]);
 
   // Đồng bộ category + page với URL
   useEffect(() => {
@@ -242,10 +252,9 @@ export default function Products() {
                         className="new-product-item"
                       >
                         <div className="new-product-thumb">
+                          {/* 🔥 2. SỬA Ở ĐÂY: Áp dụng getImageUrl */}
                           <img
-                            src={
-                              p.thumbnail || "https://via.placeholder.com/60"
-                            }
+                            src={getImageUrl(p.thumbnail)}
                             alt={p.title}
                           />
                         </div>
@@ -273,17 +282,11 @@ export default function Products() {
               </h2>
             </div>
 
-            {/* Bạn có thể thêm ô search nếu cần */}
-            {/* <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Tìm kiếm sản phẩm..."
-            /> */}
-
             {/* Grid danh sách sản phẩm */}
             <div className="product-grid">
               {paginatedProducts.length > 0 ? (
                 paginatedProducts.map((p) => (
+                  // ProductCard đã được fix ở bước trước, nên ở đây không cần sửa gì
                   <ProductCard key={p.id} product={p} />
                 ))
               ) : (
@@ -395,7 +398,6 @@ export default function Products() {
 
       {/* ====== HERO “ĐĂNG KÝ TÀI KHOẢN” DƯỚI PHẦN SẢN PHẨM ====== */}
       <section className="hero-signup">
-        {/* Lớp icon bay xung quanh (pure decoration) */}
         <div className="hero-floating-layer" aria-hidden="true">
           <div className="hero-floating-card card-1">
             <img src={OfficeLogo} alt="Office" />
@@ -420,7 +422,6 @@ export default function Products() {
         <div className="hero-floating-card card-6">
           <img src={KasperskyLogo} alt="Kaspersky" />
         </div>
-        {/* Nội dung chính ở giữa */}
         <div className="hero-inner">
           <div className="hero-badge">
             <span className="hero-badge-dot" />
@@ -451,7 +452,6 @@ export default function Products() {
       {/* ====== KHUNG ĐEN LỢI ÍCH DƯỚI HERO ====== */}
       <section className="benefit-strip">
         <div className="benefit-strip-inner">
-          {/* Item 1 */}
           <div className="benefit-item">
             <div className="benefit-icon">
               <span role="img" aria-label="truck">
@@ -466,7 +466,6 @@ export default function Products() {
 
           <span className="benefit-divider" aria-hidden="true" />
 
-          {/* Item 2 */}
           <div className="benefit-item">
             <div className="benefit-icon">
               <span role="img" aria-label="support">
@@ -481,7 +480,6 @@ export default function Products() {
 
           <span className="benefit-divider" aria-hidden="true" />
 
-          {/* Item 3 */}
           <div className="benefit-item">
             <div className="benefit-icon">
               <span role="img" aria-label="key">
@@ -496,7 +494,6 @@ export default function Products() {
 
           <span className="benefit-divider" aria-hidden="true" />
 
-          {/* Item 4 */}
           <div className="benefit-item">
             <div className="benefit-icon">
               <span role="img" aria-label="headset">
