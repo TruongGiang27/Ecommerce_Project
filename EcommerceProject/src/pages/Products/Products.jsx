@@ -16,19 +16,19 @@ import KasperskyLogo from "../../assets/images/kaspersky.png";
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
-
+  
   // --- STATE QUẢN LÝ DỮ LIỆU ---
   const [products, setProducts] = useState([]); // List sản phẩm hiển thị chính
   const [newestProducts, setNewestProducts] = useState([]); // List sản phẩm mới cho Sidebar
   const [count, setCount] = useState(0); // Tổng số lượng sản phẩm (để chia trang)
   const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
-
+  
   // --- CẤU HÌNH ---
   const pageSize = 12;
   const page = Number(searchParams.get("page")) || 1;
   const category = searchParams.get("category") || "All";
   const [pageInput, setPageInput] = useState(String(page));
-
+  
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
   const baseUrl = "http://localhost:9000/store"; // Base URL API
 
@@ -60,7 +60,7 @@ export default function Products() {
         // (Vì Medusa API lọc theo ID chứ không theo tên)
         if (category !== "All") {
           const colRes = await fetch(`${baseUrl}/collections?limit=100`, {
-            headers: { "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY },
+             headers: { "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY },
           });
           const colData = await colRes.json();
           const foundCol = colData.collections.find(c => c.title === category);
@@ -70,7 +70,7 @@ export default function Products() {
         // BƯỚC B: Gọi API lấy sản phẩm theo trang và collection ID
         const offset = (page - 1) * pageSize;
         let url = `${baseUrl}/products?region_id=${regionId}&limit=${pageSize}&offset=${offset}`;
-
+        
         // Nếu tìm thấy ID collection thì thêm vào filter
         if (collectionId) {
           url += `&collection_id[]=${collectionId}`;
@@ -81,7 +81,7 @@ export default function Products() {
         });
 
         if (!res.ok) throw new Error("API Error");
-
+        
         const data = await res.json();
         setProducts(data.products || []);
         setCount(data.count || 0); // Quan trọng: lấy count từ server để tính phân trang
@@ -95,7 +95,7 @@ export default function Products() {
     };
 
     fetchMainProducts();
-
+    
     // Scroll lên đầu mỗi khi đổi trang hoặc category
     window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -198,7 +198,7 @@ export default function Products() {
                   {products.length > 0 ? (
                     products.map((p) => <ProductCard key={p.id} product={p} />)
                   ) : (
-                    <div style={{ width: '100%', textAlign: 'center' }}>Không tìm thấy sản phẩm nào.</div>
+                    <div style={{width: '100%', textAlign: 'center'}}>Không tìm thấy sản phẩm nào.</div>
                   )}
                 </div>
 
@@ -229,18 +229,18 @@ export default function Products() {
                     <button onClick={() => changePage(page + 1)} disabled={page >= totalPages} className="icon-pagination-button">
                       &gt;
                     </button>
-
+                    
                     {/* Input nhập trang nhanh */}
-                    <div style={{ marginLeft: 10, display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <span>Đến trang:</span>
-                      <input
-                        type="number"
-                        value={pageInput}
-                        onChange={(e) => setPageInput(e.target.value)}
-                        onKeyDown={handlePageInputKeyDown}
-                        onBlur={() => changePage(Number(pageInput))}
-                        style={{ width: 50, padding: 5, borderRadius: 4, border: '1px solid #ccc' }}
-                      />
+                    <div style={{marginLeft: 10, display: 'flex', alignItems: 'center', gap: 5}}>
+                        <span>Đến trang:</span>
+                        <input 
+                            type="number" 
+                            value={pageInput}
+                            onChange={(e) => setPageInput(e.target.value)}
+                            onKeyDown={handlePageInputKeyDown}
+                            onBlur={() => changePage(Number(pageInput))}
+                            style={{width: 50, padding: 5, borderRadius: 4, border: '1px solid #ccc'}}
+                        />
                     </div>
                   </div>
                 )}
@@ -260,7 +260,7 @@ export default function Products() {
           <div className="hero-floating-card card-5"><img src={WindowsLogo} alt="Windows" /></div>
         </div>
         <div className="hero-floating-card card-6"><img src={KasperskyLogo} alt="Kaspersky" /></div>
-
+        
         <div className="hero-inner">
           <div className="hero-badge"><span className="hero-badge-dot" />3.000+ khách hàng tin tưởng</div>
           <h2 className="hero-title">
