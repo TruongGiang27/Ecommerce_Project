@@ -121,7 +121,7 @@ function CustomerLoginForm() {
           <p>Hoặc đăng nhập bằng</p>
           <div className="social-buttons">
             <button onClick={handleGoogleLogin} className="social-btn google">Google</button>
-            <button className="social-btn facebook">Facebook</button>
+            {/* <button className="social-btn facebook">Facebook</button> */}
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import "../Header/header.css";
 import "../../theme/theme.css";
-import React, { useState, useEffect, useRef } from "react";
+import  { useState, useEffect, useRef } from "react";
 import { FiMenu } from "react-icons/fi";
 import { FaUserCircle, FaShoppingCart, FaSearch } from "react-icons/fa";
 import { useCart } from "../../context/CartContext";
