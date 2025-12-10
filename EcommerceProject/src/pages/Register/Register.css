@@ -1,100 +1,275 @@
-/* Tương tự Login.css, chỉ điều chỉnh chút */
+/* src/pages/Login/Login.css */
+
 .auth-wrapper {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url("/src/images/2.jpg") center/cover no-repeat;
+  background: url("/src/images/2.jpg") center/cover no-repeat; /* Kiểm tra lại đường dẫn ảnh */
   position: relative;
+  padding: 20px; /* Padding để không dính sát lề trên mobile */
 }
 
+/* Lớp phủ tối màu */
 .auth-wrapper::after {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(14, 34, 57, 0.6); /* Màu xanh đen mờ sang trọng hơn đen thuần */
+  backdrop-filter: blur(4px); /* Hiệu ứng mờ nền hiện đại */
 }
 
 .auth-card {
-  background: #fff;
-  padding: 40px 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-  z-index: 1;
-  width: 360px;
-  max-width: 90%;
-  animation: fadeInUp 0.8s ease;
+  background: #ffffff;
+  padding: 32px 28px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  z-index: 10;
+  width: 100%;
+  max-width: 420px; /* Rộng hơn chút để thoáng */
+  animation: fadeInUp 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  position: relative;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 24px;
 }
 
 .auth-card h2 {
-  text-align: center;
-  margin-bottom: 25px;
-  color: #0e2239;
+  margin: 0 0 8px 0;
+  color: #111827;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
+.auth-subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Form Styles */
 .auth-form .form-group {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 16px;
 }
 
 .auth-form .form-group label {
-  margin-bottom: 8px;
-  color: #444;
+  display: block;
+  margin-bottom: 6px;
+  color: #374151;
   font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .auth-form .form-group input {
-  padding: 12px 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  transition: all 0.2s ease;
+  background: #f9fafb;
 }
 
 .auth-form .form-group input:focus {
-  border-color: #f7c600;
+  border-color: #2563eb; /* Màu primary */
+  background: #fff;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(247,198,0,0.3);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
+/* Input Group cho password */
+.input-group {
+  position: relative;
+}
+.input-group input {
+  padding-right: 45px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle:hover {
+  color: #111827;
+}
+
+/* Options: Checkbox & Forgot Pass */
 .form-options {
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #4b5563;
 }
 
 .link-btn {
   background: none;
   border: none;
-  color: #007bff;
+  color: #2563eb;
   cursor: pointer;
-  font-size: 0.9rem;
-  text-decoration: underline;
+  font-weight: 500;
+  padding: 0;
+  transition: color 0.2s;
 }
+.link-btn:hover { text-decoration: underline; color: #1d4ed8; }
 
 .btn-submit {
   width: 100%;
   padding: 12px;
-  background: #f7c600;
-  color: #0e2239;
-  font-size: 1.1rem;
+  background: #facc15; /* Màu vàng thương hiệu */
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 600;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(250, 204, 21, 0.3);
 }
 
 .btn-submit:hover {
-  background: #e0b500;
+  background: #eab308;
+  transform: translateY(-1px);
 }
+
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Social Login */
+.social-login {
+  margin-top: 24px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+}
+.divider span { padding: 0 10px; }
+
+.social-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.social-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.social-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Footer & Messages */
+.auth-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+.link-btn.highlight { font-weight: 700; margin-left: 4px; }
+
+.message-box {
+  margin-top: 16px;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+.message-box.error { background: #fee2e2; color: #dc2626; }
+.message-box.success { background: #dcfce7; color: #16a34a; }
 
 /* Animation */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 24px 20px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .auth-card h2 { font-size: 1.3rem; }
+  .form-options { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .forgot-btn { margin-left: auto; } /* Đẩy nút quên mật khẩu sang phải */
+}
+
+/* src/pages/Register/Register.css */
+/* ... (Copy nội dung từ Login.css sang đây để đồng bộ style) ... */
+
+/* TÙY CHỈNH RIÊNG CHO REGISTER */
+
+.register-card {
+  max-width: 500px; /* Form đăng ký rộng hơn chút vì có 2 cột */
+}
+
+/* Grid Layout cho form-row */
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row .form-group {
+  flex: 1; /* Chia đều 50-50 */
+}
+
+.req {
+  color: #dc2626;
+  margin-left: 2px;
+}
+
+/* RESPONSIVE CHO REGISTER */
+@media (max-width: 550px) {
+  /* Khi màn hình nhỏ hơn 550px, chuyển row thành column */
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .register-card {
+    padding: 24px 20px;
   }
 }
