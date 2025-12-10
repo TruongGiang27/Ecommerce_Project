@@ -1,75 +1,10 @@
-// import React, { useEffect } from "react";
-// import { useAuth } from "../../context/AuthContext";
-// import "./profile.css";
-
-// export default function Profile() {
-//   const { customer, isLoading, fetchCustomer, isAuthenticated } = useAuth();
-
-//   // Nếu cần refresh dữ liệu (ví dụ token tồn tại nhưng customer chưa có), có thể gọi fetchCustomer
-//   useEffect(() => {
-//     if (!customer && isAuthenticated) {
-//       fetchCustomer();
-//     }
-//   }, [customer, isAuthenticated, fetchCustomer]);
-
-//   if (isLoading) {
-//     return <div className="profile-empty">Đang tải thông tin người dùng...</div>;
-//   }
-
-//   if (!customer) {
-//     return (
-//       <div className="profile-empty">
-//         <h2>Hồ Sơ Người Dùng</h2>
-//         <p>Không có thông tin hồ sơ. Vui lòng đăng nhập.</p>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="profile-page">
-//       <div className="profile-card">
-//         <aside className="profile-aside">
-//           <div className="avatar">
-//             {customer.first_name?.[0]?.toUpperCase() || "U"}
-//           </div>
-//           <div>
-//             <div className="label muted">Tài khoản</div>
-//             <div className="value">
-//               {customer.first_name} {customer.last_name}
-//             </div>
-//           </div>
-//         </aside>
-
-//         <main className="profile-main">
-//           <h2>Hồ Sơ Người Dùng</h2>
-//           <ul className="info-list">
-//             <li className="info-item">
-//               <div className="label">Email</div>
-//               <div className="value">{customer.email}</div>
-//             </li>
-//             <li className="info-item">
-//               <div className="label">Số điện thoại</div>
-//               <div className="value">{customer.phone || "Chưa cập nhật"}</div>
-//             </li>
-//             <li className="info-item address" style={{ gridColumn: "1 / -1" }}>
-//               <div className="label">Địa chỉ</div>
-//               <div className="value">
-//                 {customer.addresses && customer.addresses.length > 0
-//                   ? `${customer.addresses[0].address_1 || ""} ${customer.addresses[0].city || ""}`.trim()
-//                   : "Chưa cập nhật"}
-//               </div>
-//             </li>
-//           </ul>
-//         </main>
-//       </div>
-//     </div>
-//   );
-// }
-
+// src/pages/Profile/Profile.jsx
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { apiCustomerClient } from "../../lib/medusa";
 import "./profile.css";
+
+const AUTH_TOKEN_KEY = "medusa_auth_token";
 
 export default function Profile() {
   const { customer, isLoading, isAuthenticated, fetchCustomer } = useAuth();
@@ -83,14 +18,18 @@ export default function Profile() {
   });
   const [saving, setSaving] = useState(false);
 
+  // Load dữ liệu khi customer thay đổi
   useEffect(() => {
     if (!customer && isAuthenticated) {
-      fetchCustomer();
+      // Nếu chưa có customer data thì fetch lại (dùng token từ context logic)
+      const token = localStorage.getItem(AUTH_TOKEN_KEY) || sessionStorage.getItem(AUTH_TOKEN_KEY);
+      if(token) fetchCustomer(token);
     } else if (customer) {
       setFormData({
         first_name: customer.first_name || "",
         last_name: customer.last_name || "",
-        company_name: customer.company_name || "",
+        // Lấy company từ metadata (nơi lưu trữ tùy chỉnh của Medusa)
+        company_name: customer.metadata?.company || "",
         phone: customer.phone || "",
       });
     }
@@ -101,120 +40,148 @@ export default function Profile() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ✅ HÀM QUAN TRỌNG: Lấy token từ cả 2 nơi (Session hoặc Local)
+  const getToken = () => {
+    return localStorage.getItem(AUTH_TOKEN_KEY) || sessionStorage.getItem(AUTH_TOKEN_KEY);
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!isAuthenticated) return;
+    
+    // Kiểm tra đăng nhập
+    const token = getToken();
+    if (!token) {
+      alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+      return;
+    }
 
     setSaving(true);
     try {
-      const token = localStorage.getItem("medusa_auth_token");
+      // Chuẩn bị payload chuẩn cho Medusa
+      const payload = {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        phone: formData.phone,
+        metadata: {
+          // Lưu thông tin công ty vào metadata để không bị mất
+          company: formData.company_name 
+        }
+      };
 
+      // Gọi API cập nhật
       const { data } = await apiCustomerClient.post(
         "/customers/me",
-        {
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          company_name: formData.company_name,
-          phone: formData.phone,
-        },
+        payload,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Gửi token xác thực
           },
         }
       );
 
       if (data?.customer) {
-        await fetchCustomer(token); // cập nhật context
+        await fetchCustomer(token); // Cập nhật lại dữ liệu mới nhất vào Context
         setIsEditing(false);
+        alert("Cập nhật hồ sơ thành công!");
       }
     } catch (error) {
       console.error("❌ Lỗi cập nhật hồ sơ:", error.response?.data || error);
-      alert("Cập nhật thất bại. Vui lòng thử lại!");
+      alert("Cập nhật thất bại. Vui lòng kiểm tra lại kết nối.");
     } finally {
       setSaving(false);
     }
   };
 
   if (isLoading) {
-    return <div className="profile-empty">Đang tải thông tin người dùng...</div>;
+    return <div className="profile-loading">Đang tải thông tin...</div>;
   }
 
   if (!customer) {
     return (
       <div className="profile-empty">
-        <h2>Hồ Sơ Người Dùng</h2>
-        <p>Không có thông tin hồ sơ. Vui lòng đăng nhập.</p>
+        <h2>Bạn chưa đăng nhập</h2>
+        <p>Vui lòng đăng nhập để xem hồ sơ cá nhân.</p>
       </div>
     );
   }
 
   return (
-    <div className="profile-page">
-      <div className="profile-card">
-        <aside className="profile-aside">
-          <div className="avatar">
-            {customer.first_name?.[0]?.toUpperCase() || "U"}
+    <div className="profile-wrapper">
+      <div className="profile-container">
+        {/* Sidebar bên trái */}
+        <aside className="profile-sidebar">
+          <div className="profile-avatar">
+            {customer.first_name?.[0]?.toUpperCase() || customer.email?.[0]?.toUpperCase() || "U"}
           </div>
-          <div>
-            <div className="label muted">Tài khoản</div>
-            <div className="value">
+          <div className="profile-sidebar-info">
+            <div className="profile-name">
               {customer.first_name} {customer.last_name}
             </div>
+            <div className="profile-email">{customer.email}</div>
           </div>
         </aside>
 
-        <main className="profile-main">
-          <h2>Hồ Sơ Người Dùng</h2>
+        {/* Nội dung chính bên phải */}
+        <main className="profile-content">
+          <div className="profile-header">
+            <h2>Hồ Sơ Của Tôi</h2>
+            <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+          </div>
 
           {!isEditing ? (
-            <>
-              <ul className="info-list">
-                <li className="info-item">
-                  <div className="label">Email</div>
-                  <div className="value">{customer.email}</div>
-                </li>
-                <li className="info-item">
-                  <div className="label">Số điện thoại</div>
-                  <div className="value">{customer.phone || "Chưa cập nhật"}</div>
-                </li>
-                <li className="info-item">
-                  <div className="label">Công ty</div>
-                  <div className="value">{customer.company_name || "Chưa cập nhật"}</div>
-                </li>
-                <li className="info-item address" style={{ gridColumn: "1 / -1" }}>
-                  <div className="label">Địa chỉ</div>
-                  <div className="value">
-                    {customer.addresses?.length > 0
-                      ? `${customer.addresses[0].address_1 || ""} ${customer.addresses[0].city || ""}`.trim()
-                      : "Chưa cập nhật"}
-                  </div>
-                </li>
-              </ul>
-              <button className="edit-btn" onClick={() => setIsEditing(true)}>
-                Chỉnh sửa
-              </button>
-            </>
-          ) : (
-            <form className="edit-form" onSubmit={handleSave}>
-              <div className="form-group">
-                <label>Họ</label>
-                <input
-                  type="text"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                />
+            /* CHẾ ĐỘ XEM */
+            <div className="profile-view">
+              <div className="info-row">
+                <span className="info-label">Họ tên:</span>
+                <span className="info-value">
+                  {customer.first_name} {customer.last_name}
+                </span>
               </div>
-
-              <div className="form-group">
-                <label>Tên</label>
-                <input
-                  type="text"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                />
+              <div className="info-row">
+                <span className="info-label">Email:</span>
+                <span className="info-value">{customer.email}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Số điện thoại:</span>
+                <span className="info-value">{customer.phone || "Chưa cập nhật"}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Công ty:</span>
+                <span className="info-value">
+                  {customer.metadata?.company || "Chưa cập nhật"}
+                </span>
+              </div>
+              
+              <div className="profile-actions">
+                <button className="btn-edit" onClick={() => setIsEditing(true)}>
+                  Chỉnh Sửa Thông Tin
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* CHẾ ĐỘ CHỈNH SỬA */
+            <form className="profile-form" onSubmit={handleSave}>
+              <div className="form-group-row">
+                <div className="form-group">
+                  <label>Họ</label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    placeholder="Nhập họ"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Tên</label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    placeholder="Nhập tên"
+                  />
+                </div>
               </div>
 
               <div className="form-group">
@@ -224,6 +191,7 @@ export default function Profile() {
                   name="company_name"
                   value={formData.company_name}
                   onChange={handleChange}
+                  placeholder="Tên công ty / Tổ chức"
                 />
               </div>
 
@@ -234,15 +202,21 @@ export default function Profile() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
+                  placeholder="Nhập số điện thoại"
                 />
               </div>
 
-              <div className="btn-group">
-                <button type="button" onClick={() => setIsEditing(false)} disabled={saving}>
+              <div className="form-actions">
+                <button 
+                  type="button" 
+                  className="btn-cancel" 
+                  onClick={() => setIsEditing(false)} 
+                  disabled={saving}
+                >
                   Hủy
                 </button>
-                <button type="submit" disabled={saving}>
-                  {saving ? "Đang lưu..." : "Lưu thay đổi"}
+                <button type="submit" className="btn-save" disabled={saving}>
+                  {saving ? "Đang Lưu..." : "Lưu Thay Đổi"}
                 </button>
               </div>
             </form>
