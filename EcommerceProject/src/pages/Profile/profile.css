@@ -238,3 +238,79 @@
     font-size: 0.85rem;
   }
 }
+
+/* src/pages/Profile/profile.css */
+
+/* ... (Giữ nguyên các phần .profile-wrapper, .profile-container, .profile-avatar...) */
+
+/* Thêm style cho menu sidebar */
+.sidebar-menu {
+  width: 100%;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.menu-btn {
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.menu-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.menu-btn.active {
+  background: #eff6ff;
+  color: #2563eb;
+  border-left-color: #2563eb;
+  font-weight: 600;
+}
+
+/* Style cho input password có icon mắt */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding: 10px 40px 10px 12px; /* Chừa chỗ cho icon bên phải */
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.password-wrapper input:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eye-icon:hover {
+  color: #374151;
+}
+
+/* ... (Giữ nguyên phần responsive) */
