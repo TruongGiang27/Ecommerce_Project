@@ -262,7 +262,6 @@ export default function Header() {
                   >
                     <img src={p.thumbnail || "/default-product.png"} alt="" className="suggestion-thumbnail" />
                     <span className="suggestion-title">{p.title}</span>
-                    <small className="suggestion-id">{p.id.slice(0, 8)}...</small>
                   </li>
                 ))}
 

@@ -1,16 +1,72 @@
-// src/pages/VnpayReturn.jsx
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./VnpayReturn.css";
+import { useDispatch, useSelector } from "react-redux";
+import { processCheckout } from "../../services/order";
+import { clearAllVariants } from "../../redux/slices/variantSlice";
+import { resetCustomerInfo } from "../../redux/slices/customerInfoSlice";
 
 export default function VnpayReturn() {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const variantsSelector = useSelector((state) => state.variant.selections);
+  const customerInfoSelector = useSelector((state) => state.customerInfo);
+
+  const isProcessed = useRef(false);
 
   const searchParams = new URLSearchParams(location.search);
   const params = Object.fromEntries(searchParams.entries());
 
   const success = params.vnp_ResponseCode === "00";
+
+  useEffect(() => {
+    const buyNow = async () => {
+      try {
+        const customerInfo = {
+          email: customerInfoSelector.email,
+          address: {
+            first_name: customerInfoSelector.address.first_name,
+            last_name: customerInfoSelector.address.last_name,
+            address_1: customerInfoSelector.address.address_1,
+            city: customerInfoSelector.address.city,
+            country_code: "vn",
+            postal_code: "700000",
+            phone: customerInfoSelector.address.phone,
+          },
+          promoCodes: customerInfoSelector.promoCodes,
+        };
+
+        console.log("Variant: ", variantsSelector);
+        console.log("Customer Info: ", customerInfo);
+
+        await processCheckout(variantsSelector, 1, customerInfo);
+
+        console.log("Đơn hàng đã được xử lý sau thanh toán VNPay thành công.");
+
+        dispatch(clearAllVariants());
+        dispatch(resetCustomerInfo());
+
+        console.log("Đã clear Redux sau thanh toán VNPay.");
+      } catch (err) {
+        console.error("Lỗi khi xử lý đơn hàng sau thanh toán VNPay:", err);
+        alert("Có lỗi xảy ra, vui lòng thử lại.");
+      }
+    };
+
+    if (
+      success &&
+      variantsSelector.length > 0 &&
+      !isProcessed.current // Chỉ chạy nếu chưa từng chạy
+    ) {
+      // Khóa ngay lập tức (Sync) để chặn lần gọi thứ 2
+      isProcessed.current = true;
+
+      console.log("Bắt đầu xử lý đơn hàng...");
+      buyNow();
+    }
+  }, [success, variantsSelector, customerInfoSelector, dispatch]);
 
   return (
     <div className="vnpay-return-wrapper">
@@ -56,7 +112,7 @@ export default function VnpayReturn() {
         </div>
 
         <button className="vnpay-back-btn" onClick={() => navigate("/")}>
-          🔙 Quay về trang chủ
+          Quay về trang chủ
         </button>
       </div>
     </div>

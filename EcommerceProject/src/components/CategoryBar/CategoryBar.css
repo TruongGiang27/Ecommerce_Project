@@ -22,7 +22,6 @@
 }
 
 .category-item .icon {
-  width: 70px;   /* icon to rõ */
   height: 70px;
   object-fit: contain;
   font-size: 4rem;

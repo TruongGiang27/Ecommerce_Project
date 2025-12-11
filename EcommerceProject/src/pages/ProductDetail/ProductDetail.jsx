@@ -278,7 +278,7 @@ export default function ProductDetail() {
                 <div className="upgrade-account-input-group">
                   <label htmlFor="upgradeAccountInput">
                     Nhập tài khoản cần nâng cấp (không phải tài khoản đăng
-                    nhập Woku Shop)
+                    nhập Digitech Shop)
                   </label>
                   <input
                     id="upgradeAccountInput"

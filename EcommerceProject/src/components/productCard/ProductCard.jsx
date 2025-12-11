@@ -1,7 +1,5 @@
 import React from "react";
-// import { Link } from "react-router-dom";
 import "./productCard.css";
-// import { fetchProducts } from "../../services/api"; // Không dùng thì có thể bỏ
 import { FaShoppingCart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
@@ -10,42 +8,34 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  // 🔥 1. Lấy biến môi trường URL Backend (Cloudflare)
   const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
 
-  // 🔥 2. Hàm xử lý link ảnh: Đổi localhost -> Cloudflare URL
+  // Hàm sửa link ảnh Medusa -> Cloudflare
   const getImageUrl = (url) => {
     if (!url) return "https://via.placeholder.com/200";
-    
-    // Nếu link ảnh chứa localhost:9000, thay thế bằng BACKEND_URL
+
     if (url.includes("localhost:9000")) {
       return url.replace("http://localhost:9000", BACKEND_URL);
     }
     return url;
   };
 
+  // Lấy giá sản phẩm
   const price = product?.variants?.[0]?.calculated_price?.calculated_amount || 0;
 
-  // Hàm handleAddToCart này của bạn chưa được gắn vào nút giỏ hàng ở dưới, 
-  // mình đã để nguyên nhưng bạn nhớ kiểm tra nút Button nhé.
-  const handleAddToCart = () => {
-    addToCart(product);
-    navigate("/cart");
-  };
-
-  // console.log("Product data:", product);
-
-  // ✅ Logic check tồn kho (thay vì dùng product.status)
+  // -----------------------------
+  // 🔥 CHECK TỒN KHO CHUẨN MEDUSA
+  // -----------------------------
   const hasStock = product?.variants?.some((v) => {
-    // Medusa v1: inventory_quantity
+    // Nếu dùng Classic Inventory của Medusa
     if (typeof v.inventory_quantity === "number") {
       return v.inventory_quantity > 0;
     }
 
-    // Nếu không quản lý tồn kho thì coi như luôn mua được
+    // Nếu không quản lý tồn kho -> coi như có hàng
     if (v.manage_inventory === false) return true;
 
-    // Một số setup có thể dùng stock_status
+    // Nếu bản cài có stock_status
     if (v.stock_status === "in_stock") return true;
 
     return false;
@@ -53,18 +43,22 @@ const ProductCard = ({ product }) => {
 
   const statusLabel = hasStock ? "Còn hàng" : "Liên hệ";
 
+  const handleAddToCart = () => {
+    addToCart(product);
+    navigate("/cart");
+  };
+
   return (
     <div className="product-card">
       {/* Ảnh + overlay */}
       <div className="product-img">
         <img
-          // 🔥 3. Áp dụng hàm getImageUrl vào đây
           src={getImageUrl(product?.thumbnail)}
           alt={product?.title}
         />
         <div className="explore-overlay">
-          <button 
-            onClick={() => navigate(`/products/${product?.id}`)} 
+          <button
+            onClick={() => navigate(`/products/${product?.id}`)}
             className="btn-explore"
           >
             Khám phá ngay →
@@ -76,24 +70,24 @@ const ProductCard = ({ product }) => {
       <div className="product-info">
         <div className="info-top">
           <h3 className="title">{product?.title}</h3>
+
           <div className="price-box">
             <span className="price">{price.toLocaleString()} đ</span>
+
             {product?.variants?.[0]?.original_price && (
               <span className="old-price">
-                {(product?.variants?.[0]?.original_price / 100).toLocaleString()}{" "}
-                đ
+                {(product?.variants?.[0]?.original_price / 100).toLocaleString()} đ
               </span>
             )}
           </div>
         </div>
+
         <div className="info-bottom">
-          <p className="status">
-            {product?.status === "published" || product?.status === "in_stock" 
-              ? "Còn hàng" 
-              : "Liên hệ"}
-          </p>
-          <button 
-            onClick={() => navigate(`/products/${product?.id}`)} 
+          {/* 🔥 DÙNG hasStock CHỈNH XÁC */}
+          <p className="status">{statusLabel}</p>
+
+          <button
+            onClick={() => navigate(`/products/${product?.id}`)}
             className="btn-cart"
           >
             <FaShoppingCart />

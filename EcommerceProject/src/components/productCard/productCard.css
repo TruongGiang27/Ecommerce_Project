@@ -10,43 +10,38 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 380px; /* 🔥 chiều cao cố định để đồng đều */
+
+  /* 🔥 tăng card lên chút để chứa hình + title */
+  height: 420px;
 }
 
 .product-card:hover {
   transform: translateY(-5px);
 }
-.product-container {
 
-}
-
-/* === Ảnh sản phẩm === */
 .product-img {
   position: relative;
-  text-align: center;
+  width: 100%;
+  height: 280px;
   overflow: hidden;
   border-radius: 10px;
-  height: 180px; /* 🔥 cố định chiều cao ảnh */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background: #000;
 }
-
 .product-img img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-  display: block;
+  object-fit: cover; /* 🔥 không để lại gap → hết đường cắt */
+  transition: 0.3s ease;
 }
 
 /* Overlay nút khám phá */
 .explore-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -87,7 +82,6 @@
   margin-top: 12px;
 }
 
-/* Phần trên: Tên + Giá */
 .info-top {
   flex-grow: 1;
 }
@@ -98,10 +92,9 @@
   margin: 5px 0 6px;
   line-height: 1.3em;
   color: #111;
-  height: 38px; /* 🔥 cố định chiều cao tên sản phẩm */
+  height: 38px;
   overflow: hidden;
   display: -webkit-box;
-  /* -webkit-line-clamp: 2; */
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
 }
@@ -111,7 +104,6 @@
 }
 
 .price {
-  /* color: #2563eb; */
   font-weight: bold;
   font-size: 15px;
 }
@@ -123,14 +115,13 @@
   font-size: 13px;
 }
 
-/* Phần dưới: Trạng thái + Nút giỏ hàng */
 .info-bottom {
   border-top: 1px solid #eee;
   padding-top: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: auto; /* 🔥 đẩy phần này xuống đáy card */
+  margin-top: auto;
 }
 
 .status {
