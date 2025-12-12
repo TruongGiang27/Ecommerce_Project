@@ -127,13 +127,14 @@ export default function Products() {
     .slice(0, 5);
 
   return (
-  <>
-    {/* ===== SIDEBAR + PRODUCT GRID ===== */}
-    <div className="container-products">
-      <div className="subContainer">
-        {/* Sidebar */}
-        <div className="side-bar">
-          <SidebarCategories onSelectCategory={handleCategoryChange} />
+    <>
+      {/* ====== LIST SẢN PHẨM + SIDEBAR ====== */}
+      <div className="products-wrapper"> {/* Thêm wrapper bao ngoài */}
+      <div className="container-products">
+        <div className="subContainer">
+          {/* Sidebar bên trái */}
+          <div className="side-bar">
+            <SidebarCategories onSelectCategory={handleCategoryChange} />
 
           <div className="right-sidebar">
             <div className="promo-banner">
@@ -214,6 +215,7 @@ export default function Products() {
         </div>
       </div>
     </div>
+      </div> {/* Đóng wrapper bao ngoài */}
 
     {/* ⭐⭐⭐ MỚI: HERO LANDING ĐƯA LÊN TRÊN ⭐⭐⭐ */}
     <HeroLanding />

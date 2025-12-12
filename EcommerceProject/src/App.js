@@ -25,10 +25,12 @@ import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 // import CartProvider from "./context/CartContext";
 import ThirdPartyCallback from "./pages/Auth/ThirdPartyCallback";
-import Guide from "./pages/Guide/Guide";
+import ConfirmPayment from "./pages/ConfirmPayment/ConfirmPayment";
 import News from "./pages/News/News";
-import GuideDetail from "./pages/GuideDetail/GuideDetail";
 import NewsDetail from "./pages/NewsDetail/NewsDetail";
+import Guide from "./pages/Guide/Guide";
+import GuideDetail from "./pages/GuideDetail/GuideDetail";
+
 function App() {
   console.log("Profile:", Profile);
 
@@ -50,9 +52,7 @@ function App() {
             <Route path="/faqs" element={<FAQs />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/orders-history" element={<OrderHistory />} />
-            {/* <Route path="/orders-history-detail/:id" element={<OrderHistoryDetail />} /> */}
             <Route path="/transaction-history" element={<TransactionHistory />} />
-            {/* <Route path="/transaction-history-detail/:id" element={<TransactionHistoryDetail />} /> */}
             <Route path="*" element={<h2>404 - Page Not Found</h2>} />
             <Route path="/vnpay-return" element={<VnpayReturn />} />
             <Route path="/support" element={<Support />} />
@@ -60,10 +60,11 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/callback" element={<ThirdPartyCallback />} />
-            <Route path="/guide" element={<Guide />} />
-            <Route path="/news" element={<News />} />
-            <Route path="/guide/:slug" element={<GuideDetail />} />
-            <Route path="/news/:slug" element={<NewsDetail />} />
+            <Route path="/cart/confirm-payment/:id" element={<ConfirmPayment />} />
+            <Route path="/news" element={<News/>} />
+            <Route path="/news/:slug" element={<NewsDetail/>} />
+            <Route path="/guide" element={<Guide/>} />
+            <Route path="/guide/:slug" element={<GuideDetail/>} />
           </Routes>
           <PhoneSupport to="/support" />
           <ScrollTop />

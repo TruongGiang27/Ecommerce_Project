@@ -1,214 +1,132 @@
-// src/pages/Register/Register.jsx (Đã chỉnh sửa)
-
+// src/pages/Register/Register.jsx
 import React, { useState } from "react";
 import { apiAuthClient, apiStoreClient } from "../../lib/medusa";
-import { useAuth } from "../../context/AuthContext"; // ✅ Dùng Context
+import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-// import { registerCustomer } from "../../services/api"; // ⚠️ Không dùng, nên loại bỏ nếu không cần thiết
+import "./Register.css";
 
 function CustomerRegistrationForm() {
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    first_name: "",
-    last_name: "",
+    email: "", password: "", first_name: "", last_name: "", phone: "", company: "",
   });
+  
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // ✅ Dùng context Auth để cập nhật trạng thái đăng nhập
   const { setAuthToken, fetchCustomer } = useAuth();
   const navigate = useNavigate();
 
-  // Hàm tiện ích cục bộ (không phải hàm tiện ích toàn cục bị dư thừa)
-  const getAuthHeaders = (token) => {
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const getAuthHeaders = (token) => ({ Authorization: `Bearer ${token}` });
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
-    setIsError(false);
+    setMessage(""); setIsError(false); setLoading(true);
 
-    const { email, password, first_name, last_name } = formData;
-    const customerForm = { first_name, last_name, email };
+    const { email, password, first_name, last_name, phone, company } = formData;
 
-    // Kiểm tra cơ bản
-    if (!email || !password || password.length < 8) {
-      setMessage("Vui lòng điền đầy đủ email và mật khẩu (tối thiểu 8 ký tự).");
-      setIsError(true);
-      return;
+    if (!email || !password || !first_name || !last_name || !phone) {
+      setMessage("Vui lòng điền các trường có dấu (*)");
+      setIsError(true); setLoading(false); return;
+    }
+    if (password.length < 8) {
+      setMessage("Mật khẩu phải có ít nhất 8 ký tự.");
+      setIsError(true); setLoading(false); return;
     }
 
     try {
-      // 1. ĐĂNG KÝ (AUTH SERVICE)
-      const authRegisterResponse = await apiAuthClient.post(
-        "/customer/emailpass/register",
-        { email, password }
-      );
-      const registerToken = authRegisterResponse.data.token;
+      // 1. Register Auth
+      const authRes = await apiAuthClient.post("/customer/emailpass/register", { email, password });
+      const tempToken = authRes.data.token;
+      setAuthToken(tempToken);
 
-      // ✅ Lưu token đăng ký TẠM THỜI (để xác thực bước Tạo Customer)
-      setAuthToken(registerToken);
+      // 2. Create Profile
+      await apiStoreClient.post("/customers", {
+        first_name, last_name, email, phone, metadata: { company: company || "" }
+      }, { headers: getAuthHeaders(tempToken) });
 
-      // 2. TẠO CUSTOMER RECORD (STORE API)
-      const headers = getAuthHeaders(registerToken);
+      // 3. Re-login
+      const loginRes = await apiAuthClient.post("/customer/emailpass", { email, password });
+      const sessionToken = loginRes.data.token;
+      setAuthToken(sessionToken);
+      await fetchCustomer(sessionToken);
 
-      const storeCustomerResponse = await apiStoreClient.post(
-        "/customers",
-        customerForm,
-        { headers }
-      );
-      const createdCustomer = storeCustomerResponse.data.customer;
-
-      // 3. ĐĂNG NHẬP (AUTH SERVICE) để lấy token phiên làm việc chính thức
-      const authLoginResponse = await apiAuthClient.post(
-        "/customer/emailpass",
-        { email, password }
-      );
-      const loginToken = authLoginResponse.data.token;
-
-      // ✅ Lưu token đăng nhập chính thức và Cập nhật Context
-      setAuthToken(loginToken);
-      await fetchCustomer(loginToken);
-
-      setMessage(
-        `Đăng ký và đăng nhập thành công cho: ${createdCustomer.email}`
-      );
+      setMessage("Đăng ký thành công! Đang chuyển hướng...");
       setIsError(false);
+      setTimeout(() => navigate("/"), 1500);
 
-      // ✅ Chuyển hướng về trang chủ sau 1 giây
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
     } catch (error) {
-      console.error("Registration Error:", error);
-
-      // Nếu đăng ký lỗi, đảm bảo xóa token (nếu có)
+      console.error(error);
       setAuthToken(null);
-
-      const errorMessage =
-        error.response?.data?.message ||
-        "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin và kết nối.";
-
-      setMessage(`Lỗi: ${errorMessage}`);
+      setMessage(error.response?.data?.message || "Đăng ký thất bại. Email có thể đã tồn tại.");
       setIsError(true);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const popUpMessage = message ? (<div style={{ color: isError ? "red" : "green", marginTop: "10px" }}>{message}</div>) : null;
-
   return (
     <div className="auth-wrapper">
-      <div className="auth-card">
-        <h2>Đăng Ký</h2>
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Nhập email của bạn"
-              value={formData.email}
-              onChange={handleChange}
-              required
+      <div className="auth-card register-card"> {/* Thêm class register-card */}
+        <div className="auth-header">
+          <h2>Tạo Tài Khoản Mới</h2>
+          <p className="auth-subtitle">Nhập thông tin chi tiết của bạn</p>
+        </div>
 
-            />
+        <form onSubmit={handleSubmit} className="auth-form">
+          {/* Sửa lại chỗ này: Bỏ style inline grid */}
+          <div className="form-row">
+            <div className="form-group">
+              <label>Họ <span className="req">*</span></label>
+              <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} required placeholder="Nguyễn" />
+            </div>
+            <div className="form-group">
+              <label>Tên <span className="req">*</span></label>
+              <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} required placeholder="Văn A" />
+            </div>
           </div>
+
           <div className="form-group">
-            <label>Mật khẩu</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Nhập mật khẩu"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            <label>Email <span className="req">*</span></label>
+            <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="email@domain.com" />
           </div>
+
           <div className="form-group">
-            <label>Họ</label>
-             <input
-              type="text"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleChange}
-              required
-              placeholder="Họ"
-            />
+            <label>Mật khẩu <span className="req">*</span></label>
+            <input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Tối thiểu 8 ký tự" />
           </div>
-           <div className="form-group">
-            <label>Tên</label>
-             <input
-              type="text"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleChange}
-              required
-              placeholder="Tên"
-            />
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>SĐT <span className="req">*</span></label>
+              <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required placeholder="0912345678" />
+            </div>
+            <div className="form-group">
+              <label>Công ty</label>
+              <input type="text" name="company" value={formData.company} onChange={handleChange} placeholder="Không bắt buộc" />
+            </div>
           </div>
-          <div className="form-options">
-            <button type="button" className="link-btn" onClick={() => navigate("/login")}>
-              Bạn đã có tài khoản? Đăng nhập
-            </button>
-          </div>
-          <button type="submit" className="btn-submit">
-            Đăng ký
+
+          <button type="submit" className="btn-submit" disabled={loading}>
+            {loading ? "Đang xử lý..." : "Đăng Ký Tài Khoản"}
           </button>
         </form>
 
-        {popUpMessage}
+        {message && (
+          <div className={`message-box ${isError ? 'error' : 'success'}`}>
+            {message}
+          </div>
+        )}
+
+        <div className="auth-footer">
+          <span>Đã có tài khoản? </span>
+          <button type="button" className="link-btn highlight" onClick={() => navigate("/login")}>
+            Đăng nhập ngay
+          </button>
+        </div>
       </div>
     </div>
-    // <form onSubmit={handleSubmit}>
-    //   <h2>Đăng ký Khách hàng (Medusa V2 Flow)</h2>
-    //   {/* Input fields */}
-    //   <input
-    //     type="email"
-    //     name="email"
-    //     value={formData.email}
-    //     onChange={handleChange}
-    //     required
-    //     placeholder="Email"
-    //   />
-    //   <input
-    //     type="password"
-    //     name="password"
-    //     value={formData.password}
-    //     onChange={handleChange}
-    //     required
-    //     placeholder="Mật khẩu"
-    //   />
-    //   <input
-    //     type="text"
-    //     name="first_name"
-    //     value={formData.first_name}
-    //     onChange={handleChange}
-    //     required
-    //     placeholder="Tên"
-    //   />
-    //   <input
-    //     type="text"
-    //     name="last_name"
-    //     value={formData.last_name}
-    //     onChange={handleChange}
-    //     required
-    //     placeholder="Họ"
-    //   />
-
-    //   <button type="submit">Đăng ký và Đăng nhập</button>
-
-    //   {message && (
-    //     <p style={{ color: isError ? "red" : "green", marginTop: "10px" }}>
-    //       {message}
-    //     </p>
-    //   )}
-    // </form>
   );
 }
 

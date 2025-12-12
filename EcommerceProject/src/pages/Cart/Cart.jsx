@@ -1,20 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useCart } from "../../context/CartContext";
 import "./Cart.css";
-import vnpayLogo from "../../images/vnpay-logo.png";
-import momoLogo from "../../images/momo-logo.png";
-// import { processCheckout } from "../../services/order";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  clearAllVariants,
-  setManyVariants,
-} from "../../redux/slices/variantSlice";
-import {
-  resetCustomerInfo,
-  setCustomerInfo,
-} from "../../redux/slices/customerInfoSlice";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { checkoutCurrentCart } from "../../services/order";
+import { clearCartId, setCartId } from "../../redux/slices/cartSlice";
 
 export default function Cart() {
   const { cart, removeFromCart } = useCart();
@@ -29,13 +20,11 @@ export default function Cart() {
   const [selected, setSelected] = useState([]); // checked items
   const [qrCode, setQrCode] = useState(null);
 
-  const [isVNPayModalOpen, setIsVNPayModalOpen] = useState(false);
-  const [isMomoModalOpen, setIsMomoModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const paymentUrl = process.env.REACT_APP_PAYMENT_URL;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const promoText = promo ? (
     <>
       mã ưu đãi: <strong>{promo}</strong>
@@ -47,8 +36,7 @@ export default function Cart() {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    dispatch(clearAllVariants());
-    dispatch(resetCustomerInfo());
+    dispatch(clearCartId());
 
     console.log("Đã clear");
   }, []);
@@ -84,7 +72,7 @@ export default function Cart() {
     alert(`Mã ưu đãi: ${upperCode || "Chưa nhập"}`);
   };
 
-  const validateVNPayOrder = () => {
+  const validateCheckout = () => {
     if (!isAuthenticated) {
       alert("Vui lòng đăng nhập để tiếp tục thanh toán.");
       navigate("/login");
@@ -101,92 +89,44 @@ export default function Cart() {
       return false;
     }
 
-    setIsVNPayModalOpen(true);
+    setIsModalOpen(true);
   };
 
-  const validateMomoOrder = () => {
-    if (!isAuthenticated) {
-      alert("Vui lòng đăng nhập để tiếp tục thanh toán.");
-      navigate("/login");
-      return false;
-    }
-
-    if (!email || !firstName || !lastName || !address || !city || !phone) {
-      alert("Vui lòng nhập đầy đủ thông tin trước khi thanh toán.");
-      return false;
-    }
-
-    if (selected.length === 0) {
-      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
-      return false;
-    }
-
-    setIsMomoModalOpen(true);
-  };
-
-  const saveToRedux = () => {
-    const newSelected = formatDataForCart(selected);
-
-    // --- 1. Xử lý Variants ---
-    if (newSelected.length > 0) {
-      dispatch(setManyVariants(newSelected));
-      console.log(
-        "Đã lưu variants vào Redux thành công với data: ",
-        newSelected
-      );
-    }
-
-    // --- 2. Xử lý Customer Info ---
-    dispatch(
-      setCustomerInfo({
+  const checkoutCart = async () => {
+    try {
+      const customerInfo = {
         email: email,
         address: {
           first_name: firstName,
           last_name: lastName,
           address_1: address,
           city: city,
-          phone: phone,
           country_code: "vn",
           postal_code: "700000",
+          phone: phone,
         },
         promoCodes: promo ? [promo] : [],
-      })
-    );
-    console.log(
-      "Đã lưu customer info vào Redux thành công với data: ",
-      email,
-      firstName,
-      lastName,
-      address,
-      city,
-      phone,
-      promo
-    );
-  };
+      };
 
-  const payVnpay = async () => {
-    const res = await fetch(`${paymentUrl}/create_payment`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: total }),
-    });
+      const variantData = formatDataForCart(selected);
+      console.log("Variant Data for Checkout: ", variantData);
+      console.log("Customer Info for Checkout: ", customerInfo);
 
-    const data = await res.json();
-    if (data?.data) window.location.href = data.data;
-  };
+      const currentCartId = await checkoutCurrentCart(
+        variantData,
+        1,
+        customerInfo
+      );
+      console.log("Cart id sau khi checkout: ", currentCartId);
 
-  const payMomo = async () => {
-    const res = await fetch(`${paymentUrl}/create-momo-payment`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount: total,
-        orderInfo: "Thanh toán đơn hàng",
-      }),
-    });
+      dispatch(setCartId(currentCartId));
+      console.log("Đã set Cart ID vào Redux: ", currentCartId);
 
-    const data = await res.json();
-    if (data?.payUrl) window.location.href = data.payUrl;
+      navigate(`/cart/confirm-payment/${currentCartId}`);
+    } catch (error) {
+      console.error("Lỗi khi xử lý đơn hàng:", error);
+      alert("Có lỗi xảy ra, vui lòng thử lại.");
+    }
   };
 
   // total = sum of prices of checked items (each item quantity = 1)
@@ -198,15 +138,15 @@ export default function Cart() {
     return sum + (variantPrice || 0);
   }, 0);
 
-  if (!cart.length) {
-    return (
-      <div className="cart-page">
-        <div className="cart-wapper">
-          <p className="cart-empty">🛒 Giỏ hàng của bạn đang trống</p>
-        </div>
-      </div>
-    );
-  }
+  // if (!cart.length) {
+  //   return (
+  //     <div className="cart-page">
+  //       <div className="cart-wapper">
+  //         <p className="cart-empty">🛒 Giỏ hàng của bạn đang trống</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
@@ -394,16 +334,8 @@ export default function Cart() {
 
               {/* Thanh toán */}
               <div className="pay-alt">
-                <button
-                  className="qr-btn vnpay-btn"
-                  onClick={validateVNPayOrder}
-                >
-                  <img src={vnpayLogo} alt="VNPay" className="pay-logo" /> Thanh
-                  toán với VNPay QR
-                </button>
-                <button className="qr-btn momo-btn" onClick={validateMomoOrder}>
-                  <img src={momoLogo} alt="MoMo" className="pay-logo" /> Thanh
-                  toán với MoMo QR
+                <button className="qr-btn vnpay-btn" onClick={validateCheckout}>
+                  Xác nhận thông tin & Thanh toán
                 </button>
               </div>
 
@@ -418,86 +350,27 @@ export default function Cart() {
         </div>
       </div>
 
-      {/* Modal xác nhận thanh toán vnpay */}
-      {isVNPayModalOpen && (
+      {/* Modal xác nhận */}
+      {isModalOpen && (
         <div className="outside-modal">
           <div className="confirm-modal">
-            <h3 className="modal-header">Xác nhận thanh toán bằng VNPay</h3>
-
-            <div className="modal-content">
-              <p className="text">
-                Bạn đang thực hiện thanh toán cho đơn hàng trị giá:{" "}
-                <strong style={{ color: "red", fontWeight: "bold" }}>
-                  {total.toLocaleString()} đ
-                </strong>
-              </p>
-
-              <p className="text">Thông tin ưu đãi: {promoText}</p>
-
-              <p className="text">
-                Địa chỉ nhận hàng: {address}, {city}
-              </p>
-            </div>
+            <h3 className="modal-header">
+              Xác nhận thanh toán đơn hàng với {promoText} ?
+            </h3>
 
             {/* Action Buttons */}
             <div className="modal-actions">
               {/* Nút Hủy: Chỉ hiện khi KHÔNG processing */}
               <button
-                onClick={() => setIsVNPayModalOpen(false)}
+                onClick={() => setIsModalOpen(false)}
                 className="cancel-btn"
               >
                 Hủy bỏ
               </button>
 
               {/* Nút OK: Gọi hàm handelBuyNow */}
-              <button
-                onClick={() => {
-                  saveToRedux();
-                  payVnpay();
-                }}
-                className="confirm-btn"
-              >
+              <button onClick={checkoutCart} className="confirm-btn">
                 Xác nhận
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal xác nhận thanh toán momo */}
-      {isMomoModalOpen && (
-        <div className="outside-modal">
-          <div className="confirm-modal">
-            <h3 className="modal-header">Xác nhận thanh toán bằng Momo</h3>
-
-            <div className="modal-content">
-              <p className="text">
-                Bạn đang thực hiện thanh toán cho đơn hàng trị giá:{" "}
-                <strong style={{ color: "red", fontWeight: "bold" }}>
-                  {total.toLocaleString()} đ
-                </strong>
-              </p>
-
-              <p className="text">Thông tin ưu đãi: {promoText}</p>
-
-              <p className="text">
-                Địa chỉ nhận hàng: {address}, {city}
-              </p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="modal-actions">
-              {/* Nút Hủy: Chỉ hiện khi KHÔNG processing */}
-              <button
-                onClick={() => setIsMomoModalOpen(false)}
-                className="cancel-btn"
-              >
-                Hủy bỏ
-              </button>
-
-              {/* Nút OK: Gọi hàm handelBuyNow */}
-              <button onClick={payMomo} className="confirm-btn">
-                Đồng ý thanh toán
               </button>
             </div>
           </div>

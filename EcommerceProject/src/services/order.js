@@ -52,7 +52,12 @@ export async function addItemToCart(cartId, variantId, quantity = 1) {
 }
 
 // 4. Cập nhật Email & Địa chỉ (Bắt buộc để tính Ship)
-export async function updateCartInfo(cartId, email, shippingAddress, promoCodes) {
+export async function updateCartInfo(
+  cartId,
+  email,
+  shippingAddress,
+  promoCodes
+) {
   try {
     const res = await apiClient.post(`/carts/${cartId}`, {
       email: email,
@@ -113,16 +118,26 @@ export async function completeCart(cartId) {
   }
 }
 
+// 10. Lấy thông tin giỏ hàng theo ID
+export async function getCartByID(cartId) {
+  try {
+    const res = await apiClient.get(`/carts/${cartId}`);
+
+    return res.data.cart;
+  } catch (error) {
+    console.error("Error get cart by id:", error);
+    throw error;
+  }
+}
+
 // --- HÀM TỔNG HỢP (FULL FLOW) ---
 // Hàm này mô phỏng nút "Mua Ngay" (Buy Now)
-export async function processCheckout(
-  variantId,
-  quantity,
-  customerInfo,
-) {
+export async function processCheckout(variantId, quantity, customerInfo) {
   try {
     if (!Array.isArray(variantId) || variantId.length === 0) {
-      throw new Error("Danh sách sản phẩm không hợp lệ (phải là mảng và không rỗng).");
+      throw new Error(
+        "Danh sách sản phẩm không hợp lệ (phải là mảng và không rỗng)."
+      );
     }
 
     console.log("1. Creating Cart...");
@@ -131,12 +146,14 @@ export async function processCheckout(
     console.log("Finish Create Cart");
 
     console.log(`2. Adding ${variantId.length} Item...`);
-    await Promise.all(variantId.map(id => addItemToCart(cartId, id.variant_id, quantity)));
+    await Promise.all(
+      variantId.map((id) => addItemToCart(cartId, id.variant_id, quantity))
+    );
     console.log("Finish Add Item");
 
     console.log("3. Updating Info...");
     console.log("Customer Info: ", customerInfo);
-    
+
     // customerInfo structure: { email: "...", address: { ... } }
     cart = await updateCartInfo(
       cartId,
@@ -156,6 +173,54 @@ export async function processCheckout(
 
     console.log("Order Created Successfully:", orderData);
     return orderData;
+  } catch (error) {
+    console.error("Checkout Failed:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export async function checkoutCurrentCart(variantId, quantity, customerInfo) {
+  try {
+    if (!Array.isArray(variantId) || variantId.length === 0) {
+      throw new Error(
+        "Danh sách sản phẩm không hợp lệ (phải là mảng và không rỗng)."
+      );
+    }
+
+    console.log("1. Creating Cart...");
+    let cart = await createCart();
+    const cartId = cart.id;
+    console.log("Finish Create Cart");
+
+    console.log(`2. Adding ${variantId.length} Item...`);
+    await Promise.all(
+      variantId.map((id) => addItemToCart(cartId, id.variant_id, quantity))
+    );
+    console.log("Finish Add Item");
+
+    console.log("3. Updating Info...");
+    console.log("Customer Info: ", customerInfo);
+
+    // customerInfo structure: { email: "...", address: { ... } }
+    cart = await updateCartInfo(
+      cartId,
+      customerInfo.email,
+      customerInfo.address,
+      customerInfo.promoCodes
+    );
+    console.log("Finish Update Info");
+
+    console.log("5. Initializing Payment...");
+    const payCol = await createPaymentCollection(cartId);
+    await initPaymentSession(payCol.id, "pp_system_default");
+    console.log("Finish Init Payment");
+
+    // console.log("6. Getting Current Cart...");
+    // cart = await getCartByID(cartId);
+    // console.log("Finish Get Current Cart");
+
+    console.log("Checked Out Successfully:", cartId);
+    return cartId;
   } catch (error) {
     console.error("Checkout Failed:", error.response?.data || error.message);
     throw error;

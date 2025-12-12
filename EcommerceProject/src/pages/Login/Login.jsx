@@ -2,20 +2,23 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { AiOutlineEye, AiOutlineEyeInvisible, AiOutlineGoogle } from "react-icons/ai";
 import "./Login.css";
 
 function CustomerLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  
+  // 🔹 State cho chức năng ghi nhớ đăng nhập
+  const [rememberMe, setRememberMe] = useState(false);
+  
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
   const { login, isAuthenticated, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  // ✅ Xử lý việc chuyển hướng sau khi Context cập nhật isAuthenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/");
@@ -33,37 +36,32 @@ function CustomerLoginForm() {
       return;
     }
 
-    const result = await login(email, password);
+    // 🔹 Gọi hàm login với tham số rememberMe
+    const result = await login(email, password, rememberMe);
 
     if (result.success) {
-      // ✅ Nếu login thành công, useEffect ở trên sẽ tự xử lý chuyển hướng
-      setMessage(`Đăng nhập thành công! Đang kiểm tra phiên...`);
+      setMessage(`Đăng nhập thành công!`);
       setIsError(false);
     } else {
-      // Nếu thất bại (bao gồm cả lỗi fetchCustomer/CORS), hiển thị lỗi
       setMessage(`Lỗi: ${result.error}`);
       setIsError(true);
     }
   };
 
-  const messageStyle = { color: isError ? "red" : "green", marginTop: "10px" };
-
-  // const loginWithGoogle = 
-  const handleGoogleLogin = () => {
-    loginWithGoogle();
-  }
-
-  // ... (Phần JSX giữ nguyên)
   return (
     <div className="auth-wrapper">
       <div className="auth-card">
-        <h2>Đăng Nhập</h2>
+        <div className="auth-header">
+          <h2>Đăng Nhập</h2>
+          <p className="auth-subtitle">Chào mừng bạn quay trở lại!</p>
+        </div>
+        
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label>Email</label>
             <input
               type="email"
-              placeholder="Nhập email"
+              placeholder="Nhập email của bạn"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -78,55 +76,60 @@ function CustomerLoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                aria-label="Mật khẩu"
               />
               <button
                 type="button"
                 className="password-toggle"
-                onClick={() => setShowPassword((s) => !s)}
-                aria-pressed={showPassword}
-                aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? (
-                  <AiOutlineEyeInvisible size={18} aria-hidden="true" />
-                ) : (
-                  <AiOutlineEye size={18} aria-hidden="true" />
-                )}
+                {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
               </button>
             </div>
           </div>
+          
           <div className="form-options">
-            <label>
-              <input type="checkbox" /> Ghi nhớ mật khẩu
+            <label className="checkbox-container">
+              {/* 🔹 Input checkbox liên kết với state rememberMe */}
+              <input 
+                type="checkbox" 
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              /> 
+              Ghi nhớ mật khẩu
             </label>
-            <button
-      type="button"
-      className="link-btn"
-      onClick={() => navigate("/forgot-password")}
-      style={{ marginBottom: 4 }}
-    >
-      Quên mật khẩu?
-    </button>
-            <button type="button" className="link-btn" onClick={() => navigate("/register")}>
-              Bạn chưa có tài khoản? Đăng ký ngay
+            <button type="button" className="link-btn forgot-btn" onClick={() => navigate("/forgot-password")}>
+              Quên mật khẩu?
             </button>
           </div>
+
           <button type="submit" className="btn-submit">
             Đăng nhập
           </button>
         </form>
-        {message && <div style={messageStyle}>{message}</div>}
-        {/* Option login bằng social */}
-        <div className="social-login">
-          <p>Hoặc đăng nhập bằng</p>
-          <div className="social-buttons">
-            <button onClick={handleGoogleLogin} className="social-btn google">Google</button>
-            {/* <button className="social-btn facebook">Facebook</button> */}
+
+        {message && (
+          <div className={`message-box ${isError ? 'error' : 'success'}`}>
+            {message}
           </div>
+        )}
+
+        {/* <div className="social-login">
+          <div className="divider"><span>Hoặc</span></div>
+          <div className="social-buttons">
+            <button onClick={() => loginWithGoogle()} className="social-btn google">
+               <AiOutlineGoogle size={20} style={{marginRight: 8}}/> Đăng nhập với Google
+            </button>
+          </div>
+        </div> */}
+
+        <div className="auth-footer">
+          <span>Bạn chưa có tài khoản? </span>
+          <button type="button" className="link-btn highlight" onClick={() => navigate("/register")}>
+            Đăng ký ngay
+          </button>
         </div>
       </div>
     </div>
-
   );
 }
 
