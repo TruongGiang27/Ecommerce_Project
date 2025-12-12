@@ -178,6 +178,8 @@ export default function Products() {
 
   return (
     <>
+      {/* ====== LIST SẢN PHẨM + SIDEBAR ====== */}
+      <div className="products-wrapper"> {/* Thêm wrapper bao ngoài */}
       <div className="container-products">
         <div className="subContainer">
           {/* Sidebar */}
@@ -281,6 +283,7 @@ export default function Products() {
           </div>
         </div>
       </div>
+      </div> {/* Đóng wrapper bao ngoài */}
 
       {/* Hero Signup Section (Giữ nguyên, chỉ thêm loading="lazy" cho ảnh) */}
       <section className="hero-signup">

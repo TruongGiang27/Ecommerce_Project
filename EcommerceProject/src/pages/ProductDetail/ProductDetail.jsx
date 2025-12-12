@@ -19,6 +19,7 @@ export default function ProductDetail() {
   
   // 🔥 1. Lấy URL từ biến môi trường
   const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+  const REGION = process.env.REACT_APP_MEDUSA_REGION_ID || "reg_01K73N9QAJJ6DVF7FGKAKCJQG0";
 
   // 🔥 2. Hàm xử lý link ảnh (Fix lỗi localhost)
   const getImageUrl = (url) => {
@@ -31,7 +32,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     fetch(
-      `${BACKEND_URL}/store/products/${id}?region_id=reg_01K73N9QAJJ6DVF7FGKAKCJQG0`,
+      `${BACKEND_URL}/store/products/${id}?region_id=${REGION}`,
       {
         headers: {
           "x-publishable-api-key":

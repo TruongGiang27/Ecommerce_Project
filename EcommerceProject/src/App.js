@@ -25,6 +25,8 @@ import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 // import CartProvider from "./context/CartContext";
 import ThirdPartyCallback from "./pages/Auth/ThirdPartyCallback";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   console.log("Profile:", Profile);
@@ -63,6 +65,18 @@ function App() {
           <ScrollTop />
         </main>
         <Footer />
+        <ToastContainer 
+          position="top-right"
+          autoClose={3000}       // Tự tắt sau 3 giây
+          hideProgressBar={false}
+          newestOnTop={true}     // Thông báo mới hiện trên cùng
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"          // light, dark hoặc colored
+        />
       </div>
     </Router>
   );
