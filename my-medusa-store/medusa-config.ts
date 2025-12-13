@@ -9,7 +9,7 @@ console.log("✅ NODE_ENV:", process.env.NODE_ENV);
 console.log("✅ DATABASE_URL:", process.env.DATABASE_URL ? "Found (Hidden)" : "❌ MISSING");
 console.log("✅ REDIS_URL:", process.env.REDIS_URL ? "Found" : "❌ MISSING");
 console.log("-----------------------------------------------------");
-
+console.log("✅ STORE_CORS:", process.env.STORE_CORS);
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,

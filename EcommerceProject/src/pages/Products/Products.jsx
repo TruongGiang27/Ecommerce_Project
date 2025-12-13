@@ -1,12 +1,15 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+
+import { useEffect, useState } from "react";
 import ProductCard from "../../components/productCard/ProductCard";
+import { useSearchParams, Link } from "react-router-dom";
 import SidebarCategories from "../../components/SidebarCategories/SidebarCategories";
 import "./products.css";
 
-// Assets
+// Banner / logo dùng cho sidebar + hero
 import OfficeBanner from "../../assets/images/banner-office.png";
 import QuizletBanner from "../../assets/images/banner-quizlet.png";
+
+// 👉 Các logo “app” bay lơ lửng quanh hero (bạn đổi path cho đúng dự án của bạn nha)
 import NetflixLogo from "../../assets/images/netflix2.png";
 import AdobeLogo from "../../assets/images/adobe-color.png";
 import DuolingoLogo from "../../assets/images/duolingo-logo.png";
@@ -16,69 +19,21 @@ import KasperskyLogo from "../../assets/images/kaspersky.png";
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const [category, setCategory] = useState(searchParams.get("category") || "All");
-
-  // Products
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState(
+    searchParams.get("category") || "All"
+  );
   const [products, setProducts] = useState([]);
-  const [newestProducts, setNewestProducts] = useState([]);
-
-  // Loading
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSidebarLoading, setIsSidebarLoading] = useState(true);
-
-  // Pagination
   const pageSize = 12;
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
-  const [pageInput, setPageInput] = useState(String(Number(searchParams.get("page")) || 1));
-
-  // Env
-  const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
-
-  // ===== Utils =====
-  const getImageUrl = useCallback(
-    (url) => {
-      if (!url) return "https://via.placeholder.com/60";
-      if (url.includes("localhost:9000")) {
-        return url.replace("http://localhost:9000", BACKEND_URL);
-      }
-      return url;
-    },
-    [BACKEND_URL]
+  const [pageInput, setPageInput] = useState(
+    String(Number(searchParams.get("page")) || 1)
   );
+  const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
 
-  // ===== Fetch newest products (Sidebar) =====
-  useEffect(() => {
-    const fetchNewProducts = async () => {
-      try {
-        const res = await fetch(
-          `${BACKEND_URL}/store/products?region_id=${regionId}&limit=5`,
-          {
-            headers: {
-              "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
-            },
-          }
-        );
-        const data = await res.json();
-        const sorted = (data.products || []).sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        );
-        setNewestProducts(sorted);
-      } catch (err) {
-        console.error("Lỗi fetch newest products:", err);
-      } finally {
-        setIsSidebarLoading(false);
-      }
-    };
-
-    if (regionId) fetchNewProducts();
-  }, [regionId, BACKEND_URL]);
-
-  // ===== Fetch all products =====
+  // Lấy toàn bộ products
   useEffect(() => {
     const fetchAllProducts = async () => {
-      setIsLoading(true);
       try {
         const limit = 100;
         let offset = 0;
@@ -86,46 +41,57 @@ export default function Products() {
 
         while (true) {
           const res = await fetch(
-            `${BACKEND_URL}/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
+            `http://localhost:9000/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
             {
               headers: {
-                "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
+                "x-publishable-api-key":
+                  process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
               },
             }
           );
 
-          if (!res.ok) break;
+          if (!res.ok) {
+            throw new Error(`Fetch error: ${res.status}`);
+          }
 
           const data = await res.json();
-          const items = data.products || [];
+          console.log("API page response:", data);
 
+          const items = data.products || data.items || data.data || [];
           allProducts = allProducts.concat(items);
 
-          if (items.length < limit) break;
+          if (items.length < limit) {
+            break;
+          }
+
           offset += limit;
         }
 
         setProducts(allProducts);
       } catch (err) {
-        console.error("Lỗi fetch products:", err);
-      } finally {
-        setIsLoading(false);
+        console.error("Lỗi khi fetch products:", err);
       }
     };
 
-    if (regionId) fetchAllProducts();
-  }, [regionId, BACKEND_URL]);
+    fetchAllProducts();
+  }, [regionId]);
 
-  // ===== Sync URL =====
+  // Đồng bộ category + page với URL
   useEffect(() => {
-    const cat = searchParams.get("category");
-    const pg = Number(searchParams.get("page")) || 1;
+    const categoryFromUrl = searchParams.get("category");
+    const pageFromUrl = Number(searchParams.get("page")) || 1;
 
-    setCategory(cat || "All");
-    setPage(pg);
-    setPageInput(String(pg));
+    if (categoryFromUrl) {
+      setCategory(categoryFromUrl);
+    } else {
+      setCategory("All");
+    }
+
+    setPage(pageFromUrl);
+    setPageInput(String(pageFromUrl));
   }, [searchParams]);
 
+  // Đổi category
   const handleCategoryChange = (newCategory) => {
     setCategory(newCategory);
     setPage(1);
@@ -133,14 +99,27 @@ export default function Products() {
     setSearchParams({ category: newCategory, page: "1" });
   };
 
-  // ===== Filter products =====
-  const filteredProducts = useMemo(() => {
-    return products.filter(
-      (p) => category === "All" || p.collection?.title === category
+  // Lọc sản phẩm theo category + search
+  const filteredProducts = products.filter((p) => {
+    return (
+      (category === "All" || p.collection?.title === category) &&
+      (p.title || "").toLowerCase().includes((search || "").toLowerCase())
     );
-  }, [products, category]);
+  });
 
+  // Tính tổng số trang
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+
+  // Nếu page > totalPages thì kéo lại
+  useEffect(() => {
+    if (page > totalPages) {
+      const newPage = totalPages;
+      setPage(newPage);
+      setPageInput(String(newPage));
+      setSearchParams({ category: category, page: String(newPage) });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredProducts.length, totalPages]);
 
   const changePage = (newPage) => {
     if (newPage < 1) newPage = 1;
@@ -148,16 +127,21 @@ export default function Products() {
 
     setPage(newPage);
     setPageInput(String(newPage));
-    setSearchParams({ category, page: String(newPage) });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setSearchParams({ category: category, page: String(newPage) });
+
+    try {
+      const container = document.querySelector(".container-products");
+      if (container && typeof container.scrollIntoView === "function") {
+        container.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } catch (err) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
-  const startIndex = (page - 1) * pageSize;
-  const paginatedProducts = filteredProducts.slice(
-    startIndex,
-    startIndex + pageSize
-  );
-
+  // Tạo list số trang có dấu ...
   const getPageList = () => {
     const pages = [];
     if (totalPages <= 7) {
@@ -177,171 +161,259 @@ export default function Products() {
     return pages;
   };
 
+  const handlePageInputChange = (e) => {
+    setPageInput(e.target.value);
+  };
+
+  const applyPageInput = () => {
+    const n = Number(pageInput);
+    if (!Number.isFinite(n) || n < 1) {
+      setPageInput(String(page));
+      return;
+    }
+    changePage(Math.min(Math.max(1, Math.floor(n)), totalPages));
+  };
+
   const handlePageInputKeyDown = (e) => {
     if (e.key === "Enter") {
-      const n = Number(pageInput);
-      if (!Number.isFinite(n) || n < 1) {
-        setPageInput(String(page));
-        return;
-      }
-      changePage(Math.min(Math.max(1, Math.floor(n)), totalPages));
+      applyPageInput();
     }
   };
 
+  const handlePageInputBlur = () => {
+    applyPageInput();
+  };
+
+  const startIndex = (page - 1) * pageSize;
+  const paginatedProducts = filteredProducts.slice(
+    startIndex,
+    startIndex + pageSize
+  );
+
+  // Sản phẩm mới nhất
+  const newestProducts = [...products]
+    .sort((a, b) => {
+      const da = new Date(a.created_at || 0).getTime();
+      const db = new Date(b.created_at || 0).getTime();
+      return db - da;
+    })
+    .slice(0, 5);
+
   return (
     <>
-      {/* ===== LIST + SIDEBAR ===== */}
-      <div className="products-wrapper">
-        <div className="container-products">
-          <div className="subContainer">
-            {/* Sidebar */}
-            <div className="side-bar">
-              <SidebarCategories onSelectCategory={handleCategoryChange} />
+      {/* ====== LIST SẢN PHẨM + SIDEBAR ====== */}
+      <div className="container-products">
+        <div className="subContainer">
+          {/* Sidebar bên trái */}
+          <div className="side-bar">
+            <SidebarCategories onSelectCategory={handleCategoryChange} />
 
-              <div className="right-sidebar">
-                <div className="promo-banner">
-                  <img src={OfficeBanner} alt="Office" loading="lazy" />
-                </div>
+            {/* Banner + Sản phẩm mới dưới sidebar */}
+            <div className="right-sidebar">
+              {/* Banner Office */}
+              <div className="promo-banner">
+                <img src={OfficeBanner} alt="Office 2024 chính chủ" />
+              </div>
 
-                <Link to="/products/prod_quizlet" className="promo-banner">
-                  <img src={QuizletBanner} alt="Quizlet" loading="lazy" />
-                </Link>
+              {/* Banner Quizlet → link tới product Quizlet */}
+              <Link
+                to="/products/prod_01K73YARNBAD1FZ5QKGFS2T6W6"
+                className="promo-banner"
+                style={{ display: "block" }}
+              >
+                <img
+                  src={QuizletBanner}
+                  alt="Quizlet banner"
+                  style={{ cursor: "pointer", width: "100%", height: "auto" }}
+                />
+              </Link>
 
-                {/* New products */}
-                <div className="new-products-box">
-                  <h3 className="new-products-title">Sản phẩm mới</h3>
-
-                  <div className="new-products-list">
-                    {isSidebarLoading ? (
-                      <p style={{ padding: 10, fontSize: 13, color: "#888" }}>
-                        Đang tải...
-                      </p>
-                    ) : (
-                      newestProducts.map((p) => {
-                        const price =
-                          p?.variants?.[0]?.calculated_price
-                            ?.calculated_amount || 0;
-                        return (
-                          <Link
-                            key={p.id}
-                            to={`/products/${p.id}`}
-                            className="new-product-item"
-                          >
-                            <div className="new-product-thumb">
-                              <img
-                                src={getImageUrl(p.thumbnail)}
-                                alt={p.title}
-                                loading="lazy"
-                              />
-                            </div>
-                            <div className="new-product-info">
-                              <p className="new-product-name">{p.title}</p>
-                              <p className="new-product-price">
-                                {price.toLocaleString()} đ
-                              </p>
-                            </div>
-                          </Link>
-                        );
-                      })
-                    )}
-                  </div>
+              {/* Box Sản phẩm mới */}
+              <div className="new-products-box">
+                <h3 className="new-products-title">Sản phẩm mới</h3>
+                <div className="new-products-list">
+                  {newestProducts.map((p) => {
+                    const npPrice =
+                      p?.variants?.[0]?.calculated_price?.calculated_amount ||
+                      0;
+                    return (
+                      <Link
+                        key={p.id}
+                        to={`/products/${p.id}`}
+                        className="new-product-item"
+                      >
+                        <div className="new-product-thumb">
+                          <img
+                            src={
+                              p.thumbnail || "https://via.placeholder.com/60"
+                            }
+                            alt={p.title}
+                          />
+                        </div>
+                        <div className="new-product-info">
+                          <p className="new-product-name">{p.title}</p>
+                          <p className="new-product-price">
+                            {npPrice.toLocaleString()} đ
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Content */}
-            <div className="content">
-              <div className="title-style">
-                <h2>
-                  {category === "All"
-                    ? "Tất cả sản phẩm"
-                    : `Sản phẩm: ${category}`}
-                </h2>
-              </div>
+          {/* Nội dung chính */}
+          <div className="content">
+            <div className="title-style" style={{ flex: 1 }}>
+              <h2 style={{ marginBottom: "20px" }}>
+                {category === "All"
+                  ? "Tất cả sản phẩm"
+                  : `Sản phẩm: ${category}`}
+              </h2>
+            </div>
 
-              {isLoading ? (
-                <div
-                  className="loading-container"
-                  style={{ textAlign: "center", padding: 50 }}
-                >
-                  <div className="loader"></div>
-                  <p>Đang tải danh sách sản phẩm...</p>
-                </div>
+            {/* Bạn có thể thêm ô search nếu cần */}
+            {/* <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tìm kiếm sản phẩm..."
+            /> */}
+
+            {/* Grid danh sách sản phẩm */}
+            <div className="product-grid">
+              {paginatedProducts.length > 0 ? (
+                paginatedProducts.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))
               ) : (
-                <>
-                  <div className="product-grid">
-                    {paginatedProducts.length > 0 ? (
-                      paginatedProducts.map((p) => (
-                        <ProductCard key={p.id} product={p} />
-                      ))
-                    ) : (
-                      <p>Không tìm thấy sản phẩm.</p>
-                    )}
-                  </div>
-
-                  {filteredProducts.length > pageSize && (
-                    <div className="pagination">
-                      <button
-                        onClick={() => changePage(page - 1)}
-                        disabled={page <= 1}
-                        className="icon-pagination-button"
-                      >
-                        &lt;
-                      </button>
-
-                      <ul className="pagination-list">
-                        {getPageList().map((item, idx) =>
-                          item === "left-ellipsis" ||
-                          item === "right-ellipsis" ? (
-                            <li key={idx} className="ellipsis">
-                              …
-                            </li>
-                          ) : (
-                            <li key={item}>
-                              <button
-                                onClick={() => changePage(item)}
-                                className={`page-button ${
-                                  item === page ? "active" : ""
-                                }`}
-                              >
-                                {item}
-                              </button>
-                            </li>
-                          )
-                        )}
-                      </ul>
-
-                      <button
-                        onClick={() => changePage(page + 1)}
-                        disabled={page >= totalPages}
-                        className="icon-pagination-button"
-                      >
-                        &gt;
-                      </button>
-                    </div>
-                  )}
-                </>
+                <p>Không tìm thấy sản phẩm</p>
               )}
+            </div>
+
+            {/* Pagination */}
+            <div
+              className="pagination"
+              style={{
+                marginTop: 20,
+                display: "flex",
+                gap: 10,
+                alignItems: "center",
+              }}
+            >
+              <button
+                onClick={() => changePage(page - 1)}
+                disabled={page <= 1}
+                className="icon-pagination-button"
+                aria-label="Trang trước"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M15 18L9 12L15 6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span className="sr-only">Prev</span>
+              </button>
+
+              <nav aria-label="Pagination">
+                <ul
+                  className="pagination-list"
+                  style={{
+                    display: "flex",
+                    gap: 6,
+                    listStyle: "none",
+                    padding: 0,
+                    margin: 0,
+                  }}
+                >
+                  {getPageList().map((item, idx) =>
+                    item === "left-ellipsis" || item === "right-ellipsis" ? (
+                      <li
+                        key={`${item}-${idx}`}
+                        className="ellipsis"
+                        aria-hidden="true"
+                        style={{ padding: "6px 8px" }}
+                      >
+                        …
+                      </li>
+                    ) : (
+                      <li key={item}>
+                        <button
+                          onClick={() => changePage(item)}
+                          className={`page-button ${
+                            item === page ? "active" : ""
+                          }`}
+                          aria-current={item === page ? "page" : undefined}
+                        >
+                          {item}
+                        </button>
+                      </li>
+                    )
+                  )}
+                </ul>
+              </nav>
+
+              <button
+                onClick={() => changePage(page + 1)}
+                disabled={page >= totalPages}
+                className="icon-pagination-button"
+                aria-label="Trang tiếp theo"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M9 18L15 12L9 6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span className="sr-only">Next</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ===== HERO ===== */}
+      {/* ====== HERO “ĐĂNG KÝ TÀI KHOẢN” DƯỚI PHẦN SẢN PHẨM ====== */}
       <section className="hero-signup">
-        <div className="hero-floating-layer">
+        {/* Lớp icon bay xung quanh (pure decoration) */}
+        <div className="hero-floating-layer" aria-hidden="true">
           <div className="hero-floating-card card-1">
             <img src={OfficeLogo} alt="Office" />
           </div>
+
           <div className="hero-floating-card card-2">
             <img src={NetflixLogo} alt="Netflix" />
           </div>
+
           <div className="hero-floating-card card-3">
             <img src={AdobeLogo} alt="Adobe" />
           </div>
+
           <div className="hero-floating-card card-4">
             <img src={DuolingoLogo} alt="Duolingo" />
           </div>
+
           <div className="hero-floating-card card-5">
             <img src={WindowsLogo} alt="Windows" />
           </div>
@@ -349,14 +421,94 @@ export default function Products() {
         <div className="hero-floating-card card-6">
           <img src={KasperskyLogo} alt="Kaspersky" />
         </div>
+        {/* Nội dung chính ở giữa */}
         <div className="hero-inner">
-          <div className="hero-badge">3.000+ khách hàng tin tưởng</div>
+          <div className="hero-badge">
+            <span className="hero-badge-dot" />
+            3.000+ khách hàng tin tưởng
+          </div>
+
           <h2 className="hero-title">
-            Mua tài khoản & key bản quyền chính hãng tại Digitech Shop
+            <span className="hero-title-gradient">Mua tài Khoản Chính Chủ, </span>
+            <span className="hero-title-gradient">
+              Key bản Quyền Giá Tốt
+            </span>{" "}
+            <span className="hero-title-gradient"> Tại Digitech Shop</span>
           </h2>
+
+          <p className="hero-subtitle">
+            Trải nghiệm mua sắm tiện lợi với tài khoản và key bản quyền chính
+            hãng tại Digitech Shop. Cam kết giá tốt nhất, hỗ trợ kỹ thuật và
+            dịch vụ khách hàng chu đáo suốt quá trình sử dụng.
+          </p>
+
           <Link to="/register" className="hero-cta">
-            Đăng ký tài khoản
+            <span>Đăng ký tài khoản</span>
+            <span className="hero-cta-arrow">➜</span>
           </Link>
+        </div>
+      </section>
+
+      {/* ====== KHUNG ĐEN LỢI ÍCH DƯỚI HERO ====== */}
+      <section className="benefit-strip">
+        <div className="benefit-strip-inner">
+          {/* Item 1 */}
+          <div className="benefit-item">
+            <div className="benefit-icon">
+              <span role="img" aria-label="truck">
+                🚚
+              </span>
+            </div>
+            <div className="benefit-text">
+              <p className="benefit-title">Xử lý nhanh</p>
+              <p className="benefit-sub">Trong vòng 3h</p>
+            </div>
+          </div>
+
+          <span className="benefit-divider" aria-hidden="true" />
+
+          {/* Item 2 */}
+          <div className="benefit-item">
+            <div className="benefit-icon">
+              <span role="img" aria-label="support">
+                🛡️
+              </span>
+            </div>
+            <div className="benefit-text">
+              <p className="benefit-title">Đội ngũ chuyên nghiệp</p>
+              <p className="benefit-sub">Hỗ trợ 24/7</p>
+            </div>
+          </div>
+
+          <span className="benefit-divider" aria-hidden="true" />
+
+          {/* Item 3 */}
+          <div className="benefit-item">
+            <div className="benefit-icon">
+              <span role="img" aria-label="key">
+                🔑
+              </span>
+            </div>
+            <div className="benefit-text">
+              <p className="benefit-title">Key chính hãng</p>
+              <p className="benefit-sub">Hợp pháp 100%</p>
+            </div>
+          </div>
+
+          <span className="benefit-divider" aria-hidden="true" />
+
+          {/* Item 4 */}
+          <div className="benefit-item">
+            <div className="benefit-icon">
+              <span role="img" aria-label="headset">
+                🎧
+              </span>
+            </div>
+            <div className="benefit-text">
+              <p className="benefit-title">Cổng thanh toán</p>
+              <p className="benefit-sub">An toàn, uy tín</p>
+            </div>
+          </div>
         </div>
       </section>
     </>
