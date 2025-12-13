@@ -19,6 +19,7 @@ export default function Products() {
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   const [pageInput, setPageInput] = useState(String(Number(searchParams.get("page")) || 1));
   const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
+  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
 
   // Fetch products
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function Products() {
 
         while (true) {
           const res = await fetch(
-            `http://localhost:9000/store/products?region_id=${regionId}&limit=${limit}&offset=${offset}`,
+            `${BACKEND_URL}/store/products?region_id=${regionId}&limit=5`, 
             {
               headers: {
                 "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
