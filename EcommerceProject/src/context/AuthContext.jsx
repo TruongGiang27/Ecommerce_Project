@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+// ✅ Import apiAuthClient cho việc login và apiCustomerClient cho việc fetch customer
 import { apiAuthClient, apiCustomerClient, apiStoreClient } from "../lib/medusa";
 
 const AUTH_TOKEN_KEY = "medusa_auth_token";
@@ -17,78 +18,68 @@ export const AuthProvider = ({ children }) => {
   const [customer, setCustomer] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Helper: Lấy token từ storage
-  const getToken = useCallback(() => {
-    return localStorage.getItem(AUTH_TOKEN_KEY) || sessionStorage.getItem(AUTH_TOKEN_KEY);
-  }, []);
+  const getToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
 
-  // Helper: Lưu/Xóa token
-  const setAuthToken = useCallback((token, rememberMe = true) => {
-    // Xóa token cũ ở cả 2 nơi để tránh xung đột
-    localStorage.removeItem(AUTH_TOKEN_KEY);
-    sessionStorage.removeItem(AUTH_TOKEN_KEY);
-
+  const setAuthToken = (token) => {
     if (token) {
-      if (rememberMe) {
-        localStorage.setItem(AUTH_TOKEN_KEY, token); // Lưu lâu dài
-      } else {
-        sessionStorage.setItem(AUTH_TOKEN_KEY, token); // Lưu phiên hiện tại
-      }
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+    } else {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
     }
-  }, []);
+  };
 
-  const getAuthHeaders = useCallback((token) => {
+  const getAuthHeaders = (token) => {
     const currentToken = token || getToken();
+    // ✅ Token phải được gửi qua header Authorization
     return currentToken ? { Authorization: `Bearer ${currentToken}` } : {};
-  }, [getToken]);
+  };
 
-  // 🔹 CẬP NHẬT: Hàm logout điều hướng về trang login
   const logout = useCallback(() => {
-    // 1. Xóa token và state
     setAuthToken(null);
     setIsAuthenticated(false);
     setCustomer(null);
+  }, []);
 
-    // 2. Điều hướng về trang đăng nhập
-    // Sử dụng window.location.replace để thay thế lịch sử duyệt web (không back lại được trang cũ)
-    // và reload lại trang để đảm bảo sạch state.
-    if (window.location.pathname !== "/login") {
-      window.location.replace("/login");
-    }
-  }, [setAuthToken]);
-
+  // ✅ HÀM NÀY ĐÃ ĐƯỢC SỬA ĐỂ GỌI /customers/me
   const fetchCustomer = useCallback(
     async (token) => {
       try {
         const headers = getAuthHeaders(token);
+
+        console.log(
+          "-> Sending GET /store/customers/me with headers:",
+          headers
+        );
+
+        // ⚠️ GỌI ENDPOINT STORE API
         const response = await apiCustomerClient.get("/customers/me", {
           headers,
         });
 
         if (response.data.customer) {
+          console.log("-> SUCCESS: Customer data received from /customers/me.");
           setCustomer(response.data.customer);
           setIsAuthenticated(true);
         } else {
+          console.log("-> FAIL: Token invalid or no customer data.");
           logout();
         }
       } catch (error) {
+        // ✅ Bắt lỗi 401/CORS/Network
         console.error(
-          "LỖI FETCH CUSTOMER:",
+          "LỖI FETCH CUSTOMER (Lỗi CORS/Token):",
           error.response?.status,
           error.message
         );
-        // Nếu lỗi 401 (Hết phiên/Token sai) -> Tự động logout và chuyển về login
-        if (error.response?.status === 401) {
-          logout();
-        }
+        logout();
       } finally {
         setIsLoading(false);
       }
     },
-    [getAuthHeaders, logout]
+    [logout]
   );
 
-  const login = async (email, password, rememberMe = false) => {
+  const login = async (email, password) => {
     try {
       const authResponse = await apiAuthClient.post("/customer/emailpass", {
         email,
@@ -96,9 +87,10 @@ export const AuthProvider = ({ children }) => {
       });
       const token = authResponse.data.token;
 
-      console.log(`-> Đăng nhập thành công. Ghi nhớ: ${rememberMe}`);
-      
-      setAuthToken(token, rememberMe);
+      console.log("-> POST /customer/emailpass success. Token received.");
+      setAuthToken(token);
+
+      // ⚠️ Dùng token mới để fetch customer từ Store API
       await fetchCustomer(token);
 
       return { success: true };
@@ -112,99 +104,115 @@ export const AuthProvider = ({ children }) => {
         success: false,
         error:
           error.response?.data?.message ||
-          "Đăng nhập thất bại (Kiểm tra kết nối/Mật khẩu)",
+          "Đăng nhập thất bại (Kiểm tra CORS/Kết nối)",
       };
     }
   };
 
+ 
   const register = async ({
-    email,
-    password,
-    first_name,
-    last_name,
-    phone,
-  }) => {
-    try {
-      // 1. Đăng ký Auth
-      const authRegisterResponse = await apiAuthClient.post(
-        "/customer/emailpass/register",
-        { email, password }
-      );
-      const registerToken = authRegisterResponse.data.token;
-      
-      // Tạm thời lưu token để gọi API tạo profile
-      setAuthToken(registerToken); 
+  email,
+  password,
+  first_name,
+  last_name,
+  phone,
+}) => {
+  try {
+    // 1️⃣ Đăng ký tài khoản trên Auth service
+    const authRegisterResponse = await apiAuthClient.post(
+      "/customer/emailpass/register",
+      { email, password }
+    );
 
-      // 2. Tạo customer record Store
-      const headers = {
-        ...getAuthHeaders(registerToken),
-        "x-publishable-api-key":
-          apiStoreClient.defaults.headers?.common?.["x-publishable-api-key"] ||
-          process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
-      };
+    const registerToken = authRegisterResponse.data.token;
+    setAuthToken(registerToken);
 
-      const customerForm = { first_name, last_name, email, phone };
-      await apiStoreClient.post("/customers", customerForm, { headers });
+    // 2️⃣ Tạo customer record trong Store API
+    const headers = {
+      ...getAuthHeaders(registerToken),
+      "x-publishable-api-key":
+        apiStoreClient.defaults.headers?.common?.["x-publishable-api-key"] ||
+        process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
+    };
 
-      // 3. Login lại để lấy session chuẩn
-      const authLoginResponse = await apiAuthClient.post("/customer/emailpass", {
-        email,
-        password,
-      });
-      const loginToken = authLoginResponse.data.token;
-      setAuthToken(loginToken);
+    const customerForm = { first_name, last_name, email, phone };
+    await apiStoreClient.post("/customers", customerForm, { headers });
 
-      // 4. Update address (nếu cần)
-      const addressPayload = { first_name, last_name, phone };
-      await apiStoreClient.post(
-        "/customers/me/addresses",
-        addressPayload,
-        { headers: getAuthHeaders(loginToken) }
-      );
+    // 3️⃣ Đăng nhập để lấy token chính thức
+    const authLoginResponse = await apiAuthClient.post("/customer/emailpass", {
+      email,
+      password,
+    });
+    const loginToken = authLoginResponse.data.token;
+    setAuthToken(loginToken);
 
-      // 5. Fetch info
-      await fetchCustomer(loginToken);
+    // 4️⃣ Gửi địa chỉ đến /store/customers/me/addresses
+    const addressPayload = {
+      first_name,
+      last_name,
+      phone,
+    };
 
-      return { success: true };
-    } catch (error) {
-      console.error("Register failed:", error);
-      setAuthToken(null);
-      const serverData = error.response?.data;
-      let serverMsg =
-        serverData?.message ||
-        (typeof serverData === "string" ? serverData : "Đăng ký thất bại.");
-      return { success: false, error: serverMsg };
+    const addressResponse = await apiStoreClient.post(
+      "/customers/me/addresses",
+      addressPayload,
+      { headers: getAuthHeaders(loginToken) }
+    );
+
+    console.log("Address created:", addressResponse.data);
+
+    // 5️⃣ Fetch lại thông tin customer để cập nhật UI
+    await fetchCustomer(loginToken);
+
+    return { success: true };
+  } catch (error) {
+    console.error(
+      "Register failed:",
+      error.response?.status,
+      error.response?.data || error.message
+    );
+    setAuthToken(null);
+
+    const serverData = error.response?.data;
+    let serverMsg =
+      serverData?.message ||
+      (typeof serverData === "string" ? serverData : "Đăng ký thất bại.");
+    return { success: false, error: serverMsg };
+  }
+};
+
+
+// dùng apiAuthClient (baseURL = `${BACKEND_URL}/auth`)
+// AuthContext.jsx (thay thế hàm loginWithGoogle)
+const loginWithGoogle = async () => {
+  try {
+    // Gọi route authenticate cho customer (baseURL đã là `${BACKEND_URL}/auth`)
+    const res = await apiAuthClient.get("/customer/google");
+
+    // Trường hợp backend trả object { location: "https://accounts.google..." }
+    if (res.data?.location) {
+      window.location.href = res.data.location;
+      return;
     }
-  };
 
-  const loginWithGoogle = async () => {
-    try {
-      const res = await apiAuthClient.get("/customer/google");
-      if (res.data?.location) {
-        window.location.href = res.data.location;
-        return;
-      }
-      const token = res.data?.token || (typeof res.data === "string" ? res.data : null);
-      if (token) {
-        setAuthToken(token);
-        await fetchCustomer(token);
-        return;
-      }
-      window.location.href = `${process.env.REACT_APP_MEDUSA_BACKEND_URL}/auth/customer/google`;
-    } catch (err) {
-      console.error("Lỗi Google login:", err);
-      window.location.href = `${process.env.REACT_APP_MEDUSA_BACKEND_URL}/auth/customer/google`;
+    // Hoặc backend có thể trả token trực tiếp (ví dụ user đã đăng nhập trước)
+    const token = res.data?.token || (typeof res.data === "string" ? res.data : null);
+    if (token) {
+      setAuthToken(token);
+      await fetchCustomer(token);
+      return;
     }
-  };
 
-  useEffect(() => {
-    const storedToken = getToken();
-    if (storedToken) {
-      fetchCustomer(storedToken);
-    } else {
-      setIsLoading(false);
-    }
-  }, [getToken, fetchCustomer]);
+    // Nếu không nhận gì hợp lệ -> fallback redirect thẳng
+    window.location.href = `${process.env.REACT_APP_MEDUSA_BACKEND_URL}/auth/customer/google`;
+  } catch (err) {
+    console.error("Lỗi khi khởi tạo Google login:", err.response?.data || err.message);
+    // fallback direct redirect nếu có lỗi mạng / CORS
+    window.location.href = `${process.env.REACT_APP_MEDUSA_BACKEND_URL}/auth/customer/google`;
+  }
+};
+
+
 
   const value = {
     isAuthenticated,
@@ -217,6 +225,17 @@ export const AuthProvider = ({ children }) => {
     fetchCustomer,
     loginWithGoogle,
   };
+
+  useEffect(() => {
+    const storedToken = getToken();
+    if (storedToken) {
+      fetchCustomer(storedToken);
+    } else {
+      setIsLoading(false);
+    }
+  }, [fetchCustomer]);
+
+  
 
   return (
     <AuthContext.Provider value={value}>
