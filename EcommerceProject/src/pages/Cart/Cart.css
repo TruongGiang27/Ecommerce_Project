@@ -1,5 +1,6 @@
 /* =========================
-   Cart.css (FULL)
+   Cart.css (FULL - Updated)
+   Fix: "Giỏ hàng" wrap + "Mã ưu đãi" không xuống hàng
    ========================= */
 
 /* ====== Base ====== */
@@ -47,6 +48,12 @@
   font-size: 22px;
   font-weight: 800;
   color: #111827;
+
+  /* FIX: không cho chữ "Giỏ hàng (x sản phẩm)" xuống dòng */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 /* ====== Giỏ hàng trống ====== */
@@ -82,7 +89,7 @@
   background: #f9fafb;
 }
 
-/* Checkbox đẹp hơn */
+/* Checkbox */
 .cart-page .cart-check {
   margin-top: 6px;
   width: 18px;
@@ -103,7 +110,6 @@
   font-weight: 700;
   color: #111827;
 
-  /* tránh title dài bị vỡ layout */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -145,29 +151,41 @@
   color: #111827;
 }
 
-/* ====== Nhóm input chung ====== */
+/* ====== Mã ưu đãi (FIX: label không xuống hàng) ====== */
 .cart-page .input-group {
   margin-bottom: 18px;
   padding-bottom: 18px;
   border-bottom: 1px solid #eef0f4;
+
+  /* FIX layout: label nằm ngang input */
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.cart-page .input-group label,
-.cart-page .input-info-group label {
+.cart-page .input-group label {
   display: block;
   font-weight: 700;
-  margin-bottom: 8px;
   color: #374151;
   font-size: 14px;
+
+  /* FIX: không cho "Mã ưu đãi" xuống dòng */
+  margin: 0;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  min-width: 86px;
 }
 
-/* Hàng nhập mã + nút */
+/* input + button chiếm phần còn lại */
 .cart-page .input-row {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
+/* ====== Input chung ====== */
 .cart-page .input-row input[type="text"],
 .cart-page .input-row input[type="tel"],
 .cart-page .input-info-feild,
@@ -179,6 +197,7 @@
   font-size: 14px;
   background: #fff;
   transition: 0.2s ease;
+  min-width: 0;
 }
 
 .cart-page .input-row input[type="text"]::placeholder,
@@ -188,7 +207,7 @@
   color: #9ca3af;
 }
 
-/* Focus đẹp */
+/* Focus */
 .cart-page .input-row input:focus,
 .cart-page .input-info-feild:focus,
 .cart-page .input-info-phone-feild:focus {
@@ -197,12 +216,20 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-/* Input info group */
+/* ====== Thông tin ====== */
 .cart-page .input-info-group {
   margin-bottom: 14px;
 }
 
-/* SĐT có prefix */
+.cart-page .input-info-group label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #374151;
+  font-size: 14px;
+}
+
+/* Phone prefix */
 .cart-page .input-info-phone {
   display: flex;
   align-items: stretch;
@@ -276,7 +303,6 @@
   margin-top: 10px;
 }
 
-/* Base button */
 .cart-page .qr-btn {
   width: 100%;
   display: flex;
@@ -294,7 +320,6 @@
   letter-spacing: 0.2px;
 }
 
-/* VNPay */
 .cart-page .vnpay-btn {
   background: linear-gradient(135deg, #2563eb, #3b82f6);
 }
@@ -376,7 +401,6 @@
   margin-top: 10px;
 }
 
-/* Modal buttons */
 .outside-modal .cancel-btn,
 .outside-modal .confirm-btn {
   padding: 12px 18px;
@@ -442,6 +466,16 @@
 }
 
 @media (max-width: 420px) {
+  /* Mã ưu đãi xuống cột cho gọn */
+  .cart-page .input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cart-page .input-group label {
+    min-width: 0;
+  }
+
   .cart-page .input-row {
     flex-direction: column;
     align-items: stretch;
