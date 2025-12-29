@@ -1,0 +1,57 @@
+name: medusa_ecommerce
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: medusa_postgres_ecommerce
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: medusa_store
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_ecommerce:/var/lib/postgresql/data
+    networks:
+      - medusa_network_ecommerce
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: medusa_redis_ecommerce
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - medusa_network_ecommerce
+
+  # Medusa Backend
+  medusa:
+    build: .
+    container_name: medusa_backend_ecommerce
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "9000:9000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:postgres@100.65.202.126:5432/medusa_store
+      - REDIS_URL=redis://redis:6379
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - medusa_network_ecommerce
+
+volumes:
+  postgres_data_ecommerce:
+
+networks:
+  medusa_network_ecommerce:
+    driver: bridge
