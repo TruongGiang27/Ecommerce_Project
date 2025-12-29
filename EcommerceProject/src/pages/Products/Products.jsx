@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import ProductCard from "../../components/productCard/ProductCard";
 import { useSearchParams, Link } from "react-router-dom";
 import SidebarCategories from "../../components/SidebarCategories/SidebarCategories";
-import "./products.css";
+import "./Products.css";
 
 // Banner / logo dùng cho sidebar + hero
 import OfficeBanner from "../../assets/images/banner-office.png";
