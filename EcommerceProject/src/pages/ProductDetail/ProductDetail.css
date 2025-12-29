@@ -140,32 +140,38 @@
   border-color: var(--color-primary);
 }
 
+/* ================================
+   ✅ FIX "Chọn lại" NGẮN như option
+   ================================ */
 .reset {
+  display: inline-flex;      /* co theo nội dung */
+  align-items: center;
+  justify-content: center;
+  width: fit-content;        /* không full width */
+  min-width: unset;
+
   border: 1.5px solid var(--color-border);
   border-radius: 10px;
   padding: 8px 14px;
-  width: fit-content;
-  margin-top: 2rem;
-  margin-left: 10px;
-  font-size: 1.2rem;
-  background: linear-gradient(
-    108deg,
-    #2563eb 3.84%,
-    #3b82f6 22.43%,
-    #06b6d4 60.36%,
-    #2563eb 96.59%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+
+  margin-top: 12px;          /* gọn hơn 2rem */
+  margin-left: 0;            /* bỏ lệch */
+
+  font-size: 1rem;           /* khớp option-item */
+  font-weight: 600;
+  line-height: 1;
+  background: #fff;          /* bỏ gradient chữ */
+  color: var(--color-text);
+
   cursor: pointer;
+  user-select: none;
+  transition: 0.2s;
 }
 
 .reset:hover {
-  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-  -webkit-text-fill-color: white;
-  color: white;
-  -webkit-background-clip: initial;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.06);
 }
 
 /* Lựa chọn không khả dụng (disabled) */
@@ -443,16 +449,10 @@
   color: #ffffff;
   border: 0;
   box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
-  transition:
-    transform 0.14s ease,
-    box-shadow 0.14s ease,
-    opacity 0.14s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease,
+    border-color 0.12s ease;
   min-width: 200px;
   cursor: pointer;
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease,
-    border-color 0.12s ease;
 }
 
 /* Biểu tượng trong vòng tròn */
@@ -519,7 +519,6 @@
 
 .contact-item .contact-icon {
   transform-origin: center;
-  /* đảm bảo chuyển tiếp mượt khi hover/blur */
   will-change: transform;
 }
 
@@ -568,9 +567,9 @@
 /* CSS CHO Ô NHẬP TÀI KHOẢN NÂNG CẤP           */
 /* =========================================== */
 .upgrade-account-input-group {
-  margin-top: 24px; /* Tách biệt với phần chọn số lượng */
-  margin-bottom: 20px; /* Tách biệt với nút Mua ngay */
-  background-color: #f9fafb; /* Màu nền nhẹ */
+  margin-top: 24px;
+  margin-bottom: 20px;
+  background-color: #f9fafb;
   border-radius: 12px;
   padding: 16px;
   border: 1px solid var(--color-border);
@@ -581,7 +580,7 @@
   font-weight: 600;
   margin-bottom: 10px;
   color: var(--color-text);
-  font-size: 0.95rem; /* Hơi nhỏ hơn tiêu đề */
+  font-size: 0.95rem;
   line-height: 1.5;
 }
 
@@ -591,17 +590,17 @@
   border-radius: 10px;
   border: 1.5px solid var(--color-border);
   font-size: 1rem;
-  background-color: #ffffff; /* Nền trắng cho input */
-  box-sizing: border-box; /* Quan trọng */
+  background-color: #ffffff;
+  box-sizing: border-box;
   transition: all 0.2s ease;
 }
 
 .upgrade-account-input:focus {
   border-color: var(--color-primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); /* Vòng focus */
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .upgrade-account-input::placeholder {
-  color: #9ca3af; /* Màu placeholder */
+  color: #9ca3af;
 }
