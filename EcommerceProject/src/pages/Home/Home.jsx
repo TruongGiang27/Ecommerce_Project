@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryBar from "../../components/CategoryBar/CategoryBar";
 import ProductCard from "../../components/productCard/ProductCard";
 import HeroBanner from "../../components/Banner/HeroBanner";
-import "./home.css";
 import InfinityScrollBar from "../../components/InfinityScrollBar/InfinityScrollBar";
 import HeroLanding from "../../components/HeroLanding/HeroLanding";
+import "./home.css";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const regionId = process.env.REACT_APP_MEDUSA_REGION_ID;
-  const BACKEND_URL = process.env.REACT_APP_MEDUSA_BACKEND_URL;
+
+  // ENV Setup
+  const regionId = import.meta.env?.VITE_MEDUSA_REGION_ID || process.env.REACT_APP_MEDUSA_REGION_ID;
+  const BACKEND_URL = import.meta.env?.VITE_MEDUSA_BACKEND_URL || process.env.REACT_APP_MEDUSA_BACKEND_URL;
+  const API_KEY = import.meta.env?.VITE_MEDUSA_PUBLISHABLE_KEY || process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY;
 
   const getImageUrl = (url) => {
     if (!url) return "/default-product.png";
@@ -26,29 +30,39 @@ export default function Home() {
   };
 
   useEffect(() => {
+    setLoading(true);
     fetch(`${BACKEND_URL}/store/products?region_id=${regionId}&limit=1000`, {
       headers: {
-        "x-publishable-api-key": process.env.REACT_APP_MEDUSA_PUBLISHABLE_KEY,
+        "x-publishable-api-key": API_KEY,
       },
     })
       .then((res) => res.json())
       .then((data) => {
         setProducts(data.products || []);
       })
-      .catch((err) => console.error("Lỗi khi lấy sản phẩm:", err));
-  }, [BACKEND_URL, regionId]);
+      .catch((err) => console.error("Lỗi khi lấy sản phẩm:", err))
+      .finally(() => setLoading(false));
+  }, [BACKEND_URL, regionId, API_KEY]);
 
-  const now = new Date();
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(now.getDate() - 30);
+  // === PHẦN BẠN MUỐN SỬA Ở ĐÂY ===
+  const { recentProducts, bestSellers } = useMemo(() => {
+    // 1. LOGIC MỚI (Lấy từ Product sang): Sắp xếp theo ngày tạo mới nhất
+    // Thay vì filter 30 ngày, ta sort date giảm dần để luôn có sản phẩm
+    const sortedByDate = [...products].sort((a, b) => {
+        const dateA = new Date(a.created_at || 0).getTime();
+        const dateB = new Date(b.created_at || 0).getTime();
+        return dateB - dateA; // Mới nhất lên đầu
+    });
 
-  const recentProducts = products.filter((p) => {
-    if (!p.created_at) return false;
-    const createdAt = new Date(p.created_at);
-    return createdAt >= thirtyDaysAgo;
-  });
+    // Lấy 8 sản phẩm mới nhất để hiển thị ra Grid (Home cần nhiều hơn sidebar của Product)
+    const recent = sortedByDate.slice(0, 8);
 
-  const bestSellers = products.slice(0, 8);
+    // 2. Logic Best Sellers (Giữ nguyên hoặc tùy chỉnh)
+    // Tạm thời lấy 8 sản phẩm đầu tiên của danh sách gốc làm bestseller
+    const best = products.slice(0, 8);
+
+    return { recentProducts: recent, bestSellers: best };
+  }, [products]);
 
   return (
     <div className="container">
@@ -73,8 +87,7 @@ export default function Home() {
           <h2>Sản Phẩm Nổi Bật Nhất Năm 2025</h2>
           <p>
             Digitech Shop cung cấp phần mềm bản quyền chính hãng đa dạng: AI,
-            Microsoft Office, thiết kế đồ họa, VPN/Antivirus... đáp ứng mọi nhu
-            cầu học tập, công việc và giải trí với giá cực kỳ cạnh tranh.
+            Microsoft Office, thiết kế đồ họa, VPN/Antivirus...
           </p>
           <button className="btn-contact" onClick={() => navigate("/contact")}>
             Liên hệ tư vấn tại đây →
@@ -83,16 +96,16 @@ export default function Home() {
 
         <div className="highlight-right">
           <h3>Nổi bật</h3>
-          {bestSellers.length > 0 ? (
+          {loading ? (
+             <div className="loading-spinner">Đang tải...</div>
+          ) : bestSellers.length > 0 ? (
             <>
               {bestSellers.length > 4 && (
                 <div className="bestseller-scroll-vertical">
                   <ul className="bestseller-list-vertical">
                     {bestSellers.slice(2).map((p) => {
                       const price =
-                        p?.variants?.[0]?.calculated_price?.calculated_amount ||
-                        0;
-
+                        p?.variants?.[0]?.calculated_price?.calculated_amount || 0;
                       const image = getImageUrl(p.thumbnail);
 
                       return (
@@ -116,71 +129,56 @@ export default function Home() {
               )}
             </>
           ) : (
-            <p>Đang tải sản phẩm...</p>
+            <p>Đang cập nhật...</p>
           )}
         </div>
       </section>
 
+      {/* === GIỮ NGUYÊN CODE UI SẢN PHẨM MỚI CỦA HOME === */}
       <section className="product-section">
         <h2>Sản phẩm mới nhất</h2>
         <div className="product-grid">
-          {recentProducts.length > 0 ? (
-            recentProducts
-              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-              .slice(0, 8)
-              .map((p) => <ProductCard key={p.id} product={p} />)
+          {loading ? (
+             <p>Đang tải sản phẩm mới...</p>
+          ) : recentProducts.length > 0 ? (
+            // Vẫn dùng Grid của Home để hiển thị danh sách đã lọc theo logic mới
+            recentProducts.map((p) => <ProductCard key={p.id} product={p} />)
           ) : (
-            <p>Không có sản phẩm mới nhất</p>
+            <p>Chưa có sản phẩm mới</p>
           )}
         </div>
       </section>
 
-      {/* ⭐ THÊM HERO LANDING Ở CUỐI */}
       <HeroLanding />
 
-      {/* ⭐ THÊM LẠI KHUNG ĐEN BENEFIT STRIP (BẢN GỐC CỦA BẠN) */}
       <section className="benefit-strip">
         <div className="benefit-strip-inner">
           <div className="benefit-item">
-            <div className="benefit-icon">
-              <span role="img" aria-label="truck">🚚</span>
-            </div>
+            <div className="benefit-icon">🚚</div>
             <div className="benefit-text">
               <p className="benefit-title">Xử lý nhanh</p>
               <p className="benefit-sub">Trong vòng 3h</p>
             </div>
           </div>
-
           <span className="benefit-divider" />
-
           <div className="benefit-item">
-            <div className="benefit-icon">
-              <span role="img" aria-label="support">🛡️</span>
-            </div>
+            <div className="benefit-icon">🛡️</div>
             <div className="benefit-text">
               <p className="benefit-title">Đội ngũ chuyên nghiệp</p>
               <p className="benefit-sub">Hỗ trợ 24/7</p>
             </div>
           </div>
-
           <span className="benefit-divider" />
-
           <div className="benefit-item">
-            <div className="benefit-icon">
-              <span role="img" aria-label="key">🔑</span>
-            </div>
+            <div className="benefit-icon">🔑</div>
             <div className="benefit-text">
               <p className="benefit-title">Key chính hãng</p>
               <p className="benefit-sub">Hợp pháp 100%</p>
             </div>
           </div>
-
           <span className="benefit-divider" />
-
           <div className="benefit-item">
-            <div className="benefit-icon">
-              <span role="img" aria-label="headset">🎧</span>
-            </div>
+            <div className="benefit-icon">🎧</div>
             <div className="benefit-text">
               <p className="benefit-title">Cổng thanh toán</p>
               <p className="benefit-sub">An toàn, uy tín</p>

@@ -1,6 +1,8 @@
 /* =========================
-   Cart.css (FULL - Updated)
-   Fix: "Giỏ hàng" wrap + "Mã ưu đãi" không xuống hàng
+   Cart.css (FULL - Final)
+   Fix:
+   - Font/title "Giỏ hàng" nhìn đúng & đồng bộ
+   - "Mã ưu đãi" không xuống hàng
    ========================= */
 
 /* ====== Base ====== */
@@ -8,7 +10,9 @@
   min-height: 100vh;
   background: #f6f7fb;
   padding: 28px 0 60px;
-  font-family: Arial, Helvetica, sans-serif;
+
+  /* IMPORTANT: ăn theo font global của site */
+  font-family: inherit;
 }
 
 /* ====== Layout chung ====== */
@@ -42,18 +46,21 @@
   height: fit-content;
 }
 
-/* ====== Title ====== */
+/* ====== Title "Giỏ hàng" (FIX FONT) ====== */
 .cart-page .cart-left h2 {
   margin: 0 0 14px;
-  font-size: 22px;
-  font-weight: 800;
   color: #111827;
 
-  /* FIX: không cho chữ "Giỏ hàng (x sản phẩm)" xuống dòng */
+  /* chỉnh lại cho giống UI web: vừa đủ nổi, không quá "nặng" */
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+
+  /* không cho xuống dòng */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.2;
 }
 
 /* ====== Giỏ hàng trống ====== */
@@ -106,7 +113,7 @@
 
 .cart-page .cart-info h3 {
   margin: 0 0 6px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #111827;
 
@@ -147,7 +154,7 @@
 .cart-page .summary h3 {
   margin: 0 0 14px;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 800;
   color: #111827;
 }
 
@@ -157,26 +164,23 @@
   padding-bottom: 18px;
   border-bottom: 1px solid #eef0f4;
 
-  /* FIX layout: label nằm ngang input */
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
 .cart-page .input-group label {
-  display: block;
   font-weight: 700;
   color: #374151;
   font-size: 14px;
 
-  /* FIX: không cho "Mã ưu đãi" xuống dòng */
   margin: 0;
-  white-space: nowrap;
+  white-space: nowrap;  /* không xuống dòng */
   flex: 0 0 auto;
-  min-width: 86px;
+  min-width: 90px;      /* đủ cho "Mã ưu đãi" */
 }
 
-/* input + button chiếm phần còn lại */
+/* input + button */
 .cart-page .input-row {
   display: flex;
   align-items: center;
@@ -327,15 +331,6 @@
 .cart-page .vnpay-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 30px rgba(59, 130, 246, 0.3);
-}
-
-/* (Nếu sau này thêm momo) */
-.cart-page .momo-btn {
-  background: linear-gradient(135deg, #d82d7e, #b42567);
-}
-.cart-page .momo-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 30px rgba(216, 45, 126, 0.25);
 }
 
 /* ====== QR preview ====== */
